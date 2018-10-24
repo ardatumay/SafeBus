@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "863159264484",
+    "firebase_url": "https://safebus-b9bf7.firebaseio.com",
+    "project_id": "safebus-b9bf7",
+    "storage_bucket": "safebus-b9bf7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:863159264484:android:0a45c6eec27f53cb",
+        "android_client_info": {
+          "package_name": "com.bros.safebus.safebus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "863159264484-rff2idv2d75miqihga7emoc3jt4vvl98.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bros.safebus.safebus",
+            "certificate_hash": "93a1ddaaeb46206ba7e00d5e62d045b4103b1dcb"
+          }
+        },
+        {
+          "client_id": "863159264484-v17917tor070asoerkp7bs0qgk191al9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAaap7ntmwelL70dRB-rrsHbrLuAgeG4_8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "863159264484-v17917tor070asoerkp7bs0qgk191al9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
