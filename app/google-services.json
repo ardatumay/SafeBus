@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "863159264484-r2dc3uu79apn4p40a28f17i0ou75sfjl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bros.safebus.safebus",
+            "certificate_hash": "036a832a8c98d815bb72f3ae1a6951bf36ca9790"
+          }
+        },
+        {
           "client_id": "863159264484-v17917tor070asoerkp7bs0qgk191al9.apps.googleusercontent.com",
           "client_type": 3
         }
