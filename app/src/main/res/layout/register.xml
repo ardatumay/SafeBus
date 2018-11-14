@@ -1,49 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
 
 <RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/reg_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/text_Register"
+        android:textAlignment="center"
+        android:textSize="18sp"
+        android:textStyle="bold" />
 
     <RadioGroup
+        android:id="@+id/radio_Group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/reg_text"
         android:gravity="center_vertical"
-        android:orientation="vertical"
-        android:id="@+id/radio_group">
-
-
+        android:orientation="horizontal"
+        >
         <RadioButton
-            android:id="@+id/parent_button"
+            android:id="@+id/parent_Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/parent"
             android:textAlignment="viewStart" />
 
         <RadioButton
-            android:id="@+id/driver_button"
+            android:id="@+id/driver_Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
             android:text="@string/driver" />
 
     </RadioGroup>
-    <TextView
-        android:id="@+id/reg_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/text_register"
-        android:textAlignment="center"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+
 
     <EditText
         android:id="@+id/email"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/radio_group"
+        android:layout_below="@+id/radio_Group"
         android:autofillHints=""
         android:ems="10"
         android:hint="Email"
@@ -51,65 +51,63 @@
         android:textAlignment="viewStart" />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:id="@+id/password"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
         android:layout_below="@+id/email"
-        android:layout_alignLeft="@+id/email"
         android:layout_alignStart="@+id/email"
-        android:id="@+id/password"
         android:hint="Password"
         android:autofillHints="" />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:id="@+id/name"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
         android:ems="10"
         android:layout_below="@+id/password"
-        android:id="@+id/name"
         android:hint="Enter Your Name"
         android:autofillHints="" />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:id="@+id/surname"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
         android:ems="10"
         android:layout_below="@+id/name"
-        android:id="@+id/surname"
         android:hint="Enter Your Surname"
         android:autofillHints="" />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:id="@+id/home_Address"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
         android:ems="10"
         android:layout_below="@+id/surname"
-        android:id="@+id/home_address"
         android:hint="Enter Your Home Address"
         android:autofillHints="" />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:id="@+id/phone_Number"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
         android:ems="10"
-        android:layout_below="@+id/home_address"
-        android:id="@+id/phone_number"
+        android:layout_below="@+id/home_Address"
         android:hint="Enter Your Phone Number"
         android:autofillHints="" />
 
     <Button
+        android:id="@+id/register_Button"
         android:text="Register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/phone_number"
-        android:layout_alignRight="@+id/phone_number"
-        android:layout_alignEnd="@+id/phone_number"
-        android:id="@+id/register_button" />
+        android:layout_below="@+id/phone_Number"
+        android:layout_alignStart="@+id/phone_Number"
+         />
 
 </RelativeLayout>
-</android.support.constraint.ConstraintLayout>

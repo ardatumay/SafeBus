@@ -34,9 +34,9 @@ public class register extends AppCompatActivity {
         final EditText password = (EditText) findViewById(R.id.password);
         final EditText name = (EditText) findViewById(R.id.name);
         final EditText surname = (EditText) findViewById(R.id.surname);
-        final EditText homeAddress = (EditText) findViewById(R.id.home_address);
-        final EditText phoneNumber = (EditText) findViewById(R.id.phone_number);
-        final Button register = (Button) findViewById(R.id.register_button);
+        final EditText homeAddress = (EditText) findViewById(R.id.home_Address);
+        final EditText phoneNumber = (EditText) findViewById(R.id.phone_Number);
+        final Button register = (Button) findViewById(R.id.register_Button);
 
         register.setOnClickListener(new View.OnClickListener() {
             @Override

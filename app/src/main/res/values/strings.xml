@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">SafeBus</string>
-    <string name="text_register">REGİSTRATION</string>
-    <string name="parent">parent</string>
-    <string name="driver">driver</string>
+    <string name="text_Register">REGISTRATION</string>
+    <string name="parent">Parent</string>
+    <string name="driver">Driver</string>
     <string name="student">student</string>
 </resources>
