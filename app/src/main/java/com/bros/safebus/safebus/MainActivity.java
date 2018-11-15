@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -30,7 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 public class MainActivity extends AppCompatActivity {
 
     private FusedLocationProviderClient mFusedLocationClient; //location provider client
-    LocationRequest mLocationRequest = new LocationRequest(); // location request
+    LocationRequest mLocationRequest; // location request
     Location currentLoc = null;
     private LocationCallback mLocationCallback;
 
@@ -66,10 +67,8 @@ public class MainActivity extends AppCompatActivity {
         //////////////////////FIREBASE RELATED////////////////////
 
         //bussiness logic variables
-        createLocationRequest(mLocationRequest);  //create the location request
+        mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
-
-
 
         mLocationCallback = new LocationCallback() {//callback function to get location updates
             @Override
@@ -224,20 +223,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 */
-
-
-
-    public static void createLocationRequest(LocationRequest mLocationRequest) { //create a location request for the location updates
-
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(mLocationRequest);
-        builder.build();
-    }
-
-
 
 
 }

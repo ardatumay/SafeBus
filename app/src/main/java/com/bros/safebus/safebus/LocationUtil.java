@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -97,7 +98,7 @@ public class LocationUtil {
         };
     };
 */
-    public static void createLocationRequest() { //create a location request for the location updates
+    public static LocationRequest CreateLocationRequest() { //create a location request for the location updates
         LocationRequest mLocationRequest = new LocationRequest(); // location request
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
@@ -105,6 +106,28 @@ public class LocationUtil {
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);
         builder.build();
+        return mLocationRequest;
     }
 
+    public static LocationCallback GetLocationCallback(){
+        return new LocationCallback() {//callback function to get location updates
+            Location currentlocation;
+
+
+
+                    @Override
+                    public void onLocationResult(LocationResult locationResult) {
+                        if (locationResult == null) {
+                            return;
+                        }
+                        for (Location location : locationResult.getLocations()) {//location gives the updated location
+                            //Log.d("LOC", location.toString());
+                            // Update UI with location data
+                            // ...
+                            currentlocation = location;
+                        }
+                    };
+                };
+
+    }
 }
