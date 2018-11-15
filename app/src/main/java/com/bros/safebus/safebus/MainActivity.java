@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -34,16 +35,21 @@ public class MainActivity extends AppCompatActivity {
     LocationRequest mLocationRequest; // location request
     Location currentLoc = null;
     private LocationCallback mLocationCallback;
+    boolean mRequestingLocationUpdates = false;
+    private GeofencingClient mGeofencingClient;
+
+
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //user interface variables
-        final TextView updatedLocation = (TextView) findViewById(R.id.updatedLocation);
-        final TextView CurrentLocation = (TextView) findViewById(R.id.currentLocation);
-        Button showLocation = (Button) findViewById(R.id.showLocation);
+        final TextView updatedLocation = (TextView) findViewById(R.id.updated_Location);
+        final TextView CurrentLocation = (TextView) findViewById(R.id.current_Location);
+        Button showLocation = (Button) findViewById(R.id.show_Location);
         //////////////////////FIREBASE RELATED////////////////////
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("/children/0/busPlate");
@@ -69,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         //bussiness logic variables
         mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
-
+        mGeofencingClient = LocationServices.getGeofencingClient(this);
         mLocationCallback = new LocationCallback() {//callback function to get location updates
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -105,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        boolean mRequestingLocationUpdates = true;
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
@@ -201,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-  /* @Override
+   @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -211,9 +216,11 @@ public class MainActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
+                    mRequestingLocationUpdates = true;
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
+                    mRequestingLocationUpdates = false;
                 }
                 return;
             }
@@ -222,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
             // permissions this app might request.
         }
     }
-*/
+
 
 
 }

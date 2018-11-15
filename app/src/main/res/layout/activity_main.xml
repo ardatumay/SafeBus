@@ -8,7 +8,7 @@
 
 
     <TextView
-        android:id="@+id/currentLocation"
+        android:id="@+id/current_Location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -23,7 +23,7 @@
         app:layout_constraintVertical_bias="0.178" />
 
     <Button
-        android:id="@+id/showLocation"
+        android:id="@+id/show_Location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -38,7 +38,7 @@
         app:layout_constraintVertical_bias="0.324" />
 
     <TextView
-        android:id="@+id/updatedLocation"
+        android:id="@+id/updated_Location"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -53,7 +53,7 @@
         app:layout_constraintVertical_bias="0.539" />
 
     <Button
-        android:id="@+id/updateButton"
+        android:id="@+id/update_Button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
