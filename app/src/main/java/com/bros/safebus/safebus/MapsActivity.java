@@ -1,11 +1,18 @@
 package com.bros.safebus.safebus;
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 
+import com.directions.route.Routing;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -14,10 +21,53 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    double latitude,longitude;
+
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Bundle bundle = intent.getExtras();
+            Log.i("Here", "onreceived");
+            if (bundle != null) {
+
+                latitude = bundle.getDouble("lati");
+                Log.i("Tag", latitude + "");
+
+                longitude = bundle.getDouble("longi");
+                Log.i("tag", longitude + "");
+               // drawmap(latitude, longitude);
+            }
+        }
+    };
+
+    public void drawPath(double plati, double plongi, double cLati, double clongi) {
+        // draw on map here
+        // draw line from intial to final location and draw tracker location map
+
+        Log.i("Tag", "map");
+
+        // add line b/w current and prev location.
+        LatLng prev = new LatLng(plati, plongi);
+        LatLng my = new LatLng(cLati, clongi);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(my, 15));
+        // map.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+
+        Polyline line = mMap.addPolyline(new PolylineOptions().add(prev, my)
+                .width(5).color(Color.BLUE));
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +77,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
     }
 
 
@@ -45,13 +97,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        LatLng kralCanınEvi = new LatLng(39.892967, 32.855078);
+        /*LatLng kralCanınEvi = new LatLng(39.892967, 32.855078, 39.892311, 32.854128);
         mMap.addMarker(new MarkerOptions().position(kralCanınEvi).title("KRAL CAN"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(kralCanınEvi, 18));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(kralCanınEvi));
         mMap.addMarker(new MarkerOptions()
         .position(kralCanınEvi)
         .title("king")
-        );
+        );*/
+
+        drawPath(39.892967, 32.855078,39.892311, 32.854128 );
+
+
+       /* Polyline polyline = googleMap.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .color(Color.RED)
+                .add(
+                        new LatLng(39.892967, 32.855078),
+                        new LatLng(39.892311, 32.854128),
+                        new LatLng(39.892122, 32.852465),
+                        new LatLng(39.894560, 32.851845),
+                        new LatLng(39.895729, 32.847135)));
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -62,7 +129,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mMap.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(true);*/
+
 
     }
 
@@ -78,7 +146,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
     }
-
+    public void roadBuilder(){
+        PolylineOptions polylineOptions = new PolylineOptions();
+        polylineOptions.color(Color.RED);
+    }
 
     public GoogleMap getmMap() {
         return mMap;
