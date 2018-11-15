@@ -1,18 +1,18 @@
 package com.bros.safebus.safebus;
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.Manifest;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -26,9 +26,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.w3c.dom.Text;
-
-import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +39,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //user interface variables
+        final TextView updatedLocation = (TextView) findViewById(R.id.updatedLocation);
+        final TextView CurrentLocation = (TextView) findViewById(R.id.currentLocation);
+        Button showLocation = (Button) findViewById(R.id.showLocation);
         //////////////////////FIREBASE RELATED////////////////////
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("/children/0/busPlate");
@@ -66,21 +66,18 @@ public class MainActivity extends AppCompatActivity {
         //////////////////////FIREBASE RELATED////////////////////
 
         //bussiness logic variables
-        createLocationRequest(mLocationRequest); //create the location request
+        createLocationRequest(mLocationRequest);  //create the location request
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
 
-        //user interface variables
-        final TextView updatedLocation = (TextView) findViewById(R.id.updatedLocation);
-        final TextView CurrentLocation = (TextView) findViewById(R.id.currentLocation);
-        Button showLocation = (Button) findViewById(R.id.showLocation);
 
-        mLocationCallback = new LocationCallback() {
+
+        mLocationCallback = new LocationCallback() {//callback function to get location updates
             @Override
             public void onLocationResult(LocationResult locationResult) {
                 if (locationResult == null) {
                     return;
                 }
-                for (Location location : locationResult.getLocations()) {
+                for (Location location : locationResult.getLocations()) {//location gives the updated location
                     //Log.d("LOC", location.toString());
                     // Update UI with location data
                     // ...
@@ -91,9 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-        showLocation.setOnClickListener(new View.OnClickListener() {
+        showLocation.setOnClickListener(new View.OnClickListener() {// When show location button is clicked show the location of the currentLoc variable
             @Override
             public void onClick(View view) {
                 GetLoc();
@@ -107,19 +102,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Override
     protected void onResume() {
@@ -139,21 +121,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -167,16 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
-
-
-
-
-    void GetLoc(){//get the last location
+    void GetLoc(){//get the last location of the user and put the location value to the currentLoc variable
         checkLocationPermission();
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -194,20 +152,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
-
-
-
-
     void setTextView(TextView targetTextView, String targetString){//set textView content
         targetTextView.setText(targetString);
     }
-
-
-
-
-
-
 
 
 
@@ -219,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
+            // Permission is not granted
             // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -241,7 +189,6 @@ public class MainActivity extends AppCompatActivity {
                         .create()
                         .show();
 
-
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(this,
@@ -255,21 +202,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+  /* @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+    }
+*/
 
 
 
+    public static void createLocationRequest(LocationRequest mLocationRequest) { //create a location request for the location updates
 
-
-
-
-
-
-
-
-
-
-
-    protected void createLocationRequest(LocationRequest request) { //create a location request for the location updates
         mLocationRequest.setInterval(10000);
         mLocationRequest.setFastestInterval(5000);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -277,16 +236,6 @@ public class MainActivity extends AppCompatActivity {
                 .addLocationRequest(mLocationRequest);
         builder.build();
     }
-
-
-
-
-
-
-
-
-
-
 
 
 
