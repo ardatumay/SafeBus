@@ -6,7 +6,7 @@ public class Driver {
     private String name;
     private String surname;
     private String schoolAddress;
-    private String phoneNumber;
+    private int phoneNumber;
     private String email;
     private String password;
     private String plateNumber;
@@ -18,7 +18,7 @@ public class Driver {
     public Driver() {
     }
 
-    public Driver(String name, String surname, String schoolAddress, String phoneNumber, String email, String password, String plateNumber) {
+    public Driver(String name, String surname, String email, String password, String schoolAddress, int phoneNumber, String plateNumber) {
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -28,7 +28,7 @@ public class Driver {
         this.plateNumber = plateNumber;
     }
 
-    public Driver(String name, String surname, String schoolAddress, String phoneNumber, String email, String plateNumber, String currentLocation, String lastKnownLocation) {
+    public Driver(String name, String surname, String schoolAddress, int phoneNumber, String email, String plateNumber, String currentLocation, String lastKnownLocation) {
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -105,11 +105,11 @@ public class Driver {
         this.schoolAddress = schoolAddress;
     }
 
-    public String getPhoneNumber() {
+    public int getPhoneNumber() {
         return phoneNumber;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
+    public void setPhoneNumber(int phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
 

@@ -49,6 +49,16 @@
         android:hint="Email"
         android:inputType="textEmailAddress"
         android:textAlignment="viewStart" />
+    <EditText
+        android:id="@+id/email_driver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/radio_Group"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:textAlignment="viewStart" />
 
     <EditText
         android:id="@+id/password"
@@ -58,6 +68,16 @@
         android:ems="10"
         android:layout_below="@+id/email"
         android:layout_alignStart="@+id/email"
+        android:hint="Password"
+        android:autofillHints="" />
+    <EditText
+        android:id="@+id/password_driver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:layout_below="@+id/email_driver"
+        android:layout_alignStart="@+id/email_driver"
         android:hint="Password"
         android:autofillHints="" />
 
@@ -70,6 +90,15 @@
         android:layout_below="@+id/password"
         android:hint="Enter Your Name"
         android:autofillHints="" />
+    <EditText
+        android:id="@+id/name_driver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:ems="10"
+        android:layout_below="@+id/password_driver"
+        android:hint="Enter Your Name"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/surname"
@@ -78,6 +107,15 @@
         android:inputType="text"
         android:ems="10"
         android:layout_below="@+id/name"
+        android:hint="Enter Your Surname"
+        android:autofillHints="" />
+    <EditText
+        android:id="@+id/surname_driver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:ems="10"
+        android:layout_below="@+id/name_driver"
         android:hint="Enter Your Surname"
         android:autofillHints="" />
 
@@ -90,6 +128,15 @@
         android:layout_below="@+id/surname"
         android:hint="Enter Your Home Address"
         android:autofillHints="" />
+    <EditText
+        android:id="@+id/school_Address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:ems="10"
+        android:layout_below="@+id/surname_driver"
+        android:hint="Enter Your School Address"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/phone_Number"
@@ -100,14 +147,44 @@
         android:layout_below="@+id/home_Address"
         android:hint="Enter Your Phone Number"
         android:autofillHints="" />
+    <EditText
+        android:id="@+id/phone_Number_driver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:layout_below="@+id/school_Address"
+        android:hint="Enter Your Phone Number"
+        android:autofillHints="" />
+    <EditText
+        android:id="@+id/plate_Number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:ems="10"
+        android:layout_below="@+id/phone_Number"
+        android:hint="Enter Your Plate Number"
+        android:autofillHints="" />
+
+
 
     <Button
-        android:id="@+id/register_Button"
+        android:id="@+id/register_Button_Parent"
         android:text="Register"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/phone_Number"
         android:layout_alignStart="@+id/phone_Number"
          />
+    <Button
+        android:id="@+id/register_Button_Driver"
+        android:text="Register"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/plate_Number"
+        android:layout_alignStart="@+id/plate_Number"
+        />
+
+
 
 </RelativeLayout>
