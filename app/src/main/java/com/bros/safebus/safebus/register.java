@@ -151,9 +151,9 @@ public class register extends AppCompatActivity {
                                         //firstTextView.setText("Signing up");
 
                                         databaseReference = firebaseDatabase.getReference();
-
-                                        final Parent newParent = new Parent(Name, Surname, email_Address, pass, Address, number);
-                                        databaseReference.child("parents").child(firebaseAuth.getCurrentUser().getUid())
+                                        String parentKey = firebaseAuth.getCurrentUser().getUid();
+                                        final Parent newParent = new Parent(Name, Surname, email_Address, pass, Address, number, parentKey);
+                                        databaseReference.child("parents").child(parentKey)
                                                 .setValue(newParent);
                                         // Map<String, String> newUser = new HashMap<String, String>();
                                         //newUser.put("email", email_Address);
@@ -197,8 +197,8 @@ public class register extends AppCompatActivity {
                                     //firstTextView.setText("Signing up");
 
                                     databaseReference = firebaseDatabase.getReference();
-
-                                    final Driver newDriver = new Driver(driver_Name, driver_Surname, driver_Email_Address, driver_Pass, driver_Address, driver_phoneNumber, driver_plateNumber);
+                                    String driverKey = firebaseAuth.getCurrentUser().getUid();
+                                    final Driver newDriver = new Driver(driver_Name, driver_Surname, driver_Email_Address, driver_Pass, driver_Address, driver_phoneNumber, driver_plateNumber,driverKey);
                                     databaseReference.child("drivers") .child(firebaseAuth.getCurrentUser().getUid())
                                             .setValue(newDriver);
                                     // Map<String, String> newUser = new HashMap<String, String>();

@@ -3,6 +3,8 @@ package com.bros.safebus.safebus;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 
+import java.util.Arrays;
+
 public class Parent {
     private String name;
     private String surname;
@@ -17,7 +19,7 @@ public class Parent {
     {
 
     }
-    public Parent (String name, String surname, String email, String password, String Address, int phone)//constructor for only register page and includes only register page variables
+    public Parent (String name, String surname, String email, String password, String Address, int phone, String key)//constructor for only register page and includes only register page variables
     {
         this.name = name;
         this.surname = surname;
@@ -25,6 +27,7 @@ public class Parent {
         this.password = password;
         this.Address = Address;
         this.phone = phone;
+        this.key = key;
     }
 
     //full constructor
@@ -101,6 +104,20 @@ public class Parent {
 
     public void setChildren(Child[] children) {
         this.children = children;
+    }
+
+    @Override
+    public String toString() {
+        return "Parent{" +
+                "name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", Address='" + Address + '\'' +
+                ", phone=" + phone +
+                ", key='" + key + '\'' +
+                ", children=" + Arrays.toString(children) +
+                '}';
     }
 }
 

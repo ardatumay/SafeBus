@@ -18,7 +18,7 @@ public class Driver {
     public Driver() {
     }
 
-    public Driver(String name, String surname, String email, String password, String schoolAddress, int phoneNumber, String plateNumber) {
+    public Driver(String name, String surname, String email, String password, String schoolAddress, int phoneNumber, String plateNumber, String key) {
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -26,6 +26,7 @@ public class Driver {
         this.email = email;
         this.password = password;
         this.plateNumber = plateNumber;
+        this.key = key;
     }
 
     public Driver(String name, String surname, String schoolAddress, int phoneNumber, String email, String plateNumber, String currentLocation, String lastKnownLocation) {
