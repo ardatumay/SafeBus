@@ -1,7 +1,6 @@
-package com.bros.safebus.safebus;
+package com.bros.safebus.safebus.models;
 
-import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
+import com.bros.safebus.safebus.models.Child;
 
 public class Parent {
     private String name;

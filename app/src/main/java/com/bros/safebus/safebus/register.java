@@ -4,24 +4,23 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Editable;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bros.safebus.safebus.models.Driver;
+import com.bros.safebus.safebus.models.Parent;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class register extends AppCompatActivity {
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -133,13 +132,32 @@ public class register extends AppCompatActivity {
                 public void onClick(View v) {
 
 
-                    final String email_Address = email.getText().toString();
+                    final String email_Address = email.getText().toString().trim();
+                    if (TextUtils.isEmpty(email_Address)) {
+                        Toast.makeText(register.this, "Enter email address!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     final String pass = password.getText().toString();
+                    if (TextUtils.isEmpty(pass)) {
+                        Toast.makeText(register.this, "Enter password!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     final String Name = name.getText().toString();
+                    if (TextUtils.isEmpty(Name)) {
+                        Toast.makeText(register.this, "Enter name!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     final String Surname = surname.getText().toString();
+                    if (TextUtils.isEmpty(Surname)) {
+                        Toast.makeText(register.this, "Enter surname!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
                     final String Address = homeAddress.getText().toString();
                     //final Editable number = phoneNumber.getText();
                     final int number = Integer.parseInt(phoneNumber.getText().toString());
+
+
+
 
 
                     //final String number = phoneNumber.getText().toString();

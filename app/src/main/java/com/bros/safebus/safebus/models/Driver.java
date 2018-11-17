@@ -1,6 +1,6 @@
-package com.bros.safebus.safebus;
+package com.bros.safebus.safebus.models;
 
-import java.util.HashMap;
+import com.bros.safebus.safebus.models.Child;
 
 public class Driver {
     private String name;

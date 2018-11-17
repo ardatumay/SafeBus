@@ -1,4 +1,4 @@
-package com.bros.safebus.safebus;
+package com.bros.safebus.safebus.models;
 
 public class Child {
 
