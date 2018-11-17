@@ -64,6 +64,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -78,14 +79,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         2) location değiştiğinde bunu anlaması için call methodu yarat
         3) Değişimi anladığında location arası noktaların arasını google servisi kullanarak bağla
          */
+
+
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            LatLng getlast;
+            int i=0;
             @Override
             public void onMapLongClick(LatLng latLng) {
                 //Reset marker when already 2
-                if (listPoints.size() == 2) {
+            /*   if (listPoints.size() == 2) {
                     listPoints.clear();
                     mMap.clear();
-                }
+                }*/
                 //Save first point select
                 listPoints.add(latLng);
                 //Create marker
@@ -101,9 +106,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
                 mMap.addMarker(markerOptions);
 
-                if (listPoints.size() == 2) {
+                if (listPoints.size() >= 2) {
                     //Create the URL to get request from first marker to second marker
-                    String url = getRequestUrl(listPoints.get(0), listPoints.get(1));
+                    String url = getRequestUrl(listPoints.get(i), listPoints.get(i+1));
+                    i++;
                     TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
                     taskRequestDirections.execute(url);
                 }
