@@ -141,7 +141,7 @@ public class register extends AppCompatActivity {
                     final String Surname = surname.getText().toString();
                     final String Address = homeAddress.getText().toString();
                     //final Editable number = phoneNumber.getText();
-                    final int number = Integer.parseInt(phoneNumber.getText().toString());
+                    final long number = Long.parseLong(phoneNumber.getText().toString());
                     final String parentRole = parentButton.getText().toString();
 
                     //final String number = phoneNumber.getText().toString();

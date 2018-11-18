@@ -11,7 +11,7 @@ public class Parent {
     private String email;
     private String password;
     private String Address;
-    private int phone;
+    private long phone;
     private String key;
     private Child[] children;
     private String type;
@@ -20,7 +20,7 @@ public class Parent {
     {
 
     }
-    public Parent (String name, String surname, String email, String password, String Address, int phone, String key, String type)//constructor for only register page and includes only register page variables
+    public Parent (String name, String surname, String email, String password, String Address, long phone, String key, String type)//constructor for only register page and includes only register page variables
     {
         this.name = name;
         this.surname = surname;
@@ -33,7 +33,7 @@ public class Parent {
     }
 
     //full constructor
-    public Parent(String name, String surname, String email, String password, String address, int phone, String key, Child[] children, String type) {
+    public Parent(String name, String surname, String email, String password, String address, long phone, String key, Child[] children, String type) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -85,7 +85,7 @@ public class Parent {
         Address = address;
     }
 
-    public int getPhone() {
+    public long getPhone() {
         return phone;
     }
 
