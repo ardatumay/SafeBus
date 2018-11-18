@@ -12,9 +12,13 @@
         android:id="@+id/animation_view"
         android:layout_width="match_parent"
         android:layout_height="200dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
         android:layout_gravity="center"
-        app:lottie_rawRes="@raw/bus"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="99dp"
+        app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_autoPlay="true"/>
+        app:lottie_rawRes="@raw/bus" />
 
 </RelativeLayout>
