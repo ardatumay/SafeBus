@@ -123,18 +123,20 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
                             String RegisteredUserID = currentUser.getUid();
 
-                            DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID);
+                            final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID);
 
                             databaseref.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     String userType = dataSnapshot.child("type").getValue().toString();
+
+
                                     if(userType.equals("Parent")){
-                                        Intent intentResident = new Intent(MainActivity.this, User.class);
+                                        Intent intentResident = new Intent(MainActivity.this, register.class);
                                         intentResident.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intentResident);
                                         finish();
-                                    }else if(userType.equals("Driver")){
+                                    }else if (userType.equals("Driver")){
                                         Intent intentMain = new Intent(MainActivity.this, register.class);
                                         intentMain.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intentMain);
