@@ -67,7 +67,8 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
             }
-        });
+        });*/
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,23 +79,22 @@ public class MainActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    firstTextView.setText("Logging in");
+                                   // firstTextView.setText("Logging in");
                                     openActivity();
                                    // startActivity(new Intent(getApplication(), User.class));
                                 } else {
-                                    Log.e("giris hatası", task.getException().toString());
+                                    Log.e("Log in error", task.getException().toString());
                                 }
                             }
                         });
             }
         });
     }
-
     private void openActivity() {
         Intent intent = new Intent (MainActivity.this, User.class);
         startActivity(intent);
     }
-    private void kullaniciOlustur() {
+   /* private void kullaniciOlustur() {
         Map<String, String> yeniUser = new HashMap<String, String>();
         yeniUser.put("name", "name");
         yeniUser.put("surname", "surname");
@@ -121,9 +121,9 @@ public class MainActivity extends AppCompatActivity {
                         }
                        // startActivity(new Intent(MainActivity.this, User.class));
                     }
-                });*/
+                });
 
-    }
+    }*/
     void changeRegisterPage()
     {
         Intent register_intent = new Intent(this, register.class);

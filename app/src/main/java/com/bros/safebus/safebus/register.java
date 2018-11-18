@@ -1,5 +1,6 @@
 package com.bros.safebus.safebus;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -158,7 +159,7 @@ public class register extends AppCompatActivity {
                                         // Map<String, String> newUser = new HashMap<String, String>();
                                         //newUser.put("email", email_Address);
                                         //newUser.put("password", pass);
-
+                                        returnMainPage();
 
                                         // .child(firebaseAuth.getCurrentUser().getUid())
                                         // .setValue(newParent);
@@ -206,7 +207,7 @@ public class register extends AppCompatActivity {
                                     //newUser.put("password", pass);
 
 
-
+                                    returnMainPage();
                                     // .child(firebaseAuth.getCurrentUser().getUid())
                                     // .setValue(newParent);
                                     // kullaniciGuncelle();
@@ -219,6 +220,11 @@ public class register extends AppCompatActivity {
             }
         });
 
-    }
 
+    }
+    void returnMainPage()
+    {
+        Intent main_Page = new Intent(this, MainActivity.class);
+        startActivity(main_Page);
+    }
 }
