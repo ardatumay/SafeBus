@@ -53,11 +53,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-<<<<<<< HEAD
 
-
-=======
->>>>>>> 05fca5d7310c51b60a706eb363a5b28efbee3b28
        /* sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
