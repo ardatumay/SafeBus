@@ -2,21 +2,24 @@ package com.bros.safebus.safebus.models;
 
 import com.bros.safebus.safebus.models.Child;
 
+import java.util.Arrays;
+
 public class Parent {
     private String name;
     private String surname;
     private String email;
     private String password;
     private String Address;
-    private int phone;
+    private long phone;
     private String key;
     private Child[] children;
+    private String type;
 
     public Parent ()
     {
 
     }
-    public Parent (String name, String surname, String email, String password, String Address, int phone)//constructor for only register page and includes only register page variables
+    public Parent (String name, String surname, String email, String password, String Address, long phone, String key, String type)//constructor for only register page and includes only register page variables
     {
         this.name = name;
         this.surname = surname;
@@ -24,10 +27,12 @@ public class Parent {
         this.password = password;
         this.Address = Address;
         this.phone = phone;
+        this.key = key;
+        this.type = type;
     }
 
     //full constructor
-    public Parent(String name, String surname, String email, String password, String address, int phone, String key, Child[] children) {
+    public Parent(String name, String surname, String email, String password, String address, long phone, String key, Child[] children, String type) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -36,6 +41,7 @@ public class Parent {
         this.phone = phone;
         this.key = key;
         this.children = children;
+        this.type = type;
     }
 
     public String getName() {
@@ -78,7 +84,7 @@ public class Parent {
         Address = address;
     }
 
-    public int getPhone() {
+    public long getPhone() {
         return phone;
     }
 
@@ -100,6 +106,27 @@ public class Parent {
 
     public void setChildren(Child[] children) {
         this.children = children;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+    @Override
+    public String toString() {
+        return "Parent{" +
+                "name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", Address='" + Address + '\'' +
+                ", phone=" + phone +
+                ", key='" + key + '\'' +
+                ", children=" + Arrays.toString(children) +
+                '}';
     }
 }
 

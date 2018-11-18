@@ -1,5 +1,6 @@
 package com.bros.safebus.safebus;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -26,6 +27,8 @@ public class register extends AppCompatActivity {
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     DatabaseReference databaseReference;
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +52,6 @@ public class register extends AppCompatActivity {
         final RadioGroup radioGroup = (RadioGroup) findViewById(R.id.radio_Group);
         final RadioButton parentButton = (RadioButton) findViewById(R.id.parent_Button);
         final RadioButton driverButton = (RadioButton) findViewById(R.id.driver_Button);
-
 
        /* name.setVisibility(View.VISIBLE);
         deneme.setOnClickListener(new View.OnClickListener() {
@@ -154,8 +156,8 @@ public class register extends AppCompatActivity {
                     }
                     final String Address = homeAddress.getText().toString();
                     //final Editable number = phoneNumber.getText();
-                    final int number = Integer.parseInt(phoneNumber.getText().toString());
-
+                    final long number = Long.parseLong(phoneNumber.getText().toString());
+                    final String parentRole = parentButton.getText().toString();
 
 
 
@@ -169,14 +171,14 @@ public class register extends AppCompatActivity {
                                         //firstTextView.setText("Signing up");
 
                                         databaseReference = firebaseDatabase.getReference();
-
-                                        final Parent newParent = new Parent(Name, Surname, email_Address, pass, Address, number);
-                                        databaseReference.child("parents").child(firebaseAuth.getCurrentUser().getUid())
+                                        String parentKey = firebaseAuth.getCurrentUser().getUid();
+                                        final Parent newParent = new Parent(Name, Surname, email_Address, pass, Address, number, parentKey, parentRole);
+                                        databaseReference.child("parents").child(parentKey)
                                                 .setValue(newParent);
                                         // Map<String, String> newUser = new HashMap<String, String>();
                                         //newUser.put("email", email_Address);
                                         //newUser.put("password", pass);
-
+                                        returnMainPage();
 
                                         // .child(firebaseAuth.getCurrentUser().getUid())
                                         // .setValue(newParent);
@@ -204,7 +206,7 @@ public class register extends AppCompatActivity {
                 //final Editable number = phoneNumber.getText();
                 final int driver_phoneNumber = Integer.parseInt(driverPhoneNumber.getText().toString());
                 final String driver_plateNumber = plateNumber.getText().toString();
-
+                final String driverRole = driverButton.getText().toString();
 
                 //final String number = phoneNumber.getText().toString();
                 firebaseAuth.createUserWithEmailAndPassword(driver_Email_Address, driver_Pass)
@@ -215,8 +217,8 @@ public class register extends AppCompatActivity {
                                     //firstTextView.setText("Signing up");
 
                                     databaseReference = firebaseDatabase.getReference();
-
-                                    final Driver newDriver = new Driver(driver_Name, driver_Surname, driver_Email_Address, driver_Pass, driver_Address, driver_phoneNumber, driver_plateNumber);
+                                    String driverKey = firebaseAuth.getCurrentUser().getUid();
+                                    final Driver newDriver = new Driver(driver_Name, driver_Surname, driver_Email_Address, driver_Pass, driver_Address, driver_phoneNumber, driver_plateNumber,driverKey,driverRole);
                                     databaseReference.child("drivers") .child(firebaseAuth.getCurrentUser().getUid())
                                             .setValue(newDriver);
                                     // Map<String, String> newUser = new HashMap<String, String>();
@@ -224,7 +226,7 @@ public class register extends AppCompatActivity {
                                     //newUser.put("password", pass);
 
 
-
+                                    returnMainPage();
                                     // .child(firebaseAuth.getCurrentUser().getUid())
                                     // .setValue(newParent);
                                     // kullaniciGuncelle();
@@ -237,6 +239,14 @@ public class register extends AppCompatActivity {
             }
         });
 
+
+
+
+    }
+    void returnMainPage()
+    {
+        Intent main_Page = new Intent(this, MainActivity.class);
+        startActivity(main_Page);
     }
 
 }
