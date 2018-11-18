@@ -14,12 +14,13 @@ public class Parent {
     private int phone;
     private String key;
     private Child[] children;
+    private String type;
 
     public Parent ()
     {
 
     }
-    public Parent (String name, String surname, String email, String password, String Address, int phone, String key)//constructor for only register page and includes only register page variables
+    public Parent (String name, String surname, String email, String password, String Address, int phone, String key, String type)//constructor for only register page and includes only register page variables
     {
         this.name = name;
         this.surname = surname;
@@ -28,10 +29,11 @@ public class Parent {
         this.Address = Address;
         this.phone = phone;
         this.key = key;
+        this.type = type;
     }
 
     //full constructor
-    public Parent(String name, String surname, String email, String password, String address, int phone, String key, Child[] children) {
+    public Parent(String name, String surname, String email, String password, String address, int phone, String key, Child[] children, String type) {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -40,6 +42,7 @@ public class Parent {
         this.phone = phone;
         this.key = key;
         this.children = children;
+        this.type = type;
     }
 
     public String getName() {
@@ -106,6 +109,13 @@ public class Parent {
         this.children = children;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
     @Override
     public String toString() {
         return "Parent{" +
