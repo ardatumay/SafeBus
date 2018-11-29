@@ -120,6 +120,16 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        Button mapsButton = (Button) findViewById(R.id.o_map);
+        mapsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public  void onClick(View v){
+                goMaps();
+            }
+        });
+
     }
 
     @Override
@@ -246,20 +256,16 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        Button mapsButton = (Button) findViewById(R.id.o_map);
-        mapsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public  void onClick(View v){
-                goMaps();
-            }
-        });
 
-    }
 
     void goMaps (){
         Intent intent = new Intent(this, MapsActivity.class);
         startActivity(intent);
     }
 
+    }
 
-}
+
+
+
+
