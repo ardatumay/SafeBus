@@ -22,6 +22,16 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import android.content.Intent;
+import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+
+import com.bros.safebus.safebus.Animation.AnimationActivity;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         //user interface variables
         final TextView updatedLocation = (TextView) findViewById(R.id.updated_Location);
@@ -91,7 +102,10 @@ public class MainActivity extends AppCompatActivity {
             };
         };
 
+       /* FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference();
 
+        myRef.setValue("Hello, Worlddddd!");*/
 
         showLocation.setOnClickListener(new View.OnClickListener() {// When show location button is clicked show the location of the currentLoc variable
             @Override
@@ -230,6 +244,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
+        Button mapsButton = (Button) findViewById(R.id.o_map);
+        mapsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public  void onClick(View v){
+                goMaps();
+            }
+        });
+
+    }
+
+    void goMaps (){
+        Intent intent = new Intent(this, MapsActivity.class);
+        startActivity(intent);
+    }
 
 
 }
