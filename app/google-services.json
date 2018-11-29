@@ -23,6 +23,30 @@
           }
         },
         {
+          "client_id": "863159264484-r2dc3uu79apn4p40a28f17i0ou75sfjl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bros.safebus.safebus",
+            "certificate_hash": "036a832a8c98d815bb72f3ae1a6951bf36ca9790"
+          }
+        },
+        {
+          "client_id": "863159264484-t74956g0s6g8aoakhmhfqsij9um6conr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bros.safebus.safebus",
+            "certificate_hash": "d4045c1021c6f8b6914ba8a9fc016c72c23ed1a7"
+          }
+        },
+        {
+          "client_id": "863159264484-ougl6epm4ac3u53g2rtbqdt8ua05i1is.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bros.safebus.safebus",
+            "certificate_hash": "2c7611cc42e5ff9db3ea981f4623d001ef7424ed"
+          }
+        },
+        {
           "client_id": "863159264484-v17917tor070asoerkp7bs0qgk191al9.apps.googleusercontent.com",
           "client_type": 3
         }
