@@ -4,7 +4,11 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.bros.safebus.safebus.register"
+    android:id="@+id/register">
     <TextView
         android:id="@+id/reg_text"
         android:layout_width="match_parent"

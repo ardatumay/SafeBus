@@ -158,23 +158,23 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     String userType = dataSnapshot.child("type").getValue().toString().toLowerCase();
-
+                                    String key = dataSnapshot.child("key").getValue().toString();
 
                                     if(userType.equals("parents")){
                                         /*Intent intentResident = new Intent(MainActivity.this, register.class);
                                         intentResident.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intentResident);
                                         finish();*/
-                                        GoToParentHome();
+                                        GoToParentHome(key);
                                     }else if (userType.equals("drivers")){
                                         /*Intent intentMain = new Intent(MainActivity.this, register.class);
                                         intentMain.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intentMain);
                                         finish();*/
-                                        GoToDriverHome();
+                                        GoToDriverHome(key);
 
                                     }else if(userType.equals("children")) {
-                                        GoToChildrenHome();
+                                        GoToChildrenHome(key);
                                     }
                                     else{
                                             Toast.makeText(MainActivity.this, "Failed Login. Please Try Again", Toast.LENGTH_SHORT).show();
@@ -194,16 +194,19 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    void GoToParentHome(){
+    void GoToParentHome(String userKey){
         Intent i = new Intent(this, ParentInterface.class);
+        i.putExtra("userKey", userKey);
         startActivity(i);
     }
-    void GoToChildrenHome(){
+    void GoToChildrenHome(String userKey){
         Intent i = new Intent(this, ChildrenInterface.class);
+        i.putExtra("userKey", userKey);
         startActivity(i);
     }
-    void GoToDriverHome(){
+    void GoToDriverHome(String userKey){
         Intent i = new Intent(this, DriverInterface.class);
+        i.putExtra("userKey", userKey);
         startActivity(i);
     }
    /* private void kullaniciOlustur() {

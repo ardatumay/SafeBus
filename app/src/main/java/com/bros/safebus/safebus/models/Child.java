@@ -2,22 +2,24 @@ package com.bros.safebus.safebus.models;
 
 public class Child {
 
+    private String password;
     private String name;
-    private  String surname;
-    private  String schoolAddress;
-    private  String phone;
+    private String surname;
+    private String schoolAddress;
+    private long phone;
     private String parentKey;
     private String email;
     private String busPlate;
     private String key;
     private String currentLocation;
     private String lastKnownLocation;//tek bi string olarak mı yoksa ikili hashmap tarzında mı. virgülle ayrılıyor
+    private String type;
 
     public Child() {
     }
 
     //full constructor
-    public Child(String name, String surname, String schoolAddress, String phone, String parentKey, String email, String busPlate, String key, String currentLocation, String lastKnownLocation) {
+    public Child(String name, String surname, String schoolAddress, long phone, String parentKey, String email, String busPlate, String key, String currentLocation, String lastKnownLocation) {
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -30,12 +32,16 @@ public class Child {
         this.lastKnownLocation = lastKnownLocation;
     }
 
-    public Child(String name, String surname, String schoolAddress, String phone, String email) {// for register page. only includes register page variables
+    public Child(String name, String surname, String email, String password, String schoolAddress, long phone, String key, String parentKey, String type) {// for register page. only includes register page variables
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
         this.phone = phone;
         this.email = email;
+        this.password = password;
+        this.key = key;
+        this.type = type;
+        this.parentKey = parentKey;
     }
 
 
@@ -64,11 +70,11 @@ public class Child {
         this.schoolAddress = schoolAddress;
     }
 
-    public String getPhone() {
+    public long getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public void setPhone(long phone) {
         this.phone = phone;
     }
 
@@ -104,8 +110,42 @@ public class Child {
         this.key = key;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getCurrentLocation() {
         return currentLocation;
+    }
+
+    @Override
+    public String toString() {
+        return "Child{" +
+                "password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", schoolAddress='" + schoolAddress + '\'' +
+                ", phone=" + phone +
+                ", parentKey='" + parentKey + '\'' +
+                ", email='" + email + '\'' +
+                ", busPlate='" + busPlate + '\'' +
+                ", key='" + key + '\'' +
+                ", currentLocation='" + currentLocation + '\'' +
+                ", lastKnownLocation='" + lastKnownLocation + '\'' +
+                ", type='" + type + '\'' +
+                '}';
     }
 
     public void setCurrentLocation(String currentLocation) {

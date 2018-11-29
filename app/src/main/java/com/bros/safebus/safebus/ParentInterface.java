@@ -20,7 +20,10 @@ public class ParentInterface extends Activity {
         });
     }
     void GoToChildrenRegister(){
+        Intent intent = getIntent();
+        String parentKey = intent.getStringExtra("userKey");
         Intent i = new Intent(this, registerChild.class);
+        i.putExtra("parentKey", parentKey);
         startActivity(i);
     }
 
