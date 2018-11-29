@@ -217,16 +217,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
          */
 
 
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+        mMap.setOnMyLocationChangeListener(new GoogleMap.OnMyLocationChangeListener() {
             LatLng getlast;
             int i=0;
             @Override
-            public void onMapLongClick(LatLng latLng) {
-                //Reset marker when already 2
-            /*   if (listPoints.size() == 2) {
-                    listPoints.clear();
-                    mMap.clear();
-                }*/
+            public void onMyLocationChange(Location location) {
+                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+
                 //Save first point select
                 listPoints.add(latLng);
                 //Create marker
@@ -251,6 +248,17 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     taskRequestDirections.execute(url);
                 }
             }
+
+
+            /*@Override
+            public void onMapLongClick(LatLng latLng) {*/
+                //Reset marker when already 2
+            /*   if (listPoints.size() == 2) {
+                    listPoints.clear();
+                    mMap.clear();
+                }*/
+
+            //}
         });
 
     }
