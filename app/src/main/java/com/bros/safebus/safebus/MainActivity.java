@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private LocationCallback mLocationCallback;
     boolean mRequestingLocationUpdates = false;
     private GeofencingClient mGeofencingClient;
+    Location updatedLoc = null;
+
 
 
 
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
                     // Update UI with location data
                     // ...
                     updatedLocation.setText(location.toString());
+                    SetLocation(location);
                 }
             };
         };
@@ -132,9 +135,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    void SetLocation(Location loc){
+        updatedLoc = loc;
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
+        mRequestingLocationUpdates = true;
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
@@ -152,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        //stopLocationUpdates();
     }
 
     private void stopLocationUpdates() {
@@ -257,10 +265,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
     void goMaps (){
         Intent intent = new Intent(this, MapsActivity.class);
+
         startActivity(intent);
+
     }
 
     }

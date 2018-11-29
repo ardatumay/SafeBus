@@ -2,15 +2,26 @@ package com.bros.safebus.safebus;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.GeofencingClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -41,6 +52,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<LatLng> listPoints;
 
 
+    private FusedLocationProviderClient mFusedLocationClient; //location provider client
+    LocationRequest mLocationRequest; // location request
+    Location currentLoc = null;
+    private LocationCallback mLocationCallback;
+    boolean mRequestingLocationUpdates = false;
+    private GeofencingClient mGeofencingClient;
+    Location updatedLoc = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,8 +69,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         listPoints = new ArrayList<>();
-    }
 
+        mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
+        //mGeofencingClient = LocationServices.getGeofencingClient(this);
+        mLocationCallback = new LocationCallback() {//callback function to get location updates
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {//location gives the updated location
+                    //Log.d("LOC", location.toString());
+                    // Update UI with location data
+                    // ...
+                    //updatedLocation.setText(location.toString());
+                    SetLocation(location);
+                }
+            };
+        };
+    }
+    void SetLocation(Location loc){
+        updatedLoc = loc;
+    }
     // Add a marker in Sydney and move the camera
         /*LatLng kralCanınEvi = new LatLng(39.892967, 32.855078, 39.892311, 32.854128);
         mMap.addMarker(new MarkerOptions().position(kralCanınEvi).title("KRAL CAN"));
@@ -61,6 +101,102 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         .position(kralCanınEvi)
         .title("king")
         );*/
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mRequestingLocationUpdates = true;
+        if (mRequestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+    private void startLocationUpdates() {
+        checkLocationPermission();
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                mLocationCallback,
+                null /* Looper */);
+    }
+
+
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //stopLocationUpdates();
+    }
+
+    private void stopLocationUpdates() {
+        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+
+    public boolean checkLocationPermission() { //check whether the app has enough permissions for location services
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Permission is not granted
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.title_location_permission)
+                        .setMessage(R.string.text_location_permission)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                //Prompt the user once explanation has been shown
+                                ActivityCompat.requestPermissions(MapsActivity.this,
+                                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                        MY_PERMISSIONS_REQUEST_LOCATION);
+                            }
+                        })
+                        .create()
+                        .show();
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    /*@Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_LOCATION: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    mRequestingLocationUpdates = true;
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    mRequestingLocationUpdates = false;
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request.
+        }
+    }*/
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -107,6 +243,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 mMap.addMarker(markerOptions);
 
                 if (listPoints.size() >= 2) {
+                    Log.d("lat lng", "LATLNG: " + latLng);
                     //Create the URL to get request from first marker to second marker
                     String url = getRequestUrl(listPoints.get(i), listPoints.get(i+1));
                     i++;
