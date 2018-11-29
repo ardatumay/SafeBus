@@ -35,27 +35,48 @@
                     android:layout_below="@+id/email"
                     android:hint="Password" />
 
-                <Button
-                    android:id="@+id/login_Button"
-                    android:text="Login"
+                <RadioGroup
+                    android:id="@+id/userTypeRadio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/password"
-                    android:layout_alignStart="@+id/password"
-                    />
+                    android:layout_below="@id/password">
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/parent"/>
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/driver"/>
+                        <RadioButton
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/student"/>
+                </RadioGroup>
 
-                <Button
-                    android:id="@+id/signup_Button"
-                    android:text="Sign Up"
+                <RelativeLayout
+                    android:id="@+id/buttonHolder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/password"
-                    android:layout_alignEnd="@+id/password"
-                    />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/deneme"/>
+                    android:layout_below="@+id/userTypeRadio">
+                        <Button
+                            android:id="@+id/login_Button"
+                            android:text="Login"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_toRightOf="@+id/signup_Button"
+                            />
+
+                        <Button
+                            android:id="@+id/signup_Button"
+                            android:text="Sign Up"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+
+                            />
+                </RelativeLayout>
+
+
         </RelativeLayout>
 
 </RelativeLayout>

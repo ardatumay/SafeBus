@@ -9,10 +9,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
+import com.bros.safebus.safebus.models.Child;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -29,10 +31,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-
+    private String userType = "";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         final Button login = (Button) findViewById(R.id.login_Button);
        // final TextView firstTextView = (TextView) findViewById(R.id.textView);
         final Button sign_up = (Button) findViewById(R.id.signup_Button);
+
 
         sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,9 +83,12 @@ public class MainActivity extends AppCompatActivity {
                 String userLoginEmail = email.getText().toString();
                 String userLoginPassword = password.getText().toString();
 
-                if(!TextUtils.isEmpty(userLoginEmail)&& !TextUtils.isEmpty(userLoginPassword)) {
+                if(!TextUtils.isEmpty(userLoginEmail)&& !TextUtils.isEmpty(userLoginPassword) && userType != "") {
+                    Log.d("USER LOGIN MAIL","CALL LOGIN" );
+
                     loginUser(userLoginEmail, userLoginPassword);
                 }else{
+                    Log.d("USER LOGIN TYPE", "LOGIN EMPTY");
                     Toast.makeText(MainActivity.this, "Failed Login: Empty Inputs are not allowed", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -109,10 +114,32 @@ public class MainActivity extends AppCompatActivity {
                  //       });
            // }
        // });
+        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.userTypeRadio);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
+                Log.d("DRIVER", "NEW RADIO CLICK" + checkedButton.getText().toString().toLowerCase() );
+                   /* Log.d("DRIVER", "onCheckedChanged: " +checkedButton.getText().toString().toLowerCase() );
+                    SetUserType("drivers");
+                    Log.d("CHILDREN", "onCheckedChanged: " +checkedButton.getText().toString().toLowerCase() );
+                    SetUserType("children");
+                    Log.d("PARENT", "onCheckedChanged: " +checkedButton.getText().toString().toLowerCase() );*/
+
+                    SetUserType(checkedButton.getText().toString().toLowerCase());
+
+            }
+        });
     }
     private void openActivity() {
         Intent intent = new Intent (MainActivity.this, User.class);
         startActivity(intent);
+    }
+
+    void SetUserType(String val){
+        Log.d("SET USERTYPE", "NEW VAL" + val );
+        userType = val;
     }
 
     private void loginUser(final String userLoginEmail, final String userLoginPassword) {
@@ -123,31 +150,37 @@ public class MainActivity extends AppCompatActivity {
                         if(task.isSuccessful()){
 
                             FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
-                            String RegisteredUserID = currentUser.getUid();
+                            final String RegisteredUserID = currentUser.getUid();
 
-                            final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID);
+                            final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child(userType).child(RegisteredUserID);
 
                             databaseref.addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
-                                    String userType = dataSnapshot.child("type").getValue().toString();
+                                    String userType = dataSnapshot.child("type").getValue().toString().toLowerCase();
 
 
-                                    if(userType.equals("Parent")){
-                                        Intent intentResident = new Intent(MainActivity.this, register.class);
+                                    if(userType.equals("parents")){
+                                        /*Intent intentResident = new Intent(MainActivity.this, register.class);
                                         intentResident.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intentResident);
-                                        finish();
-                                    }else if (userType.equals("Driver")){
-                                        Intent intentMain = new Intent(MainActivity.this, register.class);
+                                        finish();*/
+                                        GoToParentHome();
+                                    }else if (userType.equals("drivers")){
+                                        /*Intent intentMain = new Intent(MainActivity.this, register.class);
                                         intentMain.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intentMain);
-                                        finish();
-                                    }else{
-                                        Toast.makeText(MainActivity.this, "Failed Login. Please Try Again", Toast.LENGTH_SHORT).show();
-                                        return;
+                                        finish();*/
+                                        GoToDriverHome();
+
+                                    }else if(userType.equals("children")) {
+                                        GoToChildrenHome();
                                     }
-                                }
+                                    else{
+                                            Toast.makeText(MainActivity.this, "Failed Login. Please Try Again", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+                                    }
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -159,6 +192,19 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    void GoToParentHome(){
+        Intent i = new Intent(this, ParentInterface.class);
+        startActivity(i);
+    }
+    void GoToChildrenHome(){
+        Intent i = new Intent(this, ChildrenInterface.class);
+        startActivity(i);
+    }
+    void GoToDriverHome(){
+        Intent i = new Intent(this, DriverInterface.class);
+        startActivity(i);
     }
    /* private void kullaniciOlustur() {
         Map<String, String> yeniUser = new HashMap<String, String>();

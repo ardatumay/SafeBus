@@ -9,7 +9,7 @@ public class Parent {
     private String surname;
     private String email;
     private String password;
-    private String Address;
+    private String address;
     private long phone;
     private String key;
     private Child[] children;
@@ -19,13 +19,13 @@ public class Parent {
     {
 
     }
-    public Parent (String name, String surname, String email, String password, String Address, long phone, String key, String type)//constructor for only register page and includes only register page variables
+    public Parent (String name, String surname, String email, String password, String address, long phone, String key, String type)//constructor for only register page and includes only register page variables
     {
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.password = password;
-        this.Address = Address;
+        this.address = address;
         this.phone = phone;
         this.key = key;
         this.type = type;
@@ -37,7 +37,7 @@ public class Parent {
         this.surname = surname;
         this.email = email;
         this.password = password;
-        Address = address;
+        address = address;
         this.phone = phone;
         this.key = key;
         this.children = children;
@@ -77,11 +77,11 @@ public class Parent {
     }
 
     public String getAddress() {
-        return Address;
+        return address;
     }
 
     public void setAddress(String address) {
-        Address = address;
+        address = address;
     }
 
     public long getPhone() {
@@ -122,7 +122,7 @@ public class Parent {
                 ", surname='" + surname + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
-                ", Address='" + Address + '\'' +
+                ", Address='" + address + '\'' +
                 ", phone=" + phone +
                 ", key='" + key + '\'' +
                 ", children=" + Arrays.toString(children) +

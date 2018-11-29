@@ -6,7 +6,7 @@ public class Driver {
     private String name;
     private String surname;
     private String schoolAddress;
-    private int phoneNumber;
+    private long phoneNumber;
     private String email;
     private String password;
     private String plateNumber;
@@ -19,7 +19,7 @@ public class Driver {
     public Driver() {
     }
 
-    public Driver(String name, String surname, String email, String password, String schoolAddress, int phoneNumber, String plateNumber, String key,String type) {
+    public Driver(String name, String surname, String email, String password, String schoolAddress, long phoneNumber, String plateNumber, String key,String type) {
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -109,7 +109,7 @@ public class Driver {
         this.schoolAddress = schoolAddress;
     }
 
-    public int getPhoneNumber() {
+    public long getPhoneNumber() {
         return phoneNumber;
     }
 

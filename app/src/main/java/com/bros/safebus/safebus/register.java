@@ -169,7 +169,7 @@ public class register extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         //firstTextView.setText("Signing up");
-
+                                        String type = "parent";
                                         databaseReference = firebaseDatabase.getReference();
                                         String parentKey = firebaseAuth.getCurrentUser().getUid();
                                         final Parent newParent = new Parent(Name, Surname, email_Address, pass, Address, number, parentKey, parentRole);
@@ -204,7 +204,7 @@ public class register extends AppCompatActivity {
                 final String driver_Surname = driverSurname.getText().toString();
                 final String driver_Address = driverSchoolAddress.getText().toString();
                 //final Editable number = phoneNumber.getText();
-                final int driver_phoneNumber = Integer.parseInt(driverPhoneNumber.getText().toString());
+                final long driver_phoneNumber = Long.parseLong(driverPhoneNumber.getText().toString());
                 final String driver_plateNumber = plateNumber.getText().toString();
                 final String driverRole = driverButton.getText().toString();
 
