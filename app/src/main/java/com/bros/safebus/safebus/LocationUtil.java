@@ -20,8 +20,8 @@ public class LocationUtil {
 
     public static LocationRequest CreateLocationRequest() { //create a location request for the location updates
         LocationRequest mLocationRequest = new LocationRequest(); // location request
-        mLocationRequest.setInterval(10000);
-        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setInterval(3000);
+        mLocationRequest.setFastestInterval(1500);
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
                 .addLocationRequest(mLocationRequest);

@@ -15,15 +15,17 @@ public class Child {
     private String key;
     private String type;
     //locarion related data
-    private long currentLocation [];
+    private double currentLocation [];
     //private String currentLocation;
     private String lastKnownLocation;//tek bi string olarak mı yoksa ikili hashmap tarzında mı. virgülle ayrılıyor
+
+
 
     public Child() {
     }
 
     //full constructor
-    public Child(String name, String surname, String schoolAddress, long phone, String parentKey, String email, String busPlate, String key, long latitude, long longitude, String lastKnownLocation) {
+    public Child(String name, String surname, String schoolAddress, long phone, String parentKey, String email, String busPlate, String key, double latitude, double longitude, String lastKnownLocation) {
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -32,7 +34,7 @@ public class Child {
         this.email = email;
         this.busPlate = busPlate;
         this.key = key;
-        this.currentLocation = new long[2];
+        this.currentLocation = new double[2];
         currentLocation[0] = latitude;
         currentLocation[1] = longitude;
         this.lastKnownLocation = lastKnownLocation;
@@ -132,7 +134,7 @@ public class Child {
         this.type = type;
     }
 
-    public long[] getCurrentLocation() {
+    public double[] getCurrentLocation() {
         return currentLocation;
     }
 
@@ -154,8 +156,8 @@ public class Child {
                 '}';
     }
 
-    public void setCurrentLocation(long lat, long log) {
-        this.currentLocation = new long[2];
+    public void setCurrentLocation(double lat, double log) {
+        this.currentLocation = new double[2];
         this.currentLocation[0] = lat;
         this.currentLocation[1] = log;
     }
