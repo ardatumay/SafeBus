@@ -94,7 +94,6 @@ public class registerChild extends Activity {
                                     databaseReference = firebaseDatabase.getReference();
                                     String childrenKey = firebaseAuth.getCurrentUser().getUid();
                                     final Child newChild = new Child(Name, Surname, email_Address, pass, Address, phone, childrenKey, parentKey ,type);
-                                    Log.d("child", "onComplete: " + newChild.toString());
                                     databaseReference.child("children").child(childrenKey)
                                             .setValue(newChild);
                                     HashMap<String, String> childForparent = new HashMap<String, String>();

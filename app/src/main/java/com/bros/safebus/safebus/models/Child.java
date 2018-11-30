@@ -1,5 +1,7 @@
 package com.bros.safebus.safebus.models;
 
+import java.util.HashMap;
+
 public class Child {
 
     private String password;
@@ -11,15 +13,17 @@ public class Child {
     private String email;
     private String busPlate;
     private String key;
-    private String currentLocation;
-    private String lastKnownLocation;//tek bi string olarak mı yoksa ikili hashmap tarzında mı. virgülle ayrılıyor
     private String type;
+    //locarion related data
+    private long currentLocation [];
+    //private String currentLocation;
+    private String lastKnownLocation;//tek bi string olarak mı yoksa ikili hashmap tarzında mı. virgülle ayrılıyor
 
     public Child() {
     }
 
     //full constructor
-    public Child(String name, String surname, String schoolAddress, long phone, String parentKey, String email, String busPlate, String key, String currentLocation, String lastKnownLocation) {
+    public Child(String name, String surname, String schoolAddress, long phone, String parentKey, String email, String busPlate, String key, long latitude, long longitude, String lastKnownLocation) {
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -28,7 +32,9 @@ public class Child {
         this.email = email;
         this.busPlate = busPlate;
         this.key = key;
-        this.currentLocation = currentLocation;
+        this.currentLocation = new long[2];
+        currentLocation[0] = latitude;
+        currentLocation[1] = longitude;
         this.lastKnownLocation = lastKnownLocation;
     }
 
@@ -126,7 +132,7 @@ public class Child {
         this.type = type;
     }
 
-    public String getCurrentLocation() {
+    public long[] getCurrentLocation() {
         return currentLocation;
     }
 
@@ -148,8 +154,10 @@ public class Child {
                 '}';
     }
 
-    public void setCurrentLocation(String currentLocation) {
-        this.currentLocation = currentLocation;
+    public void setCurrentLocation(long lat, long log) {
+        this.currentLocation = new long[2];
+        this.currentLocation[0] = lat;
+        this.currentLocation[1] = log;
     }
 
     public String getLastKnownLocation() {
