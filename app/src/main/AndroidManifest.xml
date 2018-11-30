@@ -20,6 +20,24 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".User">
+
+        </activity>
+        <activity android:name=".register">
+
+        </activity>
+        <activity android:name=".ParentInterface">
+
+        </activity>
+        <activity android:name=".DriverInterface">
+
+        </activity>
+        <activity android:name=".ChildrenInterface">
+
+        </activity>
+        <activity android:name=".registerChild">
+
+        </activity>
     </application>
 
 </manifest>
