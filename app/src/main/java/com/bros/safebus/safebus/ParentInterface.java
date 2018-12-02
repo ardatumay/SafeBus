@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -180,6 +181,7 @@ public class ParentInterface extends Activity {
     }
 
     void CreateButtons(List<String> names){
+        Log.d("CHILDRENFULL", "Child Name: " +childrenNames.size() );
             for (int i = 0 ; i < childrenNames.size() ; i++) {
                 //String childName = GetChildFullName(child.getValue());
 
@@ -187,9 +189,21 @@ public class ParentInterface extends Activity {
                 Button myButton = new Button(this);
                 myButton.setText(childrenNames.get(i));
 
-                LinearLayout ll = (LinearLayout) findViewById(R.id.buttonlayout);
-                LayoutParams lp = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+                myButton.setId(i);
+                RelativeLayout ll = (RelativeLayout) findViewById(R.id.parent_interface);
+                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+
+                if ( i > 0 )
+                {
+                    lp.addRule(RelativeLayout.BELOW, i-1);
+
+                }
+
+
+                //myButton.setLayoutParams(lp);
                 ll.addView(myButton, lp);
+
+
 
             }
     }

@@ -20,7 +20,9 @@
         android:id="@+id/add_child"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Child"/>
+        android:text="Add Child"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
 
 
 </RelativeLayout>
