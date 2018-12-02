@@ -98,8 +98,9 @@ public class registerChild extends Activity {
                                             .setValue(newChild);
                                     HashMap<String, String> childForparent = new HashMap<String, String>();
                                     childForparent.put("key",childrenKey );
+                                    String childName = Name + " " + Surname;
+                                    childForparent.put("name",childName );
                                     String key = databaseReference.child("parents").child(parentKey).child("children").push().getKey();
-
                                     databaseReference.child("parents").child(parentKey).child("children").child(key)
                                             .setValue(childForparent);
                                     // Map<String, String> newUser = new HashMap<String, String>();
