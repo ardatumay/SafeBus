@@ -199,9 +199,10 @@ public class ParentInterface extends Activity {
 
                 }
 
+                ll.addView(myButton, lp);
 
                 //myButton.setLayoutParams(lp);
-                ll.addView(myButton, lp);
+
 
 
 
