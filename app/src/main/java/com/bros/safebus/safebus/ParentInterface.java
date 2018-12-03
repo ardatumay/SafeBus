@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Function;
 
 import static com.google.android.gms.tasks.Tasks.await;
 
@@ -188,26 +189,37 @@ public class ParentInterface extends Activity {
                 //Log.d("CHILDREN", "Child Name of each child: " + childrenNames.get(i));
                 Button myButton = new Button(this);
                 myButton.setText(childrenNames.get(i));
-
                 myButton.setId(i);
-                RelativeLayout ll = (RelativeLayout) findViewById(R.id.parent_interface);
-                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-
-                if ( i > 0 )
-                {
-                    lp.addRule(RelativeLayout.BELOW, i-1);
-
-                }
+                myButton.setOnClickListener(OnClikChild);
+                LinearLayout ll = (LinearLayout) findViewById(R.id.button_holder);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
                 ll.addView(myButton, lp);
+
+                ll.addView(myButton, lp);
+
 
                 //myButton.setLayoutParams(lp);
 
 
-
-
             }
     }
+
+
+    View.OnClickListener OnClikChild =  new View.OnClickListener(){
+
+        @Override
+        public void onClick(View view) {
+            GoToMapPage();
+        }
+    };
+    void GoToMapPage(){
+
+        Intent i = new Intent(this, ParentMap.class);
+        //i.putExtra("childKey", parentKey);
+        startActivity(i);
+    }
+
     void GoToChildrenRegister() {
         Intent intent = getIntent();
         String parentKey = intent.getStringExtra("userKey");

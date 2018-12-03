@@ -38,6 +38,9 @@
         <activity android:name=".registerChild">
 
         </activity>
+        <activity android:name=".ParentMap">
+
+        </activity>
     </application>
 
 </manifest>
