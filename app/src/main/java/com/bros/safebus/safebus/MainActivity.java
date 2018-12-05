@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity {
         final EditText email = (EditText) findViewById(R.id.email);
         final EditText password = (EditText) findViewById(R.id.password);
         final String sa ;
-       // final Button register = (Button) findViewById(R.id.register);
+        // final Button register = (Button) findViewById(R.id.register);
         final Button login = (Button) findViewById(R.id.login_Button);
-       // final TextView firstTextView = (TextView) findViewById(R.id.textView);
+        // final TextView firstTextView = (TextView) findViewById(R.id.textView);
         final Button sign_up = (Button) findViewById(R.id.signup_Button);
 
         sign_up.setOnClickListener(new View.OnClickListener() {
@@ -94,27 +94,27 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-       // login.setOnClickListener(new View.OnClickListener() {
-          //  @Override
-          //  public void onClick(View v) {
-             //   firebaseAuth.signInWithEmailAndPassword(
-             //            email.getText().toString(),
-             //           password.getText().toString())
-              //          .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-              //              @Override
-               //             public void onComplete(@NonNull Task<AuthResult> task) {
-               //                 if (task.isSuccessful()) {
-               //                     loginUser(email, password);
-                                   // firstTextView.setText("Logging in");
-                                   // openActivity();
-                                   // startActivity(new Intent(getApplication(), User.class));
-                  //              } else {
-                  //                  Log.e("Log in error", task.getException().toString());
-                 //               }
-                 //           }
-                 //       });
-           // }
-       // });
+        // login.setOnClickListener(new View.OnClickListener() {
+        //  @Override
+        //  public void onClick(View v) {
+        //   firebaseAuth.signInWithEmailAndPassword(
+        //            email.getText().toString(),
+        //           password.getText().toString())
+        //          .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+        //              @Override
+        //             public void onComplete(@NonNull Task<AuthResult> task) {
+        //                 if (task.isSuccessful()) {
+        //                     loginUser(email, password);
+        // firstTextView.setText("Logging in");
+        // openActivity();
+        // startActivity(new Intent(getApplication(), User.class));
+        //              } else {
+        //                  Log.e("Log in error", task.getException().toString());
+        //               }
+        //           }
+        //       });
+        // }
+        // });
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.userTypeRadio);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     SetUserType("children");
                     Log.d("PARENT", "onCheckedChanged: " +checkedButton.getText().toString().toLowerCase() );*/
 
-                    SetUserType(checkedButton.getText().toString().toLowerCase());
+                SetUserType(checkedButton.getText().toString().toLowerCase());
 
             }
         });
@@ -179,10 +179,10 @@ public class MainActivity extends AppCompatActivity {
                                         GoToChildrenHome(key);
                                     }
                                     else{
-                                            Toast.makeText(MainActivity.this, "Failed Login. Please Try Again", Toast.LENGTH_SHORT).show();
-                                            return;
-                                        }
+                                        Toast.makeText(MainActivity.this, "Failed Login. Please Try Again", Toast.LENGTH_SHORT).show();
+                                        return;
                                     }
+                                }
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -214,36 +214,36 @@ public class MainActivity extends AppCompatActivity {
         i.putExtra("userKey", userKey);
         startActivity(i);
     }
-   /* private void kullaniciOlustur() {
-        Map<String, String> yeniUser = new HashMap<String, String>();
-        yeniUser.put("name", "name");
-        yeniUser.put("surname", "surname");
+    /* private void kullaniciOlustur() {
+         Map<String, String> yeniUser = new HashMap<String, String>();
+         yeniUser.put("name", "name");
+         yeniUser.put("surname", "surname");
 
-        DatabaseReference databaseReference = firebaseDatabase.getReference();
-        databaseReference.child("users")
-                .child(firebaseAuth.getCurrentUser().getUid())
-                .setValue(yeniUser);
-    }
-    private void kullaniciGuncelle() {
-        FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
+         DatabaseReference databaseReference = firebaseDatabase.getReference();
+         databaseReference.child("users")
+                 .child(firebaseAuth.getCurrentUser().getUid())
+                 .setValue(yeniUser);
+     }
+     private void kullaniciGuncelle() {
+         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
 
-        UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
-                .setDisplayName("nick ver")
-                .setPhotoUri(null)
-                .build();
+         UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
+                 .setDisplayName("nick ver")
+                 .setPhotoUri(null)
+                 .build();
 
-        firebaseUser.updateProfile(userProfileChangeRequest)
-                .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if (!task.isSuccessful()) {
-                            Log.e("update error", task.getException().getMessage());
-                        }
-                       // startActivity(new Intent(MainActivity.this, User.class));
-                    }
-                });
+         firebaseUser.updateProfile(userProfileChangeRequest)
+                 .addOnCompleteListener(new OnCompleteListener<Void>() {
+                     @Override
+                     public void onComplete(@NonNull Task<Void> task) {
+                         if (!task.isSuccessful()) {
+                             Log.e("update error", task.getException().getMessage());
+                         }
+                        // startActivity(new Intent(MainActivity.this, User.class));
+                     }
+                 });
 
-    }*/
+     }*/
     void changeRegisterPage()
     {
         Intent register_intent = new Intent(this, register.class);

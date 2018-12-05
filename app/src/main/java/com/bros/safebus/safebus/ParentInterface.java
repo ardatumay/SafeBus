@@ -178,6 +178,7 @@ public class ParentInterface extends Activity {
             }
         });
 
+
         return childFullName;
     }
 
@@ -209,7 +210,7 @@ public class ParentInterface extends Activity {
     };
     void GoToMapPage(){
 
-        Intent i = new Intent(this, ParentMap.class);
+        Intent i = new Intent(this, MapsActivity.class);
         //i.putExtra("childKey", parentKey);
         startActivity(i);
     }
