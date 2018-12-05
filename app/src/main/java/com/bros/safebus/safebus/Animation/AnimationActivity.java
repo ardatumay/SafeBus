@@ -14,7 +14,7 @@ import com.bros.safebus.safebus.R;
 
 public class AnimationActivity extends AppCompatActivity {
 
-    private static int SPLASH_TIME_OUT = 4000;
+    private static int SPLASH_TIME_OUT = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

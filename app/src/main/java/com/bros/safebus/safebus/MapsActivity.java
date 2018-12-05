@@ -87,7 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onMapLongClick(LatLng latLng) {
                 //Reset marker when already 2
-            /*   if (listPoints.size() == 2) {
+              /* if (listPoints.size() == 2) {
                     listPoints.clear();
                     mMap.clear();
                 }*/
