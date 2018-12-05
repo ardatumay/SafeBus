@@ -23,6 +23,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+
 public class register extends AppCompatActivity {
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
@@ -78,48 +80,47 @@ public class register extends AppCompatActivity {
         register.setVisibility(View.INVISIBLE);
 
 
+        View.OnClickListener first_radio_listener = new View.OnClickListener() {
+            public void onClick(View v) {
+                driverName.setVisibility(View.INVISIBLE);
+                driverEmail.setVisibility(View.INVISIBLE);
+                driverPassword.setVisibility(View.INVISIBLE);
+                driverPhoneNumber.setVisibility(View.INVISIBLE);
+                driverSchoolAddress.setVisibility(View.INVISIBLE);
+                driverSurname.setVisibility(View.INVISIBLE);
+                plateNumber.setVisibility(View.INVISIBLE);
+                driverRegister.setVisibility(View.INVISIBLE);
+                name.setVisibility(View.VISIBLE);
+                email.setVisibility(View.VISIBLE);
+                password.setVisibility(View.VISIBLE);
+                phoneNumber.setVisibility(View.VISIBLE);
+                homeAddress.setVisibility(View.VISIBLE);
+                surname.setVisibility(View.VISIBLE);
+                register.setVisibility(View.VISIBLE);
+            }
+        };
+        parentButton.setOnClickListener(first_radio_listener);
 
-            View.OnClickListener first_radio_listener = new View.OnClickListener() {
-                public void onClick(View v) {
-                    driverName.setVisibility(View.INVISIBLE);
-                    driverEmail.setVisibility(View.INVISIBLE);
-                    driverPassword.setVisibility(View.INVISIBLE);
-                    driverPhoneNumber.setVisibility(View.INVISIBLE);
-                    driverSchoolAddress.setVisibility(View.INVISIBLE);
-                    driverSurname.setVisibility(View.INVISIBLE);
-                    plateNumber.setVisibility(View.INVISIBLE);
-                    driverRegister.setVisibility(View.INVISIBLE);
-                    name.setVisibility(View.VISIBLE);
-                    email.setVisibility(View.VISIBLE);
-                    password.setVisibility(View.VISIBLE);
-                    phoneNumber.setVisibility(View.VISIBLE);
-                    homeAddress.setVisibility(View.VISIBLE);
-                    surname.setVisibility(View.VISIBLE);
-                    register.setVisibility(View.VISIBLE);
-                }
-            };
-            parentButton.setOnClickListener(first_radio_listener);
-
-            View.OnClickListener second_radio_listener = new View.OnClickListener() {
-                public void onClick(View v) {
-                    name.setVisibility(View.INVISIBLE);
-                    email.setVisibility(View.INVISIBLE);
-                    password.setVisibility(View.INVISIBLE);
-                    phoneNumber.setVisibility(View.INVISIBLE);
-                    homeAddress.setVisibility(View.INVISIBLE);
-                    surname.setVisibility(View.INVISIBLE);
-                    register.setVisibility(View.INVISIBLE);
-                    driverName.setVisibility(View.VISIBLE);
-                    driverEmail.setVisibility(View.VISIBLE);
-                    driverPassword.setVisibility(View.VISIBLE);
-                    driverPhoneNumber.setVisibility(View.VISIBLE);
-                    driverSchoolAddress.setVisibility(View.VISIBLE);
-                    driverSurname.setVisibility(View.VISIBLE);
-                    plateNumber.setVisibility(View.VISIBLE);
-                    driverRegister.setVisibility(View.VISIBLE);
-                }
-            };
-            driverButton.setOnClickListener(second_radio_listener);
+        View.OnClickListener second_radio_listener = new View.OnClickListener() {
+            public void onClick(View v) {
+                name.setVisibility(View.INVISIBLE);
+                email.setVisibility(View.INVISIBLE);
+                password.setVisibility(View.INVISIBLE);
+                phoneNumber.setVisibility(View.INVISIBLE);
+                homeAddress.setVisibility(View.INVISIBLE);
+                surname.setVisibility(View.INVISIBLE);
+                register.setVisibility(View.INVISIBLE);
+                driverName.setVisibility(View.VISIBLE);
+                driverEmail.setVisibility(View.VISIBLE);
+                driverPassword.setVisibility(View.VISIBLE);
+                driverPhoneNumber.setVisibility(View.VISIBLE);
+                driverSchoolAddress.setVisibility(View.VISIBLE);
+                driverSurname.setVisibility(View.VISIBLE);
+                plateNumber.setVisibility(View.VISIBLE);
+                driverRegister.setVisibility(View.VISIBLE);
+            }
+        };
+        driverButton.setOnClickListener(second_radio_listener);
 
         /*name.setVisibility(View.VISIBLE);
 
@@ -129,68 +130,72 @@ public class register extends AppCompatActivity {
         }*/
 
 
-            register.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        register.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
 
-                    final String email_Address = email.getText().toString().trim();
-                    if (TextUtils.isEmpty(email_Address)) {
-                        Toast.makeText(register.this, "Enter email address!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    final String pass = password.getText().toString();
-                    if (TextUtils.isEmpty(pass)) {
-                        Toast.makeText(register.this, "Enter password!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    final String Name = name.getText().toString();
-                    if (TextUtils.isEmpty(Name)) {
-                        Toast.makeText(register.this, "Enter name!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    final String Surname = surname.getText().toString();
-                    if (TextUtils.isEmpty(Surname)) {
-                        Toast.makeText(register.this, "Enter surname!", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    final String Address = homeAddress.getText().toString();
-                    //final Editable number = phoneNumber.getText();
-                    final long number = Long.parseLong(phoneNumber.getText().toString());
-                    final String parentRole = parentButton.getText().toString();
-
-
-
-
-                    //final String number = phoneNumber.getText().toString();
-                    firebaseAuth.createUserWithEmailAndPassword(email_Address, pass)
-                            .addOnCompleteListener(register.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        //firstTextView.setText("Signing up");
-                                        String type = "parent";
-                                        databaseReference = firebaseDatabase.getReference();
-                                        String parentKey = firebaseAuth.getCurrentUser().getUid();
-                                        final Parent newParent = new Parent(Name, Surname, email_Address, pass, Address, number, parentKey, parentRole);
-                                        databaseReference.child("parents").child(parentKey)
-                                                .setValue(newParent);
-                                        // Map<String, String> newUser = new HashMap<String, String>();
-                                        //newUser.put("email", email_Address);
-                                        //newUser.put("password", pass);
-                                        returnMainPage();
-
-                                        // .child(firebaseAuth.getCurrentUser().getUid())
-                                        // .setValue(newParent);
-                                        // kullaniciGuncelle();
-                                    } else {
-                                        Log.e("New User Error", task.getException().getMessage());
-                                    }
-
-                                }
-                            });
+                final String email_Address = email.getText().toString().trim();
+                if (TextUtils.isEmpty(email_Address)) {
+                    Toast.makeText(register.this, "Enter email address!", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-            });
+                final String pass = password.getText().toString();
+                if (TextUtils.isEmpty(pass)) {
+                    Toast.makeText(register.this, "Enter password!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final String Name = name.getText().toString();
+                if (TextUtils.isEmpty(Name)) {
+                    Toast.makeText(register.this, "Enter name!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final String Surname = surname.getText().toString();
+                if (TextUtils.isEmpty(Surname)) {
+                    Toast.makeText(register.this, "Enter surname!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final String Address = homeAddress.getText().toString();
+                //final Editable number = phoneNumber.getText();
+                final long number = Long.parseLong(phoneNumber.getText().toString());
+                final String parentRole = parentButton.getText().toString();
+
+
+                //final String number = phoneNumber.getText().toString();
+                firebaseAuth.createUserWithEmailAndPassword(email_Address, pass)
+                        .addOnCompleteListener(register.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    //firstTextView.setText("Signing up");
+                                    String type = "parent";
+                                    databaseReference = firebaseDatabase.getReference();
+                                    String parentKey = firebaseAuth.getCurrentUser().getUid();
+                                    final Parent newParent = new Parent(Name, Surname, email_Address, pass, Address, number, parentKey, parentRole);
+                                    databaseReference.child("parents").child(parentKey)
+                                            .setValue(newParent);
+                                    //set value for users
+                                    //extract @ and . character from mail and pur it as a key
+                                    String mailAsUsername = CreateUsernameFromEmail(email_Address);
+                                    HashMap<String, String> userRecord = new HashMap<String, String>();
+                                    userRecord.put("key", parentKey);
+                                    userRecord.put("type", "Parents");
+                                    //String keyForUsers = databaseReference.child("users").child(mailAsUsername).child("children").push().getKey();
+                                    databaseReference.child("users").child(mailAsUsername)
+                                            .setValue(userRecord);
+                                    returnMainPage();
+
+                                    // .child(firebaseAuth.getCurrentUser().getUid())
+                                    // .setValue(newParent);
+                                    // kullaniciGuncelle();
+                                } else {
+                                    Log.e("New User Error", task.getException().getMessage());
+                                }
+
+                            }
+                        });
+            }
+        });
 
 
         driverRegister.setOnClickListener(new View.OnClickListener() {
@@ -218,13 +223,18 @@ public class register extends AppCompatActivity {
 
                                     databaseReference = firebaseDatabase.getReference();
                                     String driverKey = firebaseAuth.getCurrentUser().getUid();
-                                    final Driver newDriver = new Driver(driver_Name, driver_Surname, driver_Email_Address, driver_Pass, driver_Address, driver_phoneNumber, driver_plateNumber,driverKey,driverRole);
-                                    databaseReference.child("drivers") .child(firebaseAuth.getCurrentUser().getUid())
+                                    final Driver newDriver = new Driver(driver_Name, driver_Surname, driver_Email_Address, driver_Pass, driver_Address, driver_phoneNumber, driver_plateNumber, driverKey, driverRole);
+                                    databaseReference.child("drivers").child(firebaseAuth.getCurrentUser().getUid())
                                             .setValue(newDriver);
-                                    // Map<String, String> newUser = new HashMap<String, String>();
-                                    //newUser.put("email", email_Address);
-                                    //newUser.put("password", pass);
-
+                                    //set value for users
+                                    //extract @ and . character from mail and pur it as a key
+                                    String mailAsUsername = CreateUsernameFromEmail(driver_Email_Address);
+                                    HashMap<String, String> userRecord = new HashMap<String, String>();
+                                    userRecord.put("key", driverKey);
+                                    userRecord.put("type", "Drivers");
+                                    //String keyForUsers = databaseReference.child("users").child(mailAsUsername).child("children").push().getKey();
+                                    databaseReference.child("users").child(mailAsUsername)
+                                            .setValue(userRecord);
 
                                     returnMainPage();
                                     // .child(firebaseAuth.getCurrentUser().getUid())
@@ -240,11 +250,22 @@ public class register extends AppCompatActivity {
         });
 
 
+    }
 
+
+    String CreateUsernameFromEmail(String email){
+        String src1 = ExtractCharFromString(email, "@");
+        String src2 = ExtractCharFromString(src1, ".");
+        return src2;
+    }
+
+    String  ExtractCharFromString(String src, String trgt){
+        String newSrc = src.replace(trgt, "");
+        return newSrc;
 
     }
-    void returnMainPage()
-    {
+
+    void returnMainPage() {
         Intent main_Page = new Intent(this, MainActivity.class);
         startActivity(main_Page);
     }

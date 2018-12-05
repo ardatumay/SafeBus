@@ -90,12 +90,14 @@ public class registerChild extends Activity {
                                     Intent intent = getIntent();
                                     String parentKey = intent.getStringExtra("parentKey");
 
-                                    String type = "children";
+                                    //set value for children
+                                    String type = "Children";
                                     databaseReference = firebaseDatabase.getReference();
                                     String childrenKey = firebaseAuth.getCurrentUser().getUid();
                                     final Child newChild = new Child(Name, Surname, email_Address, pass, Address, phone, childrenKey, parentKey ,type);
                                     databaseReference.child("children").child(childrenKey)
                                             .setValue(newChild);
+                                    //set value for parent
                                     HashMap<String, String> childForparent = new HashMap<String, String>();
                                     childForparent.put("key",childrenKey );
                                     String childName = Name + " " + Surname;
@@ -103,6 +105,16 @@ public class registerChild extends Activity {
                                     String key = databaseReference.child("parents").child(parentKey).child("children").push().getKey();
                                     databaseReference.child("parents").child(parentKey).child("children").child(key)
                                             .setValue(childForparent);
+                                    //set value for users
+                                    //extract @ and . character from mail and pur it as a key
+                                    String mailAsUsername = CreateUsernameFromEmail(email_Address);
+                                    HashMap<String, String> userRecord = new HashMap<String, String>();
+                                    userRecord.put("key",childrenKey );
+                                    userRecord.put("type", "Children");
+                                    //String keyForUsers = databaseReference.child("users").child(mailAsUsername).child("children").push().getKey();
+                                    databaseReference.child("users").child(mailAsUsername)
+                                            .setValue(userRecord);
+
                                     // Map<String, String> newUser = new HashMap<String, String>();
                                     //newUser.put("email", email_Address);
                                     //newUser.put("password", pass);
@@ -120,6 +132,18 @@ public class registerChild extends Activity {
             }
         });
 
+
+    }
+
+    String CreateUsernameFromEmail(String email){
+        String src1 = ExtractCharFromString(email, "@");
+        String src2 = ExtractCharFromString(src1, ".");
+        return src2;
+    }
+
+    String  ExtractCharFromString(String src, String trgt){
+        String newSrc = src.replace(trgt, "");
+        return newSrc;
 
     }
 

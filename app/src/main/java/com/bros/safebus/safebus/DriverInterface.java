@@ -7,11 +7,19 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.TranslateAnimation;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.GeofencingClient;
@@ -19,33 +27,39 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskCompletionSource;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
 public class DriverInterface extends Activity {
-
+    final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+    DatabaseReference databaseReference;
     private FusedLocationProviderClient mFusedLocationClient; //location provider client
     LocationRequest mLocationRequest; // location request
     Location currentLoc = null;
     private LocationCallback mLocationCallback;
     boolean mRequestingLocationUpdates = false;
     private GeofencingClient mGeofencingClient;
+    String DriverKey;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.driver_interface);
 
-        //user interface variables
-        /*final TextView updatedLocation = (TextView) findViewById(R.id.updated_Location);
-        final TextView CurrentLocation = (TextView) findViewById(R.id.current_Location);
-        Button showLocation = (Button) findViewById(R.id.show_Location);*/
-
-
-
+        //Get the driver key from intent
+        DriverKey = getIntent().getStringExtra("userKey");
 
         //bussiness logic variables
         mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
@@ -61,13 +75,13 @@ public class DriverInterface extends Activity {
                     //Log.d("LOC", location.toString());
                     // Update UI with location data
                     // ...
-                    Log.w("LOCATION", "onLocationResult: " + location.toString() );
+                    Log.w("LOCATION", "onLocationResult: " + location.toString());
                     //firebase cannot serialize arrays, it must be put in dictionary like data structure which is hashmap
-                    HashMap<String,Double> locationDetails = new HashMap<String, Double>();
+                    HashMap<String, Double> locationDetails = new HashMap<String, Double>();
                     locationDetails.put("latitude", location.getLatitude());
                     locationDetails.put("longitude", location.getLongitude());
 
-                    HashMap<String,HashMap<String, Double>> currentLocation = new HashMap<String, HashMap<String, Double>>();
+                    HashMap<String, HashMap<String, Double>> currentLocation = new HashMap<String, HashMap<String, Double>>();
                     currentLocation.put("currentLocation", locationDetails);
                     Intent intent = getIntent();
                     String childKey = intent.getStringExtra("userKey");
@@ -75,7 +89,9 @@ public class DriverInterface extends Activity {
                     databaseref.setValue(currentLocation);
                     //updatedLocation.setText(location.toString());
                 }
-            };
+            }
+
+            ;
         };
 
        /*showLocation.setOnClickListener(new View.OnClickListener() {// When show location button is clicked show the location of the currentLoc variable
@@ -92,29 +108,180 @@ public class DriverInterface extends Activity {
             }
         });*/
 
-        //////////////////////FIREBASE RELATED////////////////////
-
-
-        //myRef.setValue("Hello, Worlddddd!");
-       /* databaseref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                java.lang.Object value = dataSnapshot.getValue();
-                setTextView(CurrentLocation, String.valueOf(value));
-                Log.d("VALUE", "Value is: " + value);
-            }
+        final Button addChild = (Button) findViewById(R.id.add_child);
+        addChild.setOnClickListener(new View.OnClickListener() {
+            boolean clicked = false;
 
             @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("VALUE", "Failed to read value.", error.toException());
+            public void onClick(View view) {
+                EditText childMail = (EditText) findViewById(R.id.child_email);
+                AddChildToDriver(childMail.getText().toString());
+
+              /* if(!clicked){
+                   EditText childMail =(EditText) findViewById(R.id.child_email);
+                   childMail.setVisibility(View.VISIBLE);
+                   TranslateAnimation editTextAnim = new TranslateAnimation(1500.0f,0.0f , 0.0f, 0.0f); // new TranslateAnimation (float fromXDelta,float toXDelta, float fromYDelta, float toYDelta)
+                   editTextAnim.setDuration(1500); // animation duration
+                   //animation.setRepeatCount(4); // animation repeat count
+                   //animation.setRepeatMode(2); // repeat animation (left to right, right to left)
+                   //animation.setFillAfter(true);
+                   childMail .startAnimation(editTextAnim);//your_view for mine is imageView
+
+                   TranslateAnimation buttonAnim = new TranslateAnimation(0.0f,0.0f , 0.0f, 150.0f); // new TranslateAnimation (float fromXDelta,float toXDelta, float fromYDelta, float toYDelta)
+                   buttonAnim.setDuration(1500); // animation duration
+                   buttonAnim.setAnimationListener(new Animation.AnimationListener() {
+                       @Override
+                       public void onAnimationStart(Animation animation) {
+
+                       }
+
+                       @Override
+                       public void onAnimationEnd(Animation animation) {
+                           /*RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
+                           // change the coordinates of the view object itself so that on click listener reacts to new position
+                           view.layout(view.getLeft()+200, view.getTop(), view.getRight()+200, view.getBottom());
+                           repeatLevelSwitch.clearAnimation();
+
+
+
+                           // set new "real" position of wrapper
+                           RelativeLayout.LayoutParams lpForAddChild = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                          //lpForAddChild.addRule(RelativeLayout.BELOW, R.id.add_route);
+                           addChild.layout(addChild.getLeft(), addChild.getTop() + 1500, addChild.getRight(), addChild.getBottom());
+                           addChild.setLayoutParams(lpForAddChild);
+                           // clear animation to prevent flicker
+                           addChild.clearAnimation();
+                       }
+
+                       //@Override
+                       public void onAnimationRepeat(Animation animation) {
+
+                       }
+                   });
+                   buttonAnim.setFillAfter(true);
+                   addChild.startAnimation(buttonAnim);//your_view for mine is imageView
+                   clicked = true;
+               }else{
+                   EditText childMail =(EditText) findViewById(R.id.child_email);
+                   TranslateAnimation editTextAnim = new TranslateAnimation(0.0f,1500.0f , 0.0f, 0.0f); // new TranslateAnimation (float fromXDelta,float toXDelta, float fromYDelta, float toYDelta)
+                   editTextAnim.setDuration(1500); // animation duration
+                   //animation.setRepeatCount(4); // animation repeat count
+                   //animation.setRepeatMode(2); // repeat animation (left to right, right to left)
+                   //animation.setFillAfter(true);
+                   childMail .startAnimation(editTextAnim);//your_view for mine is imageView
+
+                   TranslateAnimation buttonAnim = new TranslateAnimation(0.0f,0.0f , 150.0f, 0.0f); // new TranslateAnimation (float fromXDelta,float toXDelta, float fromYDelta, float toYDelta)
+                   buttonAnim.setDuration(1500); // animation duration
+                   buttonAnim.setAnimationListener(new Animation.AnimationListener() {
+                       @Override
+                       public void onAnimationStart(Animation animation) {
+
+                       }
+
+                       @Override
+                       public void onAnimationEnd(Animation animation) {
+                           /*RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
+                           // change the coordinates of the view object itself so that on click listener reacts to new position
+                           view.layout(view.getLeft()+200, view.getTop(), view.getRight()+200, view.getBottom());
+                           repeatLevelSwitch.clearAnimation();
+
+                           // clear animation to prevent flicker
+                           addChild.clearAnimation();
+
+                           // set new "real" position of wrapper
+                           RelativeLayout.LayoutParams lpForAddChild = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                           lpForAddChild.removeRule(RelativeLayout.BELOW);
+                           lpForAddChild.addRule(RelativeLayout.BELOW, R.id.add_route);
+                           addChild.setLayoutParams(lpForAddChild);
+                       }
+
+                       @Override
+                       public void onAnimationRepeat(Animation animation) {
+
+                       }
+                   });
+                   childMail.setVisibility(View.INVISIBLE);
+                   buttonAnim.setFillAfter(true);
+                   buttonAnim.setFillEnabled(true);
+                   addChild.startAnimation(buttonAnim);//your_view for mine is imageView
+                   clicked = false;
+               }*/
+
             }
-        });*/
-        //////////////////////FIREBASE RELATED////////////////////
+        });
+
+        Button addRoute = (Button) findViewById(R.id.add_route);
+        addRoute.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+            }
+        });
+
 
     }
+
+    void AddChildToDriver(String userMail) {
+        String actualUsername = CreateUsernameFromEmail(userMail);
+        final TaskCompletionSource<DataSnapshot> dbSource = new TaskCompletionSource<>();
+        Task dbTask = dbSource.getTask();
+
+        final DatabaseReference databaseref = firebaseDatabase.getReference().child("users").child(actualUsername);
+        databaseref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getChildrenCount() != 0) {
+                    dbSource.setResult(dataSnapshot);
+                }else {
+                    Toast.makeText(DriverInterface.this, "Child not found.", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                dbSource.setException(databaseError.toException());
+            }
+        });
+
+        dbTask.addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DataSnapshot> task) {
+                if (task.isSuccessful()) {
+                    // Task completed successfully
+                    DataSnapshot result = task.getResult();
+
+                    Log.w("user mail", "USERMAIL:" + result.toString());
+                    HashMap<String, String> child = new HashMap<String, String>();
+                    String childKey = result.child("key").getValue(String.class);
+                    child.put("childKey", childKey);
+                    //bound child to driver
+                    databaseReference = firebaseDatabase.getReference();
+                    String keyForDriver = databaseReference.child("drivers").child(DriverKey).child("children").push().getKey();
+                    databaseReference.child("drivers").child(DriverKey).child("children").child(keyForDriver).setValue(child);
+
+                    //bound driver to child
+                    databaseReference = firebaseDatabase.getReference();
+                    databaseReference.child("children").child(childKey).child("driverKey").setValue(DriverKey);
+                }
+            }
+        });
+    }
+
+    String CreateUsernameFromEmail(String email) {
+        String src1 = ExtractCharFromString(email, "@");
+        String src2 = ExtractCharFromString(src1, ".");
+        return src2;
+    }
+
+    String ExtractCharFromString(String src, String trgt) {
+        String newSrc = src.replace(trgt, "");
+        return newSrc;
+
+    }
+
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -123,17 +290,13 @@ public class DriverInterface extends Activity {
             startLocationUpdates();
         }
     }
+
     private void startLocationUpdates() {
         checkLocationPermission();
         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                 mLocationCallback,
                 null /* Looper */);
     }
-
-
-
-
-
 
 
     @Override
@@ -145,7 +308,6 @@ public class DriverInterface extends Activity {
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
-
 
 
     void GetLoc() {//get the last location of the user and put the location value to the currentLoc variable
@@ -163,7 +325,7 @@ public class DriverInterface extends Activity {
         });
     }
 
-    void setTextView(TextView targetTextView, String targetString){//set textView content
+    void setTextView(TextView targetTextView, String targetString) {//set textView content
         targetTextView.setText(targetString);
     }
 
