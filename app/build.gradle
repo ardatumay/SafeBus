@@ -31,7 +31,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.firebase:firebase-database:16.0.1'
     implementation 'com.airbnb.android:lottie:2.7.0'
+    implementation 'com.google.android.gms:play-services-location:16.0.0'
+    implementation 'com.google.firebase:firebase-auth:16.0.1'
 }
 apply plugin: 'com.google.gms.google-services'
 // Work around
-com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
+com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true// for the resolving compile error about google play services location version check

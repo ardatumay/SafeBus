@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">SafeBus</string>
     <string name="title_activity_maps">Map</string>
+    <string name="title_location_permission">Location Permission</string>
+    <string name="text_location_permission">The app needs your permission to use your location.</string>
+    <string name="ok">OK</string>
+    <string name="text_Register">REGISTRATION</string>
+    <string name="parent">Parents</string>
+    <string name="driver">Drivers</string>
+    <string name="student">Children</string>
 </resources>
