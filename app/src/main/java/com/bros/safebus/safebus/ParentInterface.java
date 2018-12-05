@@ -41,8 +41,10 @@ public class ParentInterface extends Activity {
     Task dbTask2 = dbSource2.getTask();
     TaskCompletionSource<String> dbSource3 = new TaskCompletionSource<>();
     Task dbTask3 = dbSource3.getTask();
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parent_interface);
         children = new HashMap<String, String>();
@@ -54,7 +56,6 @@ public class ParentInterface extends Activity {
                 GoToChildrenRegister();
             }
         });
-
 
        /* Task task = forestRef.getMetadata();
         task.addOnSuccessListener(this, new OnSuccessListener() {
@@ -69,8 +70,10 @@ public class ParentInterface extends Activity {
         databaseref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getChildrenCount() != 0) {
-                    dbSource.setResult(dataSnapshot);
+                if(dataSnapshot.hasChildren()) {
+                    if (dataSnapshot.getChildrenCount() != 0) {
+                        dbSource.trySetResult(dataSnapshot);
+                    }
                 }
             }
 
@@ -90,65 +93,19 @@ public class ParentInterface extends Activity {
                     for (DataSnapshot ds : result.getChildren()) {
                         children.put(ds.getKey(), ds.child("key").getValue(String.class));
                         childrenNames.add(ds.child("name").getValue(String.class));
-
-                        //String childName =  GetChildFullName(ds.child("key").getValue(String.class));
-                       /* dbSource3.setResult(GetChildFullName(ds.child("key").getValue(String.class)));
-                        dbTask3.addOnCompleteListener(new OnCompleteListener<String>() {
-                            @Override
-                            public void onComplete(@NonNull Task<String> task) {
-                                String name = task.getResult();
-                                childrenNames.add(name);
-                            }
-                        });*/
-                        /*final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(ds.child("key").getValue(String.class));
-                        databaseref.addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                dbSource2.setResult(dataSnapshot);
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                dbSource2.setException(databaseError.toException());
-                            }
-                        });
-                        dbTask2.addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    // Task completed successfully
-                                    DataSnapshot result2 = task.getResult();
-                                    Log.d("Child name", "DBRESULT" + result2.toString());
-
-                                    String childName = result2.child("name").getValue().toString();
-                                    String childSurname = result2.child("surname").getValue().toString();
-                                    childFullName = childName + " " + childSurname;
-                                    childrenNames.add(childFullName);
-                                    Log.d("Child name", "Child Names: " + childrenNames.toString());
-
-                                }
-                            }
-                        });*/
-                       // Log.d("Child name", "Child Namess: " + childName);
-
                     }
                     Log.d("Child name", "Child Names: " + childrenNames.size());
-
                     Log.d("Child name", "ONCREATE cilhdren size" + children.size());
                     Log.d("Child name", "ONCREATE cilhdren size tostring" + children.toString());
-
 
                     if(childrenNames.size() != 0) {
                         CreateButtons(childrenNames);
                     }
-
                 }
             }
         });
         Log.d("Child name", "Child Names: " + childrenNames);
-
     }
-
-
 
     String GetChildFullName(String childKey) {
         final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey);
@@ -177,8 +134,6 @@ public class ParentInterface extends Activity {
                 }
             }
         });
-
-
         return childFullName;
     }
 
