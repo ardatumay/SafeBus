@@ -76,7 +76,6 @@ public class ParentInterface extends Activity {
                     }
                 }
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 dbSource.setException(databaseError.toException());
@@ -91,12 +90,9 @@ public class ParentInterface extends Activity {
                     DataSnapshot result = task.getResult();
 
                     for (DataSnapshot ds : result.getChildren()) {
-                        children.put(ds.getKey(), ds.child("key").getValue(String.class));
+                        children.put(ds.child("name").getValue(String.class), ds.child("key").getValue(String.class));
                         childrenNames.add(ds.child("name").getValue(String.class));
                     }
-                    Log.d("Child name", "Child Names: " + childrenNames.size());
-                    Log.d("Child name", "ONCREATE cilhdren size" + children.size());
-                    Log.d("Child name", "ONCREATE cilhdren size tostring" + children.toString());
 
                     if(childrenNames.size() != 0) {
                         CreateButtons(childrenNames);
@@ -149,7 +145,6 @@ public class ParentInterface extends Activity {
                 myButton.setOnClickListener(OnClikChild);
                 LinearLayout ll = (LinearLayout) findViewById(R.id.button_holder);
                 LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-
                 ll.addView(myButton, lp);
 
 
@@ -160,13 +155,16 @@ public class ParentInterface extends Activity {
 
         @Override
         public void onClick(View view) {
-            GoToMapPage();
+            Button b = (Button)view;
+            String buttonText = b.getText().toString();
+            String childKey = children.get(buttonText);
+            GoToMapPage(childKey);
         }
     };
-    void GoToMapPage(){
+    void GoToMapPage(String childKey){
 
         Intent i = new Intent(this, MapsActivity.class);
-        //i.putExtra("childKey", parentKey);
+        i.putExtra("childKey", childKey);
         startActivity(i);
     }
 
@@ -177,6 +175,4 @@ public class ParentInterface extends Activity {
         i.putExtra("parentKey", parentKey);
         startActivity(i);
     }
-
-
 }

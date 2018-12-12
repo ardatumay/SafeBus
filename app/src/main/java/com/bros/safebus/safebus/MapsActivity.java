@@ -2,6 +2,7 @@ package com.bros.safebus.safebus;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
@@ -12,6 +13,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -50,6 +52,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private static final int LOCATION_REQUEST = 500;
     ArrayList<LatLng> listPoints;
+    ArrayList<LatLng> listPointsChildLoc;
+    ArrayList<LatLng> listPointsDriverLoc;
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private String userType = "";
@@ -64,19 +68,37 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         listPoints = new ArrayList<>();
+        listPointsChildLoc = new ArrayList<>();
+        listPointsDriverLoc = new ArrayList<>();
 
-        FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
-        final String RegisteredUserID = currentUser.getUid();
+        Intent i = getIntent();
+        String childKey = i.getStringExtra("childKey");
+        Log.w("CHILD KEY", "CHILDKEY" + childKey);
 
-        final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID);
+        /*FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
+        final String RegisteredUserID = currentUser.getUid();*/
 
-        Log.v("logger", "bossss");
-
+        final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
         databaseref.addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                String as = "";
+                Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("latitude").getValue(Double.class));
+                Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
+
+                LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+                listPointsChildLoc.add(ltlng);
+                Log.w("Child loc", "CHILDLOCSIZE" + listPointsChildLoc.size());
+                if(listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0){
+                    LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
+                    LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
+                    double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
+                    Log.w("DISTANCE", "DISTANCE" + distance);
+                    TextView distanceView = (TextView) findViewById(R.id.distance);
+                    distanceView.setText(String.valueOf(distance));
+                    MarkMap();
+
+                }
+                /*String as = "";
                 String sa = dataSnapshot.child("children").getValue().toString();
 
                 int tire = sa.indexOf('{');
@@ -96,7 +118,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                   //  String lat = dataSnapshot.child("location").child("currentLocation").child("latitude").getValue().toString();
-               //     String longitude = dataSnapshot.child("location").child("currentLocation").child("longitude").getValue().toString();
+               //     String longitude = dataSnapshot.child("location").child("currentLocation").child("longitude").getValue().toString();*/
             }
 
             @Override
@@ -104,6 +126,51 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+
+        final DatabaseReference databaserefForDriver = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
+        databaserefForDriver.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.w("Driver key", "DRIVERKEY" + dataSnapshot.toString());
+                if (dataSnapshot.getValue() != null) {
+                    final String driverKey = (String) dataSnapshot.getValue();
+                    final DatabaseReference databaserefForDriverLocation = FirebaseDatabase.getInstance().getReference().child("drivers").child(driverKey).child("location").child("currentLocation");
+                    databaserefForDriverLocation.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("latitude").getValue(Double.class));
+                            Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("longitude").getValue(Double.class));
+
+                            LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+                            listPointsDriverLoc.add(ltlng);
+                            Log.w("Child loc", "DRIVERLOCSIZE" + listPointsDriverLoc.size());
+
+                            if(listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0){
+                                LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
+                                LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
+                                double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
+                                Log.w("DISTANCE", "DISTANCE" + distance);
+                                TextView distanceView = (TextView) findViewById(R.id.distance);
+                                distanceView.setText(String.valueOf(distance)+ "KM");
+                                MarkMap();
+
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
     }
 
@@ -118,6 +185,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         .title("king")
         );*/
 
+        public void MarkMap(){
+            mMap.clear();
+            if(listPointsChildLoc.size() >= 1){
+                LatLng childrenLocation = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
+                MarkerOptions markerOptionsChild = new MarkerOptions();
+                markerOptionsChild.position(childrenLocation);
+                markerOptionsChild.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                mMap.addMarker(markerOptionsChild);
+                Log.w("CHILDLOCSHOWN", "CHILDLOCSHOWN" );
+            }
+            if(listPointsDriverLoc.size() >= 1){
+                LatLng driverLocation = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
+                MarkerOptions markerOptionsDriver = new MarkerOptions();
+                markerOptionsDriver.position(driverLocation);
+                markerOptionsDriver.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                mMap.addMarker(markerOptionsDriver);
+                Log.w("DRIVERLOCSHOWN", "DRIVERLOCSHOWN" );
+
+            }
+        }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -128,7 +216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
         mMap.setMyLocationEnabled(true);
-      //iki nokta yaratmak için bu method kullanılıyor eğer haritaya uzun tıklarsan tag yartır ve iki tag arasında yol oluşturur.
+        //iki nokta yaratmak için bu method kullanılıyor eğer haritaya uzun tıklarsan tag yartır ve iki tag arasında yol oluşturur.
         /*
         TODO:
         1) kendi locationumu belli aralıklarla al
@@ -140,7 +228,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             LatLng getlast;
-            int i=0;
+            int i = 0;
+
             @Override
             public void onMapLongClick(LatLng latLng) {
                 //Reset marker when already 2
@@ -165,7 +254,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 if (listPoints.size() >= 2) {
                     //Create the URL to get request from first marker to second marker
-                    String url = getRequestUrl(listPoints.get(i), listPoints.get(i+1));
+                    String url = getRequestUrl(listPoints.get(i), listPoints.get(i + 1));
                     i++;
                     TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
                     taskRequestDirections.execute(url);
@@ -177,9 +266,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private String getRequestUrl(LatLng origin, LatLng dest) {
         //Value of origin
-        String str_org = "origin=" + origin.latitude +","+origin.longitude;
+        String str_org = "origin=" + origin.latitude + "," + origin.longitude;
         //Value of destination
-        String str_dest = "destination=" + dest.latitude+","+dest.longitude;
+        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
         //Set value enable the sensor
         String sensor = "sensor=false";
         //Mode for find direction
@@ -187,7 +276,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         //key for access
         String key = "key=AIzaSyAaap7ntmwelL70dRB-rrsHbrLuAgeG4_8";
 
-        String param = str_org +"&" + str_dest + "&" +sensor+"&" +mode +"&" +key;
+        String param = str_org + "&" + str_dest + "&" + sensor + "&" + mode + "&" + key;
         //Output format
         String output = "json";
         //Create url to request
@@ -199,7 +288,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String responseString = "";
         InputStream inputStream = null;
         HttpURLConnection httpURLConnection = null;
-        try{
+        try {
             URL url = new URL(reqUrl);
             httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.connect();
@@ -233,7 +322,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @SuppressLint("MissingPermission")
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
+        switch (requestCode) {
             case LOCATION_REQUEST:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     mMap.setMyLocationEnabled(true);
@@ -252,7 +341,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return  responseString;
+            return responseString;
         }
 
         @Override
@@ -264,7 +353,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public class TaskParser extends AsyncTask<String, Void, List<List<HashMap<String, String>>> > {
+    public class TaskParser extends AsyncTask<String, Void, List<List<HashMap<String, String>>>> {
 
         @Override
         protected List<List<HashMap<String, String>>> doInBackground(String... strings) {
@@ -296,7 +385,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     double lat = Double.parseDouble(point.get("lat"));
                     double lon = Double.parseDouble(point.get("lon"));
 
-                    points.add(new LatLng(lat,lon));
+                    points.add(new LatLng(lat, lon));
                 }
 
                 polylineOptions.addAll(points);
@@ -305,12 +394,29 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 polylineOptions.geodesic(true);
             }
 
-            if (polylineOptions!=null) {
+            if (polylineOptions != null) {
                 mMap.addPolyline(polylineOptions);
             } else {
                 Toast.makeText(getApplicationContext(), "Direction not found!", Toast.LENGTH_SHORT).show();
             }
 
         }
+    }
+    public double CalculationByDistance(double initialLat, double initialLong,
+                                        double finalLat, double finalLong){
+        int R = 6371; // km (Earth radius)
+        double dLat = toRadians(finalLat-initialLat);
+        double dLon = toRadians(finalLong-initialLong);
+        initialLat = toRadians(initialLat);
+        finalLat = toRadians(finalLat);
+
+        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(initialLat) * Math.cos(finalLat);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    public double toRadians(double deg) {
+        return deg * (Math.PI/180);
     }
 }
