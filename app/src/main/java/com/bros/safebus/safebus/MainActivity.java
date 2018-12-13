@@ -1,8 +1,10 @@
 package com.bros.safebus.safebus;
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -47,6 +49,10 @@ public class MainActivity extends AppCompatActivity {
         final Button login = (Button) findViewById(R.id.login_Button);
         // final TextView firstTextView = (TextView) findViewById(R.id.textView);
         final Button sign_up = (Button) findViewById(R.id.signup_Button);
+
+        hideKeyboard(email);
+        hideKeyboard(password);
+
 
         sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -248,6 +254,21 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent register_intent = new Intent(this, register.class);
         startActivity(register_intent);
+    }
+
+
+
+    public void hideKeyboard(EditText editText){
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+                    inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                }
+            }
+        });
+
     }
 
 }

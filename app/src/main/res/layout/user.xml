@@ -56,7 +56,10 @@
             android:layout_height="wrap_content"
             android:id="@+id/logout"
             android:layout_below="@+id/nick"
-            android:layout_centerHorizontal="true" />
+            android:layout_centerHorizontal="true"
+            android:layout_margin="1dp"
+            android:background="@drawable/ripple_effect"
+/>
 
 
 

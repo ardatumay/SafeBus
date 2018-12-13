@@ -6,10 +6,19 @@
         tools:context="com.bros.safebus.safebus.MainActivity"
         android:id="@+id/activity_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusableInTouchMode="true">
+        <ImageView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_above="@id/relativeBuild"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/safebuslogo"
+            />
 
         <RelativeLayout
+            android:id="@+id/relativeBuild"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -65,6 +74,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_toRightOf="@+id/signup_Button"
+                            android:layout_margin="1dp"
+                            android:background="@drawable/ripple_effect"
+
                             />
 
                         <Button
@@ -72,6 +84,8 @@
                             android:text="Sign Up"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_margin="1dp"
+                            android:background="@drawable/ripple_effect"
 
                             />
                 </RelativeLayout>

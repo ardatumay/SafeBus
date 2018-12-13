@@ -18,8 +18,10 @@
         android:id="@+id/add_route"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
+        android:layout_margin="1dp"
+        android:background="@drawable/ripple_effect"
         android:text="Add Route"/>
+
     <EditText
         android:id="@+id/child_email"
         android:layout_width="match_parent"
@@ -32,6 +34,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/child_email"
+        android:layout_margin="1dp"
+        android:background="@drawable/ripple_effect"
         android:text="Add Child"/>
 
 </RelativeLayout>

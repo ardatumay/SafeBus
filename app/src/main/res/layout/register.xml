@@ -179,6 +179,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/phone_Number"
         android:layout_alignStart="@+id/phone_Number"
+        android:layout_margin="1dp"
+        android:background="@drawable/border"
+
          />
     <Button
         android:id="@+id/register_Button_Driver"
@@ -187,6 +190,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/plate_Number"
         android:layout_alignStart="@+id/plate_Number"
+        android:layout_margin="1dp"
+        android:background="@drawable/border"
         />
 
 

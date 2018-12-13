@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -143,10 +144,12 @@ public class ParentInterface extends Activity {
                 myButton.setText(childrenNames.get(i));
                 myButton.setId(i);
                 myButton.setOnClickListener(OnClikChild);
-                LinearLayout ll = (LinearLayout) findViewById(R.id.button_holder);
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                ll.addView(myButton, lp);
 
+                LinearLayout ll = (LinearLayout) findViewById(R.id.button_holder);
+                ll.setBackground(getDrawable(R.drawable.border));
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                myButton.setBackground(getDrawable(R.drawable.border));
+                ll.addView(myButton, lp);
 
             }
     }

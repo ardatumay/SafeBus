@@ -78,15 +78,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /*FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
         final String RegisteredUserID = currentUser.getUid();*/
 
-        final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
-        databaseref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("latitude").getValue(Double.class));
-                Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
+                final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
+                databaseref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("latitude").getValue(Double.class));
+                        Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
 
-                LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
-                listPointsChildLoc.add(ltlng);
+                        LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+                        listPointsChildLoc.add(ltlng);
                 Log.w("Child loc", "CHILDLOCSIZE" + listPointsChildLoc.size());
                 if(listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0){
                     LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
@@ -98,27 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     MarkMap();
 
                 }
-                /*String as = "";
-                String sa = dataSnapshot.child("children").getValue().toString();
 
-                int tire = sa.indexOf('{');
-                int esittir = sa.indexOf('=');
-               sa = sa.substring(tire + 1 ,esittir );
-                Log.v("logger", sa);
-
-                if(!sa.isEmpty()){
-                    as = dataSnapshot.child("children").child(sa).child("key").getValue().toString();
-                }
-
-               // DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("children").child(as);
-                //String sa = dataSnapshot.child("children").getValue().toString();
-
-                Log.v("logger", sa);
-                Log.v("logger", as);
-
-
-                  //  String lat = dataSnapshot.child("location").child("currentLocation").child("latitude").getValue().toString();
-               //     String longitude = dataSnapshot.child("location").child("currentLocation").child("longitude").getValue().toString();*/
             }
 
             @Override

@@ -29,7 +29,10 @@
         android:layout_height="wrap_content"
         android:text="Add Child"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        android:layout_margin="3dp"
+        android:background="@drawable/border"
+        />
 
 
 </RelativeLayout>
