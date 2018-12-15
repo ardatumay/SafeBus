@@ -11,7 +11,5 @@
         android:layout_height="wrap_content"
         android:text="Button"
         android:layout_margin="1dp"
-        android:background="@drawable/ripple_effect"
-        tools:layout_editor_absoluteX="148dp"
-        tools:layout_editor_absoluteY="44dp" />
+        android:background="@drawable/ripple_effect" />
 </RelativeLayout>

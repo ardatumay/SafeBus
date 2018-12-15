@@ -69,11 +69,11 @@
     <Button
         android:id="@+id/registerChild"
         android:text="Register"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/school_Address"
         android:layout_alignStart="@+id/phone_Number"
-        android:layout_margin="1dp"
+        android:layout_margin="3dp"
         android:background="@drawable/border"
 
         />

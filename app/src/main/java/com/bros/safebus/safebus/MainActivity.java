@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
                 String userLoginEmail = email.getText().toString();
                 String userLoginPassword = password.getText().toString();
 
-                if(!TextUtils.isEmpty(userLoginEmail)&& !TextUtils.isEmpty(userLoginPassword) && userType != "") {
+                if(!TextUtils.isEmpty(userLoginEmail)&& !TextUtils.isEmpty(userLoginPassword)) {
                     Log.d("USER LOGIN MAIL","CALL LOGIN" );
 
                     loginUser(userLoginEmail, userLoginPassword);
@@ -121,23 +121,17 @@ public class MainActivity extends AppCompatActivity {
         //       });
         // }
         // });
-        RadioGroup radioGroup = (RadioGroup) findViewById(R.id.userTypeRadio);
+  /*      RadioGroup radioGroup = (RadioGroup) findViewById(R.id.userTypeRadio);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
         {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton checkedButton = (RadioButton) findViewById(checkedId);
                 Log.d("DRIVER", "NEW RADIO CLICK" + checkedButton.getText().toString().toLowerCase() );
-                   /* Log.d("DRIVER", "onCheckedChanged: " +checkedButton.getText().toString().toLowerCase() );
-                    SetUserType("drivers");
-                    Log.d("CHILDREN", "onCheckedChanged: " +checkedButton.getText().toString().toLowerCase() );
-                    SetUserType("children");
-                    Log.d("PARENT", "onCheckedChanged: " +checkedButton.getText().toString().toLowerCase() );*/
-
                 SetUserType(checkedButton.getText().toString().toLowerCase());
 
             }
-        });
+        });*/
     }
 
     private void openActivity() {
@@ -156,11 +150,14 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-
                             FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
                             final String RegisteredUserID = currentUser.getUid();
 
-                            final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child(userType).child(RegisteredUserID);
+                            String user = userLoginEmail;
+                            user = user.replace("@","");
+                            user = user.replace(".","");
+                            Log.v("deneme", user);
+                            final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("users").child(user);
 
                             databaseref.addValueEventListener(new ValueEventListener() {
                                 @Override
