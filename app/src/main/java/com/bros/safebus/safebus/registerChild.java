@@ -1,13 +1,16 @@
 package com.bros.safebus.safebus;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +35,18 @@ public class registerChild extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_child);
 
+        final RelativeLayout r = (RelativeLayout)findViewById(R.id.register_child);
 
+        r.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (view != null) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
+
+            }
+        });
 
         final TextView email = (TextView) findViewById(R.id.email);
         final TextView name = (TextView) findViewById(R.id.name);
@@ -150,6 +164,7 @@ public class registerChild extends Activity {
     void returnHomePage()
     {
         Intent intent = new Intent(this, ParentInterface.class);
+
         startActivity(intent);
     }
 }
