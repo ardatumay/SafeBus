@@ -38,4 +38,14 @@
         android:background="@drawable/border"
         android:text="Add Child"/>
 
+    <Button
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="3dp"
+        android:layout_below="@+id/add_child"
+        android:background="@drawable/border"
+        android:text="Logout"
+
+        />
 </RelativeLayout>

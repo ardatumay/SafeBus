@@ -60,6 +60,15 @@ public class DriverInterface extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.driver_interface);
 
+        Button logout = (Button) findViewById(R.id.logout);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                firebaseAuth.signOut();
+                finish();
+            }
+        });
+
         final RelativeLayout r = (RelativeLayout) findViewById(R.id.driver_interface);
         r.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -36,6 +36,7 @@ public class ParentInterface extends Activity {
     String childFullName;
     List<String> childrenNames;
 
+
     TaskCompletionSource<DataSnapshot> dbSource = new TaskCompletionSource<>();
     Task dbTask = dbSource.getTask();
     TaskCompletionSource<DataSnapshot> dbSource2 = new TaskCompletionSource<>();
@@ -51,10 +52,19 @@ public class ParentInterface extends Activity {
         children = new HashMap<String, String>();
         childrenNames = new ArrayList<>();
         Button addChild = (Button) findViewById(R.id.add_child);
+
         addChild.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 GoToChildrenRegister();
+            }
+        });
+        Button logout = (Button) findViewById(R.id.logout);
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                firebaseAuth.signOut();
+                finish();
             }
         });
 
@@ -104,6 +114,8 @@ public class ParentInterface extends Activity {
         Log.d("Child name", "Child Names: " + childrenNames);
     }
 
+
+
     String GetChildFullName(String childKey) {
         final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey);
         databaseref.addValueEventListener(new ValueEventListener() {
@@ -132,7 +144,10 @@ public class ParentInterface extends Activity {
             }
         });
         return childFullName;
+
+
     }
+
 
     void CreateButtons(List<String> names){
         Log.d("CHILDRENFULL", "Child Name: " +childrenNames.size() );
@@ -178,4 +193,7 @@ public class ParentInterface extends Activity {
         i.putExtra("parentKey", parentKey);
         startActivity(i);
     }
+
+
 }
+
