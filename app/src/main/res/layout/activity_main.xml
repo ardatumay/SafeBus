@@ -18,6 +18,7 @@
             />
 
         <RelativeLayout
+
             android:id="@+id/relativeBuild"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -43,8 +44,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_below="@+id/email"
                     android:hint="Password" />
-
-                <RadioGroup
+<!--                <RadioGroup
                     android:id="@+id/userTypeRadio"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -62,31 +62,32 @@
                             android:layout_height="wrap_content"
                             android:text="@string/student"/>
                 </RadioGroup>
+-->
 
                 <RelativeLayout
                     android:id="@+id/buttonHolder"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/userTypeRadio">
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@+id/password">
                         <Button
                             android:id="@+id/login_Button"
                             android:text="Login"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
+                            android:layout_width="100dp"
+                            android:layout_height="40dp"
+                            android:layout_marginTop="10dp"
                             android:layout_toRightOf="@+id/signup_Button"
-                            android:layout_margin="1dp"
-                            android:background="@drawable/ripple_effect"
-
+                            android:background="@drawable/border"
                             />
 
                         <Button
                             android:id="@+id/signup_Button"
                             android:text="Sign Up"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="1dp"
-                            android:background="@drawable/ripple_effect"
-
+                            android:layout_width="100dp"
+                            android:layout_height="40dp"
+                            android:layout_marginRight="15dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/border"
                             />
                 </RelativeLayout>
 
