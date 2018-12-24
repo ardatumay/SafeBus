@@ -3,6 +3,7 @@ package com.bros.safebus.safebus;
 import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -48,10 +49,11 @@ public class ChildrenInterface extends Activity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.children_interface);
         Intent intent = getIntent();
-        i = new Intent(getApplicationContext(), LocationListener.class);
         childKey = intent.getStringExtra("userKey");
+        i = new Intent(getApplicationContext(), LocationListener.class);
 
-        final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");
+        //Service code that does not work for disabling and enabling
+        /*final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");
         databaseref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -67,10 +69,65 @@ public class ChildrenInterface extends Activity  {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
+        });*/
+
+        checkLocationPermission();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
+        mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
+
+        final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");
+        databaseref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!(boolean)dataSnapshot.getValue()){
+
+                    DisableBroadcastReceiver();
+                    mFusedLocationClient.removeLocationUpdates(getPendingIntent());
+                }else{
+                    enableBroadcastReceiver();
+                    checkLocationPermission();
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
         });
 
         //startService(new Intent(getApplicationContext(), LocationListener.class));
 
+    }
+
+    private void DisableBroadcastReceiver(){
+        ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
+        PackageManager pm = this.getPackageManager();
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);
+    }
+
+    public void enableBroadcastReceiver(){
+        ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
+        PackageManager pm = this.getPackageManager();
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
+
+    }
+
+
+    private PendingIntent getPendingIntent() {
+        Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
+        intent.setAction(LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES);
+        /*intent.putExtra(LocationUpdatesBroadcastReceiver.USER_KEY, DriverKey);
+        intent.putExtra(LocationUpdatesBroadcastReceiver.USER_TYPE, "drivers");
+        sendBroadcast(intent);*/
+        LocationUpdatesBroadcastReceiver.setUserKey(childKey);
+        LocationUpdatesBroadcastReceiver.setUserType("children");
+        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public void StartLocationService(){
