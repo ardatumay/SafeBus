@@ -5,17 +5,14 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
     <application
         android:allowBackup="true"
         android:icon="@drawable/safebuslogo"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:textColor ="@color/colorPrimaryDark"
+        android:textColor="@color/colorPrimaryDark"
         android:theme="@style/AppTheme">
-
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -23,42 +20,36 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
             </intent-filter>
         </activity>
-
-
-        <activity android:name=".MapsActivity"
-            android:label="@string/title_activity_maps">
-        </activity>
-
+        <activity
+            android:name=".MapsActivity"
+            android:label="@string/title_activity_maps" />
         <activity android:name=".Animation.AnimationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".User">
+        <activity android:name=".User" />
+        <activity android:name=".register" />
+        <activity android:name=".ParentInterface" />
+        <activity android:name=".DriverInterface" />
+        <activity android:name=".ChildrenInterface" />
+        <activity android:name=".registerChild" />
+        <activity android:name=".ParentMap" />
 
-        </activity>
-        <activity android:name=".register">
+        <service
+            android:name=".LocationListener"
+            android:exported="false" />
 
-        </activity>
-        <activity android:name=".ParentInterface">
+        <receiver
+            android:name=".LocationUpdatesBroadcastReceiver"
+            android:enabled="true"
+            android:exported="true" />
 
-        </activity>
-        <activity android:name=".DriverInterface">
 
-        </activity>
-        <activity android:name=".ChildrenInterface">
-
-        </activity>
-        <activity android:name=".registerChild">
-
-        </activity>
-        <activity android:name=".ParentMap">
-
-        </activity>
     </application>
 
 </manifest>

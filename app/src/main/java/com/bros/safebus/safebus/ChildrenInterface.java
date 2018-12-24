@@ -2,11 +2,13 @@ package com.bros.safebus.safebus;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -30,7 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
-public class ChildrenInterface extends Activity {
+public class ChildrenInterface extends Activity  {
 
     private FusedLocationProviderClient mFusedLocationClient; //location provider client
     LocationRequest mLocationRequest; // location request
@@ -38,91 +40,78 @@ public class ChildrenInterface extends Activity {
     private LocationCallback mLocationCallback;
     boolean mRequestingLocationUpdates = false;
     private GeofencingClient mGeofencingClient;
+    String childKey;
+    Intent i;
 
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.children_interface);
+        Intent intent = getIntent();
+        i = new Intent(getApplicationContext(), LocationListener.class);
+        childKey = intent.getStringExtra("userKey");
 
-
-        //bussiness logic variables
-        mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
-        mGeofencingClient = LocationServices.getGeofencingClient(this);
-        mLocationCallback = new LocationCallback() {//callback function to get location updates
+        final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");
+        databaseref.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!(boolean)dataSnapshot.getValue()){
+                    StopLocationService();
+                    Log.d("eede", "onDataChange: " + "33333 paused");
+                }else{
+                    StartLocationService();
                 }
-                for (Location location : locationResult.getLocations()) {//location gives the updated location
-                    //Log.d("LOC", location.toString());
-                    // Update UI with location data
-                    // ...
-                    Log.w("LOCATION", "onLocationResult: " + location.toString() );
-                    //firebase cannot serialize arrays, it must be put in dictionary like data structure which is hashmap
-                    HashMap<String,Double> locationDetails = new HashMap<String, Double>();
-                    locationDetails.put("latitude", location.getLatitude());
-                    locationDetails.put("longitude", location.getLongitude());
+            }
 
-                    HashMap<String,HashMap<String, Double>> currentLocation = new HashMap<String, HashMap<String, Double>>();
-                    currentLocation.put("currentLocation", locationDetails);
-                    Intent intent = getIntent();
-                    String childKey = intent.getStringExtra("userKey");
-                    final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location");
-                    databaseref.setValue(currentLocation);
-                }
-            };
-        };
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
 
+        //startService(new Intent(getApplicationContext(), LocationListener.class));
 
     }
 
+    public void StartLocationService(){
+        i.putExtra(LocationListener.USER_KEY, childKey);
+        i.putExtra(LocationListener.USER_TYPE, "children");
+        startService(i);
+    }
 
-
+    public void StopLocationService(){
+        //stopService(i);
+        stopService(new Intent(this, LocationListener.class));
+    }
 
     @Override
     protected void onResume() {
         super.onResume();
         boolean mRequestingLocationUpdates = true;
+        checkLocationPermission();
+
         if (mRequestingLocationUpdates) {
-            startLocationUpdates();
+           // startLocationUpdates();
         }
     }
     private void startLocationUpdates() {
         checkLocationPermission();
-        mFusedLocationClient.requestLocationUpdates(mLocationRequest,
-                mLocationCallback,
-                null /* Looper */);
+       /* mFusedLocationClient.requestLocationUpdates(mLocationRequest,
+                LocationCallback(),
+                null );*/
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+        //stopLocationUpdates();
     }
 
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
-
-    void GetLoc() {//get the last location of the user and put the location value to the currentLoc variable
-        checkLocationPermission();
-        mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                // Got last known location. In some rare situations this can be null.
-                if (location != null) {
-                    // Logic to handle location object
-                    currentLoc = location;
-
-                }
-            }
-        });
-    }
 
     void setTextView(TextView targetTextView, String targetString){//set textView content
         targetTextView.setText(targetString);

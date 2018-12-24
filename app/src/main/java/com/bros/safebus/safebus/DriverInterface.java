@@ -2,6 +2,8 @@ package com.bros.safebus.safebus;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,7 +22,10 @@ import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.pm.PackageManager;
 
+
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.LocationCallback;
@@ -60,9 +65,8 @@ public class DriverInterface extends Activity {
 
         //Get the driver key from intent
         DriverKey = getIntent().getStringExtra("userKey");
-
         //bussiness logic variables
-        mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
+        /*mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
         mGeofencingClient = LocationServices.getGeofencingClient(this);
         mLocationCallback = new LocationCallback() {//callback function to get location updates
@@ -90,9 +94,40 @@ public class DriverInterface extends Activity {
                     //updatedLocation.setText(location.toString());
                 }
             }
+        };*/
 
-            ;
-        };
+        checkLocationPermission();
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
+        mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
+        mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
+
+        /*Intent intent = new Intent(this, LocationListener.class);
+        intent.putExtra(LocationListener.USER_KEY, DriverKey);
+        intent.putExtra(LocationListener.USER_TYPE, "drivers");
+        startService(intent);*/
+
+        final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("drivers").child(DriverKey).child("trackLocation");
+        databaseref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if(!(boolean)dataSnapshot.getValue()){
+
+                    DisableBroadcastReceiver();
+                    mFusedLocationClient.removeLocationUpdates(getPendingIntent());
+                }else{
+                    enableBroadcastReceiver();
+                    checkLocationPermission();
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
 
        /*showLocation.setOnClickListener(new View.OnClickListener() {// When show location button is clicked show the location of the currentLoc variable
             @Override
@@ -217,9 +252,37 @@ public class DriverInterface extends Activity {
 
             }
         });
+    }
 
+    private void DisableBroadcastReceiver(){
+        ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
+        PackageManager pm = this.getPackageManager();
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                PackageManager.DONT_KILL_APP);
+    }
+
+    public void enableBroadcastReceiver(){
+        ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
+        PackageManager pm = this.getPackageManager();
+        pm.setComponentEnabledSetting(receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP);
 
     }
+
+
+    private PendingIntent getPendingIntent() {
+        Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
+        intent.setAction(LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES);
+        /*intent.putExtra(LocationUpdatesBroadcastReceiver.USER_KEY, DriverKey);
+        intent.putExtra(LocationUpdatesBroadcastReceiver.USER_TYPE, "drivers");
+        sendBroadcast(intent);*/
+        LocationUpdatesBroadcastReceiver.setUserKey(DriverKey);
+        LocationUpdatesBroadcastReceiver.setUserType("drivers");
+        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
 
     void AddChildToDriver(String userMail) {
         String actualUsername = CreateUsernameFromEmail(userMail);
@@ -287,7 +350,7 @@ public class DriverInterface extends Activity {
         super.onResume();
         boolean mRequestingLocationUpdates = true;
         if (mRequestingLocationUpdates) {
-            startLocationUpdates();
+           // startLocationUpdates();
         }
     }
 
@@ -295,14 +358,14 @@ public class DriverInterface extends Activity {
         checkLocationPermission();
         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                 mLocationCallback,
-                null /* Looper */);
+                null );
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
-        stopLocationUpdates();
+       // stopLocationUpdates();
     }
 
     private void stopLocationUpdates() {

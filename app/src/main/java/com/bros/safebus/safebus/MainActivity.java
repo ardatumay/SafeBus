@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
 
                             final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child(userType).child(RegisteredUserID);
 
-                            databaseref.addValueEventListener(new ValueEventListener() {
+                            databaseref.addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     String userType = dataSnapshot.child("type").getValue().toString().toLowerCase();
