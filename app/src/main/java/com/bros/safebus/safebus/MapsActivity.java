@@ -173,7 +173,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 markerOptionsChild.position(childrenLocation);
                 markerOptionsChild.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                 mMap.addMarker(markerOptionsChild);
-                Log.w("CHILDLOCSHOWN", "CHILDLOCSHOWN" );
             }
             if(listPointsDriverLoc.size() >= 1){
                 LatLng driverLocation = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
@@ -181,8 +180,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 markerOptionsDriver.position(driverLocation);
                 markerOptionsDriver.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 mMap.addMarker(markerOptionsDriver);
-                Log.w("DRIVERLOCSHOWN", "DRIVERLOCSHOWN" );
-
             }
         }
 

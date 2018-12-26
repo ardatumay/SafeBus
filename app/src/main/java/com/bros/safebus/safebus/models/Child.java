@@ -18,6 +18,7 @@ public class Child {
     private double currentLocation [];
     //private String currentLocation;
     private String lastKnownLocation;//tek bi string olarak mı yoksa ikili hashmap tarzında mı. virgülle ayrılıyor
+    boolean trackLocation;
 
 
 
@@ -40,7 +41,7 @@ public class Child {
         this.lastKnownLocation = lastKnownLocation;
     }
 
-    public Child(String name, String surname, String email, String password, String schoolAddress, long phone, String key, String parentKey, String type) {// for register page. only includes register page variables
+    public Child(String name, String surname, String email, String password, String schoolAddress, long phone, String key, String parentKey, String type, boolean trackLocation) {// for register page. only includes register page variables
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -50,6 +51,7 @@ public class Child {
         this.key = key;
         this.type = type;
         this.parentKey = parentKey;
+        this.trackLocation = trackLocation;
     }
 
 

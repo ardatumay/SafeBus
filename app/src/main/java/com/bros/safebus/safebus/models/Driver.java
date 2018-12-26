@@ -15,11 +15,12 @@ public class Driver {
     private String key;
     private Child[] children;
     private String type;
+    private boolean trackLocation;
 
     public Driver() {
     }
 
-    public Driver(String name, String surname, String email, String password, String schoolAddress, long phoneNumber, String plateNumber, String key,String type) {
+    public Driver(String name, String surname, String email, String password, String schoolAddress, long phoneNumber, String plateNumber, String key,String type, boolean trackLocation ) {
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -29,6 +30,7 @@ public class Driver {
         this.plateNumber = plateNumber;
         this.key = key;
         this.type = type;
+        this.trackLocation = trackLocation;
     }
 
     public Driver(String name, String surname, String schoolAddress, int phoneNumber, String email, String plateNumber, String currentLocation, String lastKnownLocation,String type) {
