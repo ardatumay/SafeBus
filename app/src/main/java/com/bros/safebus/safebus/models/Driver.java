@@ -142,4 +142,12 @@ public class Driver {
     public void setType(String type) {
         this.type = type;
     }
+
+    public boolean isTrackLocation() {
+        return trackLocation;
+    }
+
+    public void setTrackLocation(boolean trackLocation) {
+        this.trackLocation = trackLocation;
+    }
 }

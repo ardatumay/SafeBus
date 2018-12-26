@@ -108,7 +108,8 @@ public class registerChild extends Activity {
                                     String type = "Children";
                                     databaseReference = firebaseDatabase.getReference();
                                     String childrenKey = firebaseAuth.getCurrentUser().getUid();
-                                    final Child newChild = new Child(Name, Surname, email_Address, pass, Address, phone, childrenKey, parentKey ,type, true);
+                                    boolean trackLocation = true;
+                                    final Child newChild = new Child(Name, Surname, email_Address, pass, Address, phone, childrenKey, parentKey ,type, trackLocation);
                                     databaseReference.child("children").child(childrenKey)
                                             .setValue(newChild);
                                     //set value for parent

@@ -238,7 +238,8 @@ public class register extends AppCompatActivity {
 
                                     databaseReference = firebaseDatabase.getReference();
                                     String driverKey = firebaseAuth.getCurrentUser().getUid();
-                                    final Driver newDriver = new Driver(driver_Name, driver_Surname, driver_Email_Address, driver_Pass, driver_Address, driver_phoneNumber, driver_plateNumber, driverKey, driverRole, true);
+                                    boolean trackLocation = true;
+                                    final Driver newDriver = new Driver(driver_Name, driver_Surname, driver_Email_Address, driver_Pass, driver_Address, driver_phoneNumber, driver_plateNumber, driverKey, driverRole, trackLocation);
                                     databaseReference.child("drivers").child(firebaseAuth.getCurrentUser().getUid())
                                             .setValue(newDriver);
                                     //set value for users
