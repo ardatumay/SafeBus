@@ -148,6 +148,12 @@ public class ParentInterface extends Activity {
 
     }
 
+    public String GetDriverKey(String childKey){
+        final DatabaseReference driverKey = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
+        String DriverKey = driverKey.toString();
+
+        return DriverKey;
+    }
 
     void CreateButtons(List<String> names){
         Log.d("CHILDRENFULL", "Child Name: " +childrenNames.size() );
@@ -179,10 +185,12 @@ public class ParentInterface extends Activity {
             GoToMapPage(childKey);
         }
     };
+
     void GoToMapPage(String childKey){
 
         Intent i = new Intent(this, MapsActivity.class);
         i.putExtra("childKey", childKey);
+        i.putExtra("DriverKey", GetDriverKey(childKey));
         startActivity(i);
     }
 

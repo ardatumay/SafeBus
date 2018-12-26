@@ -13,6 +13,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,103 +61,134 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private String userType = "";
-
-
+    private static boolean driverControl = false;
+    String DriverKey;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        listPoints = new ArrayList<>();
-        listPointsChildLoc = new ArrayList<>();
-        listPointsDriverLoc = new ArrayList<>();
 
+        listPoints = new ArrayList<>();
         Intent i = getIntent();
-        String childKey = i.getStringExtra("childKey");
-        Log.w("CHILD KEY", "CHILDKEY" + childKey);
+        driverControl = i.getBooleanExtra("driverControl", false);
+        DriverKey= i.getStringExtra("DriverKey");
+        Log.w("KeyOFChaos", "asdasd" + DriverKey);
+
+if(driverControl==false){
+            listPointsChildLoc = new ArrayList<>();
+            listPointsDriverLoc = new ArrayList<>();
+            String childKey = i.getStringExtra("childKey");
+            Log.w("CHILD KEY", "CHILDKEY" + childKey);
 
         /*FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
         final String RegisteredUserID = currentUser.getUid();*/
 
-                final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
-                databaseref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("latitude").getValue(Double.class));
-                        Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
 
-                        LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
-                        listPointsChildLoc.add(ltlng);
-                Log.w("Child loc", "CHILDLOCSIZE" + listPointsChildLoc.size());
-                if(listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0){
-                    LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
-                    LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
-                    double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
-                    Log.w("DISTANCE", "DISTANCE" + distance);
-                    TextView distanceView = (TextView) findViewById(R.id.distance);
-                    distanceView.setText(String.valueOf(distance));
-                    MarkMap();
+
+   //Get route from the DB
+    final DatabaseReference pathList = FirebaseDatabase.getInstance().getReference().child("driver").child(DriverKey).child("pathList");
+    pathList.addValueEventListener(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+
+            for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+            int i=1;
+                LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
+                //Use the dataType you are using and also use the reference of those childs inside arrays\\
+
+                // Putting Data into Getter Setter \\
+
+                listPoints.add(point);
+                Log.v("pointList",listPoints.toString());
+
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    });
+
+
+            final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
+            databaseref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("latitude").getValue(Double.class));
+                    Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
+
+                    LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+                    listPointsChildLoc.add(ltlng);
+                    Log.w("Child loc", "CHILDLOCSIZE" + listPointsChildLoc.size());
+                    if (listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0) {
+                        LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
+                        LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
+                        double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
+                        Log.w("DISTANCE", "DISTANCE" + distance);
+                        TextView distanceView = (TextView) findViewById(R.id.distance);
+                        distanceView.setText(String.valueOf(distance));
+                        MarkMap();
+
+                    }
 
                 }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
 
-            }
-        });
+            final DatabaseReference databaserefForDriver = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
+            databaserefForDriver.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.w("Driver key", "DRIVERKEY" + dataSnapshot.toString());
+                    if (dataSnapshot.getValue() != null) {
+                        final String driverKey = (String) dataSnapshot.getValue();
+                        final DatabaseReference databaserefForDriverLocation = FirebaseDatabase.getInstance().getReference().child("drivers").child(driverKey).child("location").child("currentLocation");
+                        databaserefForDriverLocation.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("latitude").getValue(Double.class));
+                                Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("longitude").getValue(Double.class));
 
-        final DatabaseReference databaserefForDriver = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
-        databaserefForDriver.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.w("Driver key", "DRIVERKEY" + dataSnapshot.toString());
-                if (dataSnapshot.getValue() != null) {
-                    final String driverKey = (String) dataSnapshot.getValue();
-                    final DatabaseReference databaserefForDriverLocation = FirebaseDatabase.getInstance().getReference().child("drivers").child(driverKey).child("location").child("currentLocation");
-                    databaserefForDriverLocation.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("latitude").getValue(Double.class));
-                            Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("longitude").getValue(Double.class));
+                                LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+                                listPointsDriverLoc.add(ltlng);
+                                Log.w("Child loc", "DRIVERLOCSIZE" + listPointsDriverLoc.size());
 
-                            LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
-                            listPointsDriverLoc.add(ltlng);
-                            Log.w("Child loc", "DRIVERLOCSIZE" + listPointsDriverLoc.size());
+                                if (listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0) {
+                                    LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
+                                    LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
+                                    double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
+                                    Log.w("DISTANCE", "DISTANCE" + distance);
+                                    TextView distanceView = (TextView) findViewById(R.id.distance);
+                                    distanceView.setText(String.valueOf(distance) + "KM");
+                                    MarkMap();
 
-                            if(listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0){
-                                LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
-                                LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
-                                double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
-                                Log.w("DISTANCE", "DISTANCE" + distance);
-                                TextView distanceView = (TextView) findViewById(R.id.distance);
-                                distanceView.setText(String.valueOf(distance)+ "KM");
-                                MarkMap();
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
                             }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
+                        });
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
 
     }
-
+    }
 
     // Add a marker in Sydney and move the camera
         /*LatLng kralCanınEvi = new LatLng(39.892967, 32.855078, 39.892311, 32.854128);
@@ -202,45 +237,71 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
          */
 
 
+if( driverControl==true){
 
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            LatLng getlast;
-            int i = 0;
+    CreateButton("Add Path");
 
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                //Reset marker when already 2
-            /*   if (listPoints.size() == 2) {
-                    listPoints.clear();
-                    mMap.clear();
-                }*/
-                //Save first point select
-                listPoints.add(latLng);
-                //Create marker
-                MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
 
-                if (listPoints.size() == 1) {
-                    //Add first marker to the map
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                } else {
-                    //Add second marker to the map
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                }
-                mMap.addMarker(markerOptions);
+    mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+        LatLng getlast;
+        int i = 0;
 
-                if (listPoints.size() >= 2) {
-                    //Create the URL to get request from first marker to second marker
-                    String url = getRequestUrl(listPoints.get(i), listPoints.get(i + 1));
-                    i++;
-                    TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
-                    taskRequestDirections.execute(url);
-                }
+        @Override
+        public void onMapLongClick(LatLng latLng) {
+            //Save first point select
+            listPoints.add(latLng);
+            //Create marker
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            //Add first marker to the map
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            mMap.addMarker(markerOptions);
+
+            if (listPoints.size() >= 2) {
+                //Create the URL to get request from first marker to second marker
+                String url = getRequestUrl(listPoints.get(i), listPoints.get(i + 1));
+                i++;
+                TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
+                taskRequestDirections.execute(url);
             }
-        });
+        }
+    });
+}
+}
+
+    void CreateButton(String name){
+        Log.d("Button", "Add Button " + name );
+            int i = 0;
+            Button myButton = new Button(this);
+            myButton.setText(name);
+            myButton.setId(i);
+            myButton.setOnClickListener(addPath);
+            LinearLayout ll = (LinearLayout) findViewById(R.id.button_holder);
+            ll.setBackground(getDrawable(R.drawable.border));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            myButton.setBackground(getDrawable(R.drawable.border));
+            ll.addView(myButton, lp);
+        }
+
+        View.OnClickListener addPath =  new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent goMain = new Intent(MapsActivity.this, DriverInterface.class);
+                goMain.putParcelableArrayListExtra("pathList", listPoints);
+                Log.v("ListPath", listPoints.toString());
+                goMain.putExtra("userKey", DriverKey);
+                startActivity(goMain);
+            }
+        };
+
+    private void cleanMarkers(){
+
+        if (listPoints.size() == 2) {
+            listPoints.clear();
+            mMap.clear();
+        }
 
     }
-
     private String getRequestUrl(LatLng origin, LatLng dest) {
         //Value of origin
         String str_org = "origin=" + origin.latitude + "," + origin.longitude;
@@ -250,7 +311,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String sensor = "sensor=false";
         //Mode for find direction
         String mode = "mode=driving";
-        //key for access
+        //key for accesspathString
         String key = "key=AIzaSyAaap7ntmwelL70dRB-rrsHbrLuAgeG4_8";
 
         String param = str_org + "&" + str_dest + "&" + sensor + "&" + mode + "&" + key;

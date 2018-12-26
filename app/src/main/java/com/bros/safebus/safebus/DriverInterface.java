@@ -34,6 +34,7 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -46,7 +47,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DriverInterface extends Activity {
     final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -59,12 +62,12 @@ public class DriverInterface extends Activity {
     boolean mRequestingLocationUpdates = false;
     private GeofencingClient mGeofencingClient;
     String DriverKey;
-
+    ArrayList<LatLng> listPoints;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.driver_interface);
-
+        listPoints = new ArrayList<>();
         Button logout = (Button) findViewById(R.id.logout);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,9 +88,10 @@ public class DriverInterface extends Activity {
 
             }
         });
-
         //Get the driver key from intent
         DriverKey = getIntent().getStringExtra("userKey");
+        Log.v("DriverKeyDI", DriverKey);
+
         //bussiness logic variables
         /*mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
@@ -150,6 +154,14 @@ public class DriverInterface extends Activity {
             }
         });
 
+
+        //adding List path into DB
+        listPoints = getIntent().getParcelableArrayListExtra("pathList");
+        if(listPoints!=null){
+        Log.v("listPath", listPoints.toString());
+            final DatabaseReference databasePath = FirebaseDatabase.getInstance().getReference().child("drivers").child(DriverKey);
+            databasePath.child("pathList").setValue(listPoints);
+        }
 
 
        /*showLocation.setOnClickListener(new View.OnClickListener() {// When show location button is clicked show the location of the currentLoc variable
@@ -272,7 +284,10 @@ public class DriverInterface extends Activity {
         addRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                Intent intent = new Intent(DriverInterface.this, MapsActivity.class);
+                intent.putExtra("driverControl", true);
+                intent.putExtra("DriverKey",DriverKey);
+                startActivity(intent);
             }
         });
     }
