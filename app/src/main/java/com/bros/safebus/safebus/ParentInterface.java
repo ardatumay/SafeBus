@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.bros.safebus.safebus.models.Driver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -35,7 +36,7 @@ public class ParentInterface extends Activity {
     HashMap<String, String> children;
     String childFullName;
     List<String> childrenNames;
-
+    String DriverKey;
 
     TaskCompletionSource<DataSnapshot> dbSource = new TaskCompletionSource<>();
     Task dbTask = dbSource.getTask();
@@ -148,11 +149,24 @@ public class ParentInterface extends Activity {
 
     }
 
-    public String GetDriverKey(String childKey){
-        final DatabaseReference driverKey = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
-        String DriverKey = driverKey.toString();
+    public void GetDriverKey(String childKey){
+        final DatabaseReference databaseKey = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
+        databaseKey.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DriverKey = dataSnapshot.getValue(String.class);
+            }
 
-        return DriverKey;
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        Log.v("DriverKeyyy",DriverKey);
+
+
     }
 
     void CreateButtons(List<String> names){
@@ -190,7 +204,9 @@ public class ParentInterface extends Activity {
 
         Intent i = new Intent(this, MapsActivity.class);
         i.putExtra("childKey", childKey);
-        i.putExtra("DriverKey", GetDriverKey(childKey));
+        Log.v("DriverKeyPC",childKey);
+        i.putExtra("DriverKey",DriverKey);
+        Log.v("DriverKeyP",DriverKey);
         startActivity(i);
     }
 

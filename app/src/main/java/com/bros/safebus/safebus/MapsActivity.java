@@ -75,9 +75,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         listPoints = new ArrayList<>();
         Intent i = getIntent();
-        driverControl = i.getBooleanExtra("driverControl", false);
+        driverControl = i.getBooleanExtra("", false);
         DriverKey= i.getStringExtra("DriverKey");
-        Log.w("KeyOFChaos", "asdasd" + DriverKey);
+Log.v("DriverKey",DriverKey);
 
 if(driverControl==false){
             listPointsChildLoc = new ArrayList<>();
@@ -87,8 +87,6 @@ if(driverControl==false){
 
         /*FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
         final String RegisteredUserID = currentUser.getUid();*/
-
-
 
    //Get route from the DB
     final DatabaseReference pathList = FirebaseDatabase.getInstance().getReference().child("driver").child(DriverKey).child("pathList");
@@ -300,7 +298,6 @@ if( driverControl==true){
             listPoints.clear();
             mMap.clear();
         }
-
     }
     private String getRequestUrl(LatLng origin, LatLng dest) {
         //Value of origin
