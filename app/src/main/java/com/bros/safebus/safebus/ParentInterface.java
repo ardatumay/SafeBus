@@ -1,7 +1,14 @@
 package com.bros.safebus.safebus;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
@@ -36,6 +43,9 @@ public class ParentInterface extends Activity {
     String childFullName;
     List<String> childrenNames;
 
+    public static int NOTIFICATION_ID = 3131;
+    NotificationManager mNotificationManager;
+    NotificationChannel mChannel;
 
     TaskCompletionSource<DataSnapshot> dbSource = new TaskCompletionSource<>();
     Task dbTask = dbSource.getTask();
@@ -46,7 +56,7 @@ public class ParentInterface extends Activity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)  {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parent_interface);
         children = new HashMap<String, String>();
@@ -67,6 +77,28 @@ public class ParentInterface extends Activity {
                 finish();
             }
         });
+        CreateNotifChannel();
+
+
+        FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();//get the unique id of parent
+        final String RegisteredUserID = currentUser.getUid();
+        final DatabaseReference databaserefNotify = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("notify");
+        databaserefNotify.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if ((boolean) dataSnapshot.getValue()) {
+                    Log.w("notify true", "" + dataSnapshot.getValue());
+                    SentNotif();
+                } else {
+                    Log.w("notify true", "" + dataSnapshot.getValue());
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                dbSource.setException(databaseError.toException());
+            }
+        });
 
        /* Task task = forestRef.getMetadata();
         task.addOnSuccessListener(this, new OnSuccessListener() {
@@ -75,18 +107,18 @@ public class ParentInterface extends Activity {
                 // Metadata now contains the metadata for 'images/forest.jpg'
             }
         });*/
-        FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();//get the unique id of parent
-        final String RegisteredUserID = currentUser.getUid();
-        final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children");
-        databaseref.addValueEventListener(new ValueEventListener() {
+
+        final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children");
+        databaserefChild.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(dataSnapshot.hasChildren()) {
+                if (dataSnapshot.hasChildren()) {
                     if (dataSnapshot.getChildrenCount() != 0) {
                         dbSource.trySetResult(dataSnapshot);
                     }
                 }
             }
+
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 dbSource.setException(databaseError.toException());
@@ -105,7 +137,7 @@ public class ParentInterface extends Activity {
                         childrenNames.add(ds.child("name").getValue(String.class));
                     }
 
-                    if(childrenNames.size() != 0) {
+                    if (childrenNames.size() != 0) {
                         CreateButtons(childrenNames);
                     }
                 }
@@ -114,7 +146,55 @@ public class ParentInterface extends Activity {
         Log.d("Child name", "Child Names: " + childrenNames);
     }
 
+    void CreateNotifChannel() {
+        // The id of the channel.
+        String id = "my_channel_01";
+        // The user-visible name of the channel.
+        CharSequence name = "Channel 1";
+        // The user-visible description of the channel.
+        String description = "Notif channel";
+        int importance = NotificationManager.IMPORTANCE_HIGH;
 
+        mChannel = new NotificationChannel(id, name, importance);
+        // Configure the notification channel.
+        mChannel.setDescription(description);
+        mChannel.enableLights(true);
+        // Sets the notification light color for notifications posted to this
+        // channel, if the device supports this feature.
+        mChannel.setLightColor(Color.BLUE);
+        mChannel.enableVibration(true);
+        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.createNotificationChannel(mChannel);
+    }
+
+    void SentNotif() {
+
+
+        Intent intent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(intent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        String CHANNEL_ID = "my_channel_01";
+        Notification notification = new Notification.Builder(this)
+                //.setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(getString(R.string.app_name))
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.safebuslogo)
+                .setContentText("Çocuk Kaçtı!!")
+                .setChannelId(CHANNEL_ID)
+                .build();
+
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+    }
 
     String GetChildFullName(String childKey) {
         final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey);
@@ -149,39 +229,43 @@ public class ParentInterface extends Activity {
     }
 
 
-    void CreateButtons(List<String> names){
-        Log.d("CHILDRENFULL", "Child Name: " +childrenNames.size() );
-            for (int i = 0 ; i < childrenNames.size() ; i++) {
-                //String childName = GetChildFullName(child.getValue());
+    void CreateButtons(List<String> names) {
+        Log.d("CHILDRENFULL", "Child Name: " + childrenNames.size());
+        for (int i = 0; i < childrenNames.size(); i++) {
+            //String childName = GetChildFullName(child.getValue());
 
-                //Log.d("CHILDREN", "Child Name of each child: " + childrenNames.get(i));
-                Button myButton = new Button(this);
-                myButton.setText(childrenNames.get(i));
-                myButton.setId(i);
-                myButton.setOnClickListener(OnClikChild);
+            //Log.d("CHILDREN", "Child Name of each child: " + childrenNames.get(i));
+            Button myButton = new Button(this);
+            myButton.setText(childrenNames.get(i));
+            myButton.setId(i);
+            myButton.setOnClickListener(OnClikChild);
 
-                LinearLayout ll = (LinearLayout) findViewById(R.id.button_holder);
-                ll.setBackground(getDrawable(R.drawable.border));
-                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-                myButton.setBackground(getDrawable(R.drawable.border));
-                ll.addView(myButton, lp);
+            LinearLayout ll = (LinearLayout) findViewById(R.id.button_holder);
+            ll.setBackground(getDrawable(R.drawable.border));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            myButton.setBackground(getDrawable(R.drawable.border));
+            ll.addView(myButton, lp);
 
-            }
+        }
     }
 
-    View.OnClickListener OnClikChild =  new View.OnClickListener(){
+    View.OnClickListener OnClikChild = new View.OnClickListener() {
 
         @Override
         public void onClick(View view) {
-            Button b = (Button)view;
+            Button b = (Button) view;
             String buttonText = b.getText().toString();
             String childKey = children.get(buttonText);
             GoToMapPage(childKey);
         }
     };
-    void GoToMapPage(String childKey){
+
+    void GoToMapPage(String childKey) {
 
         Intent i = new Intent(this, MapsActivity.class);
+        Intent intent = getIntent();
+        String parentKey = intent.getStringExtra("userKey");
+        i.putExtra("parentKey", parentKey);
         i.putExtra("childKey", childKey);
         startActivity(i);
     }

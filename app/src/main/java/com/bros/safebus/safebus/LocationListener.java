@@ -3,7 +3,11 @@ package com.bros.safebus.safebus;
 import android.Manifest;
 import android.app.Activity;
 import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Context;
@@ -68,6 +72,7 @@ public class LocationListener extends Service {
         super();
     }
 
+    public static final int NOTIFICATION_ID = 555;
 
 
     @Override
@@ -81,7 +86,6 @@ public class LocationListener extends Service {
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
         }
-
 
     }
 

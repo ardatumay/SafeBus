@@ -1,5 +1,9 @@
 package com.bros.safebus.safebus;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,6 +16,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.HashMap;
 import java.util.List;
+
+import static android.provider.Settings.Global.getString;
 
 public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "LUBroadcastReceiver";

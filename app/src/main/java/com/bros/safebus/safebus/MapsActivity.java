@@ -92,6 +92,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
                     LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
                     double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
+
+                    if(distance > 0.1){
+                        String parentKey = GetParentKey();
+                        final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("notify");
+                        databaserefForParentNotif.setValue(true);
+                    }else{
+                        String parentKey = GetParentKey();
+                        final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("notify");
+                        databaserefForParentNotif.setValue(false);
+                    }
                     Log.w("DISTANCE", "DISTANCE" + distance);
                     TextView distanceView = (TextView) findViewById(R.id.distance);
                     distanceView.setText(String.valueOf(distance));
@@ -130,6 +140,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
                                 double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
                                 Log.w("DISTANCE", "DISTANCE" + distance);
+                                if(distance > 0.1){
+                                    String parentKey = GetParentKey();
+                                    final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("notify");
+                                    databaserefForParentNotif.setValue(true);
+                                }else{
+                                    String parentKey = GetParentKey();
+                                    final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("notify");
+                                    databaserefForParentNotif.setValue(false);
+                                }
                                 TextView distanceView = (TextView) findViewById(R.id.distance);
                                 distanceView.setText(String.valueOf(distance)+ "KM");
                                 MarkMap();
@@ -154,6 +173,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+    String GetParentKey(){
+        Intent i = getIntent();
+        String parentKey = i.getStringExtra("parentKey");
+        return parentKey;
+    }
 
     // Add a marker in Sydney and move the camera
         /*LatLng kralCanınEvi = new LatLng(39.892967, 32.855078, 39.892311, 32.854128);
