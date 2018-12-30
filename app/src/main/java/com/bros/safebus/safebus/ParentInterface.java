@@ -79,35 +79,8 @@ public class ParentInterface extends Activity {
         });
         CreateNotifChannel();
 
-
         FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();//get the unique id of parent
         final String RegisteredUserID = currentUser.getUid();
-        final DatabaseReference databaserefNotify = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("notify");
-        databaserefNotify.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if ((boolean) dataSnapshot.getValue()) {
-                    Log.w("notify true", "" + dataSnapshot.getValue());
-                    SentNotif();
-                } else {
-                    Log.w("notify true", "" + dataSnapshot.getValue());
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                dbSource.setException(databaseError.toException());
-            }
-        });
-
-       /* Task task = forestRef.getMetadata();
-        task.addOnSuccessListener(this, new OnSuccessListener() {
-            @Override
-            public void onSuccess(StorageMetadata storageMetadata) {
-                // Metadata now contains the metadata for 'images/forest.jpg'
-            }
-        });*/
-
         final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children");
         databaserefChild.addValueEventListener(new ValueEventListener() {
             @Override
@@ -134,7 +107,37 @@ public class ParentInterface extends Activity {
 
                     for (DataSnapshot ds : result.getChildren()) {
                         children.put(ds.child("name").getValue(String.class), ds.child("key").getValue(String.class));
+                        children.put(ds.child("name").getValue(String.class)+"UpperKey", ds.getKey());
                         childrenNames.add(ds.child("name").getValue(String.class));
+                        Log.w("TAG", "child keyss in parent" + ds.getKey() );
+                        //Listen notify variable of each child so that it can show notifications based on each child
+
+                        final DatabaseReference databaserefNotify = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children").child(ds.getKey()).child("notify");
+                        databaserefNotify.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if ((boolean) dataSnapshot.getValue()) {
+                                    databaserefNotify.getParent().child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            SentNotif(dataSnapshot.getValue(String.class));
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                } else {
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                dbSource.setException(databaseError.toException());
+                            }
+                        });
                     }
 
                     if (childrenNames.size() != 0) {
@@ -168,7 +171,7 @@ public class ParentInterface extends Activity {
         mNotificationManager.createNotificationChannel(mChannel);
     }
 
-    void SentNotif() {
+    void SentNotif(String name) {
 
 
         Intent intent = new Intent(this, MainActivity.class);
@@ -183,7 +186,7 @@ public class ParentInterface extends Activity {
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.safebuslogo)
-                .setContentText("Çocuk Kaçtı!!")
+                .setContentText(name + "is far away from bus")
                 .setChannelId(CHANNEL_ID)
                 .build();
 
@@ -230,7 +233,6 @@ public class ParentInterface extends Activity {
 
 
     void CreateButtons(List<String> names) {
-        Log.d("CHILDRENFULL", "Child Name: " + childrenNames.size());
         for (int i = 0; i < childrenNames.size(); i++) {
             //String childName = GetChildFullName(child.getValue());
 
@@ -256,7 +258,8 @@ public class ParentInterface extends Activity {
             Button b = (Button) view;
             String buttonText = b.getText().toString();
             String childKey = children.get(buttonText);
-            final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
+            String childUpperKey = children.get(buttonText+"UpperKey");
+            /*final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
             databaseref.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -267,18 +270,19 @@ public class ParentInterface extends Activity {
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     dbSource.setException(databaseError.toException());
                 }
-            });
-            GoToMapPage(childKey);
+            });*/
+            GoToMapPage(childKey, childUpperKey);
         }
     };
 
-    void GoToMapPage(String childKey) {
+    void GoToMapPage(String childKey, String childUpperKey) {
 
         Intent i = new Intent(this, MapsActivity.class);
         Intent intent = getIntent();
         String parentKey = intent.getStringExtra("userKey");
         i.putExtra("parentKey", parentKey);
         i.putExtra("childKey", childKey);
+        i.putExtra("childUpperKey", childUpperKey);
         startActivity(i);
     }
 

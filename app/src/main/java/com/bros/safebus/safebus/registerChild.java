@@ -117,6 +117,7 @@ public class registerChild extends Activity {
                                     childForparent.put("key",childrenKey );
                                     String childName = Name + " " + Surname;
                                     childForparent.put("name",childName );
+                                    childForparent.put("notify", childName);
                                     String key = databaseReference.child("parents").child(parentKey).child("children").push().getKey();
                                     databaseReference.child("parents").child(parentKey).child("children").child(key)
                                             .setValue(childForparent);
