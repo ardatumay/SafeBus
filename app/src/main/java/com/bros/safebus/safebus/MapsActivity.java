@@ -78,26 +78,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         /*FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
         final String RegisteredUserID = currentUser.getUid();*/
 
-                final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
-                databaseref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("latitude").getValue(Double.class));
-                        Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
+        final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
+        databaseref.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("latitude").getValue(Double.class));
+                Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
 
-                        LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
-                        listPointsChildLoc.add(ltlng);
+                LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+                listPointsChildLoc.add(ltlng);
                 Log.w("Child loc", "CHILDLOCSIZE" + listPointsChildLoc.size());
-                if(listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0){
+                if (listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0) {
                     LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
                     LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
                     double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
 
-                    if(distance > 0.1){
+                    if (distance > 0.1) {
                         String parentKey = GetParentKey();
                         final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("notify");
                         databaserefForParentNotif.setValue(true);
-                    }else{
+                    } else {
                         String parentKey = GetParentKey();
                         final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("notify");
                         databaserefForParentNotif.setValue(false);
@@ -135,22 +135,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             listPointsDriverLoc.add(ltlng);
                             Log.w("Child loc", "DRIVERLOCSIZE" + listPointsDriverLoc.size());
 
-                            if(listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0){
+                            if (listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0) {
                                 LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
                                 LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
                                 double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
                                 Log.w("DISTANCE", "DISTANCE" + distance);
-                                if(distance > 0.1){
+                                if (distance > 0.1) {
                                     String parentKey = GetParentKey();
                                     final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("notify");
                                     databaserefForParentNotif.setValue(true);
-                                }else{
+                                } else {
                                     String parentKey = GetParentKey();
                                     final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("notify");
                                     databaserefForParentNotif.setValue(false);
                                 }
                                 TextView distanceView = (TextView) findViewById(R.id.distance);
-                                distanceView.setText(String.valueOf(distance)+ "KM");
+                                distanceView.setText(String.valueOf(distance) + "KM");
                                 MarkMap();
 
                             }
@@ -173,7 +173,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    String GetParentKey(){
+    String GetParentKey() {
         Intent i = getIntent();
         String parentKey = i.getStringExtra("parentKey");
         return parentKey;
@@ -189,23 +189,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         .title("king")
         );*/
 
-        public void MarkMap(){
-            mMap.clear();
-            if(listPointsChildLoc.size() >= 1){
-                LatLng childrenLocation = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
-                MarkerOptions markerOptionsChild = new MarkerOptions();
-                markerOptionsChild.position(childrenLocation);
-                markerOptionsChild.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                mMap.addMarker(markerOptionsChild);
-            }
-            if(listPointsDriverLoc.size() >= 1){
-                LatLng driverLocation = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
-                MarkerOptions markerOptionsDriver = new MarkerOptions();
-                markerOptionsDriver.position(driverLocation);
-                markerOptionsDriver.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                mMap.addMarker(markerOptionsDriver);
-            }
+    public void MarkMap() {
+        mMap.clear();
+        if (listPointsChildLoc.size() >= 1) {
+            LatLng childrenLocation = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
+            MarkerOptions markerOptionsChild = new MarkerOptions();
+            markerOptionsChild.position(childrenLocation);
+            markerOptionsChild.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            mMap.addMarker(markerOptionsChild);
         }
+        if (listPointsDriverLoc.size() >= 1) {
+            LatLng driverLocation = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
+            MarkerOptions markerOptionsDriver = new MarkerOptions();
+            markerOptionsDriver.position(driverLocation);
+            markerOptionsDriver.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            mMap.addMarker(markerOptionsDriver);
+        }
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -224,7 +224,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         2) location değiştiğinde bunu anlaması için call methodu yarat
         3) Değişimi anladığında location arası noktaların arasını google servisi kullanarak bağla
          */
-
 
 
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
@@ -403,21 +402,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
     }
+
     public double CalculationByDistance(double initialLat, double initialLong,
-                                        double finalLat, double finalLong){
+                                        double finalLat, double finalLong) {
         int R = 6371; // km (Earth radius)
-        double dLat = toRadians(finalLat-initialLat);
-        double dLon = toRadians(finalLong-initialLong);
+        double dLat = toRadians(finalLat - initialLat);
+        double dLon = toRadians(finalLong - initialLong);
         initialLat = toRadians(initialLat);
         finalLat = toRadians(finalLat);
 
-        double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(initialLat) * Math.cos(finalLat);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(initialLat) * Math.cos(finalLat);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
     }
 
     public double toRadians(double deg) {
-        return deg * (Math.PI/180);
+        return deg * (Math.PI / 180);
     }
 }

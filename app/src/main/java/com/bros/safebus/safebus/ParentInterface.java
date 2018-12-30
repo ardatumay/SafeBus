@@ -256,6 +256,18 @@ public class ParentInterface extends Activity {
             Button b = (Button) view;
             String buttonText = b.getText().toString();
             String childKey = children.get(buttonText);
+            final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
+            databaseref.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.w("DRIVER KEY" , "KEY: "+dataSnapshot.getValue(String.class));
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    dbSource.setException(databaseError.toException());
+                }
+            });
             GoToMapPage(childKey);
         }
     };
