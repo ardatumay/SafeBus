@@ -116,16 +116,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         databaserefForDriverPathlist.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
+                                int i = 0;
                                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                                    int i = 1;
-                                    LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
+                                    LatLng point = new LatLng(dataSnapshot.child(String.valueOf(i)).child("latitude").getValue(Double.class), dataSnapshot.child(String.valueOf(i)).child("longitude").getValue(Double.class));
+
+                                   // LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
+                                    Log.v("pointList", "pointlists" + point.toString());
+
+
                                     //Use the dataType you are using and also use the reference of those childs inside arrays\\
 
                                     // Putting Data into Getter Setter \\
 
                                     listPoints.add(point);
-                                    Log.v("pointList", listPoints.toString());
-
+                                    Log.v("pointList", "pointlists" + listPoints.toString());
+                                    i++;
                                 }
                             }
 
