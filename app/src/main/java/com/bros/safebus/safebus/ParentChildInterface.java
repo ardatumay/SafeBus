@@ -70,6 +70,7 @@ public class ParentChildInterface extends Activity {
     void GoToMapPage(String childKey, String childUpperKey, String parentKey, boolean marksHome, boolean marksSchool) {
 
         Intent i = new Intent(this, MapsActivity.class);
+        i.putExtra("driverControl", false);
         i.putExtra("parentMarksMapSchool", marksSchool);
         i.putExtra("parentMarksMapHome", marksHome);
         i.putExtra("parentKey", parentKey);

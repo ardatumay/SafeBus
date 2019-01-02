@@ -63,6 +63,7 @@ public class DriverInterface extends Activity {
     private GeofencingClient mGeofencingClient;
     String DriverKey;
     ArrayList<LatLng> listPoints;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +91,6 @@ public class DriverInterface extends Activity {
         });
         //Get the driver key from intent
         DriverKey = getIntent().getStringExtra("userKey");
-        Log.v("DriverKeyDI", DriverKey);
 
         //bussiness logic variables
         /*mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
@@ -291,7 +291,7 @@ public class DriverInterface extends Activity {
             public void onClick(View view) {
                 Intent intent = new Intent(DriverInterface.this, MapsActivity.class);
                 intent.putExtra("driverControl", true);
-                intent.putExtra("DriverKey",DriverKey);
+                intent.putExtra("driverKey",DriverKey);
                 startActivity(intent);
             }
         });
