@@ -20,6 +20,7 @@
         tools:context=".MapsActivity"
         android:layout_below="@+id/distance"/>
 
+
     <Button
         android:id="@+id/submit"
         android:text="Submit"
@@ -28,6 +29,13 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"/>
 
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:id="@+id/button_holder"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+    </LinearLayout>
 
 </RelativeLayout>
 

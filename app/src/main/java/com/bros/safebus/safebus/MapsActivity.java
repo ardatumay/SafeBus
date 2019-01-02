@@ -1,4 +1,15 @@
-package com.bros.safebus.safebus;
+while(true){
+    if(!isDoorClosed()){
+        PleaseCloseDoor()
+        if(dontClose()){
+            System.out.println("Keep the fu..n door closed");
+            continue;    
+        }
+    }
+    if (isDoorClosed()){
+            System.out.println("Thank you");
+    }
+}package com.bros.safebus.safebus;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -15,6 +26,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,8 +80,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng homeAddress;
     LatLng schoolAddress;
 
+    private static boolean driverControl = false;
+    String DriverKey;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -77,7 +94,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         listPoints = new ArrayList<>();
         listPointsChildLoc = new ArrayList<>();
-        listPointsDriverLoc = new ArrayList<>();
+         listPointsDriverLoc = new ArrayList<>();
         //Make both distance view and submit button invisible and make each one visible depending on user mode, e.g. showing location of student and service or marking school address
         distanceView = (TextView) findViewById(R.id.distance);
         distanceView.setVisibility(View.INVISIBLE);
@@ -92,6 +109,41 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         String childKey = GetChildKey();
         Log.w("CHILD KEY", "CHILDKEY" + childKey);
+
+        listPoints = new ArrayList<>();
+        Intent i = getIntent();
+        driverControl = i.getBooleanExtra("", false);
+        DriverKey= i.getStringExtra("DriverKey");
+		Log.v("DriverKey",DriverKey);
+
+if(driverControl==false){
+            
+//Get route from the DB
+    final DatabaseReference pathList = FirebaseDatabase.getInstance().getReference().child("driver").child(DriverKey).child("pathList");
+    pathList.addValueEventListener(new ValueEventListener() {
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+
+for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+            int i=1;
+                LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
+                //Use the dataType you are using and also use the reference of those childs inside arrays\\
+
+           // Putting Data into Getter Setter \\
+
+                listPoints.add(point);
+                Log.v("pointList",listPoints.toString());
+
+            }
+        }
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+        }
+    });
+
+}
+
 
         Intent i = getIntent();
         parentMarksMapHome = i.getBooleanExtra("parentMarksMapHome", false);
@@ -136,9 +188,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         MarkMap();
 
                     }
-
-                }
-
+   
+                }    		
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
@@ -200,12 +251,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-
+    
         } else {
             Log.w("parent", "parent marks map");
             submit.setVisibility(View.VISIBLE);
         }
+    
     }
+
+
+
+
+
 
     String GetChildContainerKey() {
         Intent i = getIntent();
@@ -217,6 +274,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent i = getIntent();
         String parentKey = i.getStringExtra("parentKey");
         return parentKey;
+
     }
 
     String GetChildKey() {
@@ -271,17 +329,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
          */
 
 
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            LatLng getlast;
-            int i = 0;
+if( driverControl==true){
 
-            @Override
-            public void onMapLongClick(LatLng latLng) {
-                //Reset marker when already 2
-            /*   if (listPoints.size() == 2) {
-                    listPoints.clear();
-                    mMap.clear();
-                }*/
+    CreateButton("Add Path");
+
+
+    mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+        LatLng getlast;
+        int i = 0;
+
+        @Override
+        public void onMapLongClick(LatLng latLng) {
+
+
+
                 mMap.clear();
                 //Save first point select
                 if (parentMarksMapHome && !parentMarksMapSchool) {
@@ -299,32 +360,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mMap.addMarker(markerOptions);
                     schoolAddress = latLng;
                 }
-               // listPoints.add(latLng);
-                //Create marker
-                /*MarkerOptions markerOptions = new MarkerOptions();
-                markerOptions.position(latLng);
 
-                if (listPoints.size() == 1) {
-                    //Add first marker to the map
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                } else {
-                    //Add second marker to the map
-                    markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                }
-                mMap.addMarker(markerOptions);
 
-                if (listPoints.size() >= 2) {
-                    //Create the URL to get request from first marker to second marker
-                    String url = getRequestUrl(listPoints.get(i), listPoints.get(i + 1));
-                    i++;
-                    TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
-                    taskRequestDirections.execute(url);
-                }*/
+
+
+
+            //Save first point select
+            listPoints.add(latLng);
+            //Create marker
+            MarkerOptions markerOptions = new MarkerOptions();
+            markerOptions.position(latLng);
+            //Add first marker to the map
+            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+            mMap.addMarker(markerOptions);
+
+            if (listPoints.size() >= 2) {
+                //Create the URL to get request from first marker to second marker
+                String url = getRequestUrl(listPoints.get(i), listPoints.get(i + 1));
+                i++;
+                TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
+                taskRequestDirections.execute(url);
             }
-        });
+        }
+    });
+}
+}
 
+    void CreateButton(String name){
+        Log.d("Button", "Add Button " + name );
+            int i = 0;
+            Button myButton = new Button(this);
+            myButton.setText(name);
+            myButton.setId(i);
+            myButton.setOnClickListener(addPath);
+            LinearLayout ll = (LinearLayout) findViewById(R.id.button_holder);
+            ll.setBackground(getDrawable(R.drawable.border));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            myButton.setBackground(getDrawable(R.drawable.border));
+            ll.addView(myButton, lp);
+        }
+
+        View.OnClickListener addPath =  new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent goMain = new Intent(MapsActivity.this, DriverInterface.class);
+                goMain.putParcelableArrayListExtra("pathList", listPoints);
+                Log.v("ListPath", listPoints.toString());
+                goMain.putExtra("userKey", DriverKey);
+                startActivity(goMain);
+            }
+        };
+
+    private void cleanMarkers(){
+
+        if (listPoints.size() == 2) {
+            listPoints.clear();
+            mMap.clear();
+        }
     }
-
     private String getRequestUrl(LatLng origin, LatLng dest) {
         //Value of origin
         String str_org = "origin=" + origin.latitude + "," + origin.longitude;
@@ -334,7 +427,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         String sensor = "sensor=false";
         //Mode for find direction
         String mode = "mode=driving";
-        //key for access
+        //key for accesspathString
         String key = "key=AIzaSyAaap7ntmwelL70dRB-rrsHbrLuAgeG4_8";
 
         String param = str_org + "&" + str_dest + "&" + sensor + "&" + mode + "&" + key;

@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.bros.safebus.safebus.models.Driver;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
@@ -46,6 +47,7 @@ public class ParentInterface extends Activity {
     public static int NOTIFICATION_ID = 3131;
     NotificationManager mNotificationManager;
     NotificationChannel mChannel;
+    String DriverKey;
 
     TaskCompletionSource<DataSnapshot> dbSource = new TaskCompletionSource<>();
     Task dbTask = dbSource.getTask();
@@ -231,6 +233,25 @@ public class ParentInterface extends Activity {
 
     }
 
+    public void GetDriverKey(String childKey){
+        final DatabaseReference databaseKey = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
+        databaseKey.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                DriverKey = dataSnapshot.getValue(String.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+        Log.v("DriverKeyyy",DriverKey);
+
+
+    }
 
     void CreateButtons(List<String> names) {
         for (int i = 0; i < childrenNames.size(); i++) {
