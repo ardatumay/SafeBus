@@ -8,6 +8,7 @@ public class Child {
     private String name;
     private String surname;
     private String schoolAddress;
+    private  String homeAddress;
     private long phone;
     private String parentKey;
     private String email;
@@ -41,7 +42,7 @@ public class Child {
         this.lastKnownLocation = lastKnownLocation;
     }
 
-    public Child(String name, String surname, String email, String password, String schoolAddress, long phone, String key, String parentKey, String type, boolean trackLocation) {// for register page. only includes register page variables
+    public Child(String name, String surname, String email, String password, String schoolAddress, long phone, String key, String parentKey, String type, boolean trackLocation, String homeAddress) {// for register page. only includes register page variables
         this.name = name;
         this.surname = surname;
         this.schoolAddress = schoolAddress;
@@ -52,6 +53,7 @@ public class Child {
         this.type = type;
         this.parentKey = parentKey;
         this.trackLocation = trackLocation;
+        this.homeAddress = homeAddress;
     }
 
 

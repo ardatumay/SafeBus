@@ -39,6 +39,7 @@
         <activity android:name=".ChildrenInterface" />
         <activity android:name=".registerChild" />
         <activity android:name=".ParentMap" />
+        <activity android:name=".ParentChildInterface" />
 
         <service
             android:name=".LocationListener"

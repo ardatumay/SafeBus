@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/see_the_map"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="See the map" />
+
+    <Button
+        android:id="@+id/add_home_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add home address" />
+
+    <Button
+        android:id="@+id/add_school_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add school adress" />
+
+    <Button
+        android:id="@+id/stop_location_tracking"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Stop location tracking" />
+
+</LinearLayout>

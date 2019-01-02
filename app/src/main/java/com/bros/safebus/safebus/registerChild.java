@@ -52,7 +52,6 @@ public class registerChild extends Activity {
         final TextView name = (TextView) findViewById(R.id.name);
         final TextView surname = (TextView) findViewById(R.id.surname);
         final TextView password = (TextView) findViewById(R.id.password);
-        final TextView schoolAddress = (TextView) findViewById(R.id.school_Address);
         final TextView phoneNumber = (TextView) findViewById(R.id.phone_Number);
 
         Button register = (Button) findViewById(R.id.registerChild);
@@ -62,7 +61,6 @@ public class registerChild extends Activity {
 
                 final String email_Address = email.getText().toString();
                 final String pass = password.getText().toString();
-                final String Address = schoolAddress.getText().toString();
                 final long phone = Long.parseLong(phoneNumber.getText().toString());
                 final String Name = name.getText().toString();
                 final String Surname = surname.getText().toString();
@@ -81,10 +79,6 @@ public class registerChild extends Activity {
                 }
                 if (TextUtils.isEmpty(Surname)) {
                     Toast.makeText(registerChild.this, "Enter surname!", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                if (TextUtils.isEmpty(Address)) {
-                    Toast.makeText(registerChild.this, "Enter school address!", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 if (phone == 0) {
@@ -109,7 +103,9 @@ public class registerChild extends Activity {
                                     databaseReference = firebaseDatabase.getReference();
                                     String childrenKey = firebaseAuth.getCurrentUser().getUid();
                                     boolean trackLocation = true;
-                                    final Child newChild = new Child(Name, Surname, email_Address, pass, Address, phone, childrenKey, parentKey ,type, trackLocation);
+                                    String homeAddress = "some adsress";
+                                    String schoolAddress= "some adsress";
+                                    final Child newChild = new Child(Name, Surname, email_Address, pass, schoolAddress, phone, childrenKey, parentKey ,type, trackLocation, homeAddress);
                                     databaseReference.child("children").child(childrenKey)
                                             .setValue(newChild);
                                     //set value for parent

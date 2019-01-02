@@ -194,6 +194,9 @@ public class MainActivity extends AppCompatActivity {
 
 
                             });
+                        }else{
+                            Toast.makeText(MainActivity.this, "Failed Login. Please Try Again", Toast.LENGTH_SHORT).show();
+                            return;
                         }
                     }
                 });

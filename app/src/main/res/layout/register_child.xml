@@ -35,7 +35,7 @@
         android:inputType="text"
         android:ems="10"
         android:layout_below="@+id/password"
-        android:hint="Enter Your Name"
+        android:hint="Enter Name"
         android:autofillHints="" />
 
     <EditText
@@ -45,7 +45,7 @@
         android:inputType="text"
         android:ems="10"
         android:layout_below="@+id/name"
-        android:hint="Enter Your Surname"
+        android:hint="Enter Surname"
         android:autofillHints="" />
     <EditText
         android:id="@+id/phone_Number"
@@ -54,24 +54,16 @@
         android:inputType="number"
         android:ems="10"
         android:layout_below="@+id/surname"
-        android:hint="Enter Your Phone Number"
+        android:hint="Enter Phone Number"
         android:autofillHints="" />
-    <EditText
-        android:id="@+id/school_Address"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text"
-        android:ems="10"
-        android:layout_below="@+id/phone_Number"
-        android:hint="Enter school address"
-        android:autofillHints="" />
+
 
     <Button
         android:id="@+id/registerChild"
-        android:text="Register"
+        android:text="Register Child"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/school_Address"
+        android:layout_below="@+id/phone_Number"
         android:layout_alignStart="@+id/phone_Number"
         android:layout_margin="3dp"
         android:background="@drawable/border"

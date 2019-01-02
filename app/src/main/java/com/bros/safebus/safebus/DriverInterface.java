@@ -173,7 +173,12 @@ public class DriverInterface extends Activity {
             @Override
             public void onClick(View view) {
                 EditText childMail = (EditText) findViewById(R.id.child_email);
-                AddChildToDriver(childMail.getText().toString());
+                if (childMail.getText().toString().length() == 0){
+                    Toast.makeText(DriverInterface.this, "Please enter a valid input.", Toast.LENGTH_SHORT).show();
+                    return;
+                }else{
+                    AddChildToDriver(childMail.getText().toString());
+                }
 
               /* if(!clicked){
                    EditText childMail =(EditText) findViewById(R.id.child_email);
@@ -321,13 +326,13 @@ public class DriverInterface extends Activity {
                     dbSource.setResult(dataSnapshot);
                 }else {
                     Toast.makeText(DriverInterface.this, "Child not found.", Toast.LENGTH_SHORT).show();
-
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 dbSource.setException(databaseError.toException());
+                Toast.makeText(DriverInterface.this, "Child not found.", Toast.LENGTH_SHORT).show();
             }
         });
 

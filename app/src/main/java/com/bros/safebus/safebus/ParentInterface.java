@@ -271,13 +271,12 @@ public class ParentInterface extends Activity {
                     dbSource.setException(databaseError.toException());
                 }
             });*/
-            GoToMapPage(childKey, childUpperKey);
+            GoToChildInterface(childKey, childUpperKey);
         }
     };
 
-    void GoToMapPage(String childKey, String childUpperKey) {
-
-        Intent i = new Intent(this, MapsActivity.class);
+    void GoToChildInterface(String childKey, String childUpperKey){
+        Intent i = new Intent(this, ParentChildInterface.class);
         Intent intent = getIntent();
         String parentKey = intent.getStringExtra("userKey");
         i.putExtra("parentKey", parentKey);
@@ -285,6 +284,7 @@ public class ParentInterface extends Activity {
         i.putExtra("childUpperKey", childUpperKey);
         startActivity(i);
     }
+
 
     void GoToChildrenRegister() {
         Intent intent = getIntent();
