@@ -101,10 +101,47 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         listPoints = new ArrayList<>();
         driverControl = GetDriverControl();
-        DriverKey = GetDriverKey();
-        Log.v("DriverKey", DriverKey);
+        //DriverKey = GetDriverKey();
+//        Log.v("DriverKey", DriverKey);
 
         if (driverControl == false) {
+            final DatabaseReference databaserefForDriver = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
+            databaserefForDriver.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    Log.w("Driver key", "DRIVERKEY" + dataSnapshot.toString());
+                    if (dataSnapshot.getValue() != null) {
+                        final String driverKey = (String) dataSnapshot.getValue();
+                        final DatabaseReference databaserefForDriverPathlist = FirebaseDatabase.getInstance().getReference().child("drivers").child(driverKey).child("pathList");
+                        databaserefForDriverPathlist.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                                    int i = 1;
+                                    LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
+                                    //Use the dataType you are using and also use the reference of those childs inside arrays\\
+
+                                    // Putting Data into Getter Setter \\
+
+                                    listPoints.add(point);
+                                    Log.v("pointList", listPoints.toString());
+
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });/*
             //Get route from the DB
             final DatabaseReference pathList = FirebaseDatabase.getInstance().getReference().child("driver").child(DriverKey).child("pathList");
             pathList.addValueEventListener(new ValueEventListener() {
@@ -128,7 +165,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 }
             });
-
+*/
             Intent incomingIntent = getIntent();
             parentMarksMapHome = incomingIntent.getBooleanExtra("parentMarksMapHome", false);
             parentMarksMapSchool = incomingIntent.getBooleanExtra("parentMarksMapSchool", false);
@@ -183,7 +220,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
 
-                final DatabaseReference databaserefForDriver = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
                 databaserefForDriver.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -320,6 +356,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             LatLng getlast;
             int i = 0;
+
             @Override
             public void onMapLongClick(LatLng latLng) {
 
