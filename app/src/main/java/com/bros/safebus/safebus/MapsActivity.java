@@ -116,11 +116,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         databaserefForDriverPathlist.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                int i = 0;
+                                int i = 0,  num=0;
+
                                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                                     LatLng point = new LatLng(dataSnapshot.child(String.valueOf(i)).child("latitude").getValue(Double.class), dataSnapshot.child(String.valueOf(i)).child("longitude").getValue(Double.class));
 
-                                   // LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
+                                    //LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
                                     Log.v("pointList", "pointlists" + point.toString());
 
 
@@ -130,6 +131,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                     listPoints.add(point);
                                     Log.v("pointList", "pointlists" + listPoints.toString());
+
+                                    if(i>=1){
+                                        String url = getRequestUrl(listPoints.get(num), listPoints.get(num + 1));
+                                        TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
+                                        taskRequestDirections.execute(url);
+                                        num++;
+                                    }
                                     i++;
                                 }
                             }
@@ -146,31 +154,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 public void onCancelled(@NonNull DatabaseError databaseError) {
 
                 }
-            });/*
-            //Get route from the DB
-            final DatabaseReference pathList = FirebaseDatabase.getInstance().getReference().child("driver").child(DriverKey).child("pathList");
-            pathList.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        int i = 1;
-                        LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
-                        //Use the dataType you are using and also use the reference of those childs inside arrays\\
-
-                        // Putting Data into Getter Setter \\
-
-                        listPoints.add(point);
-                        Log.v("pointList", listPoints.toString());
-
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
             });
-*/
+
+
+
             Intent incomingIntent = getIntent();
             parentMarksMapHome = incomingIntent.getBooleanExtra("parentMarksMapHome", false);
             parentMarksMapSchool = incomingIntent.getBooleanExtra("parentMarksMapSchool", false);
@@ -284,7 +271,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.w("parent", "parent marks map");
                 submit.setVisibility(View.VISIBLE);
             }
-        }
+        } /*else{
+
+            //Get route from the DB
+            final DatabaseReference pathList = FirebaseDatabase.getInstance().getReference().child("driver").child(DriverKey).child("pathList");
+            pathList.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        int i = 1;
+                        LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
+                        //Use the dataType you are using and also use the reference of those childs inside arrays\\
+
+                        // Putting Data into Getter Setter \\
+
+                        listPoints.add(point);
+                        Log.v("pointList", listPoints.toString());
+
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+        }*/
     }
 
 
@@ -361,13 +373,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             LatLng getlast;
             int i = 0;
-
+            boolean create=true;
             @Override
             public void onMapLongClick(LatLng latLng) {
 
 
                 if (driverControl == true) {
-                    CreateButton("Add Path");
+                    if(create){
+                        CreateButton("Add Path");
+                        create=false;
+                    }
                     //Save first point select
                     listPoints.add(latLng);
                     //Create marker
@@ -424,11 +439,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     View.OnClickListener addPath = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            Intent goMain = new Intent(MapsActivity.this, DriverInterface.class);
-            goMain.putParcelableArrayListExtra("pathList", listPoints);
-            Log.v("ListPath", listPoints.toString());
-            goMain.putExtra("userKey", DriverKey);
-            startActivity(goMain);
+            if(listPoints.size()<2){
+                Toast.makeText(getApplicationContext(), "You need to choose 2 point", Toast.LENGTH_SHORT).show();
+            }else{
+                FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();//get the unique id of parent
+                final String RegisteredUserID = currentUser.getUid();
+                Intent goMain = new Intent(MapsActivity.this, DriverInterface.class);
+                goMain.putParcelableArrayListExtra("pathList", listPoints);
+                Log.v("ListPath", listPoints.toString());
+                goMain.putExtra("userKey", RegisteredUserID);
+                Log.v("ListPath", RegisteredUserID);
+                startActivity(goMain);
+            }
         }
     };
 
@@ -609,6 +631,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(GetChildKey()).child("homeAddress");
             databaseref.setValue(locationDetails);
+                //Success toast
+                Toast.makeText(getApplicationContext(), "Home Submited", Toast.LENGTH_SHORT).show();
+
         } else if (parentMarksMapSchool) {
             HashMap<String, Double> locationDetails = new HashMap<String, Double>();
 
@@ -620,6 +645,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(GetChildKey()).child("schoolAddress");
             databaseref.setValue(locationDetails);
+                //Success toast
+                Toast.makeText(getApplicationContext(), "School Submited", Toast.LENGTH_SHORT).show();
+
         }
     }
 }
