@@ -21,6 +21,7 @@ import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -286,6 +287,7 @@ public class DriverInterface extends Activity {
         });
 
         Button addRoute = (Button) findViewById(R.id.add_route);
+
         addRoute.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
