@@ -510,23 +510,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.clear();
         }
     }
-    LatLng point = null;
-    String cName = null;
-    private void getHomeTag(){
 
+    LatLng point = null;
+
+    private void getHomeTag(){
         final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
         databaserefChild.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     if(postSnapshot.child("name").exists()&&postSnapshot.child("homeAddress").hasChildren()){
-                        cName= postSnapshot.child("name").getValue(String.class);
-
+                        String cName= postSnapshot.child("name").getValue(String.class);
+                        int cPhone= postSnapshot.child("phone").getValue(int.class);
+                        String cSurname = postSnapshot.child("surname").getValue(String.class);
                         if(postSnapshot.child("homeAddress").child("latitude").exists()&&postSnapshot.child("homeAddress").child("longitude").exists()){
                             point = new LatLng(postSnapshot.child("homeAddress").child("latitude").getValue(Double.class), postSnapshot.child("homeAddress").child("longitude").getValue(Double.class));
                             mMap.addMarker(new MarkerOptions()
                                     .position(point)
-                                    .title("name:" + cName)
+                                    .title("name:" + cName + " " + cSurname)
+                                    .snippet("Child Phone: " + cPhone)
                                     .icon(BitmapDescriptorFactory.fromResource(R.raw.hometag)));
                         }
                     }else{
@@ -539,8 +541,34 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                         }
                     });
+    }
+    private void getSchoolTag(){
+        final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
+        databaserefChild.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if(postSnapshot.child("schoolName").exists()&&postSnapshot.child("schoolAddress").hasChildren()){
+                        String sName= postSnapshot.child("schoolName").getValue(String.class);
+                       // String sAddress = postSnapshot.child("schoolAddress").getValue(String.class);
+                        if(postSnapshot.child("schoolAddress").child("latitude").exists()&&postSnapshot.child("schoolAddress").child("longitude").exists()){
+                            point = new LatLng(postSnapshot.child("schoolAddress").child("latitude").getValue(Double.class), postSnapshot.child("schoolAddress").child("longitude").getValue(Double.class));
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(point)
+                                    .title("School Name:" + sName)
+                       //             .snippet("School Address" + sAddress)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.raw.schooltag)));
+                        }
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Add school informations!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-
+            }
+        });
     }
     private String getRequestUrl(LatLng origin, LatLng dest) {
         //Value of origin
