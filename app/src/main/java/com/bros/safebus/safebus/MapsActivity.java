@@ -2,6 +2,8 @@ package com.bros.safebus.safebus;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -30,6 +32,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -329,6 +332,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
@@ -365,10 +369,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Save first point select
                     listPoints.add(latLng);
                     //Create marker
+
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(latLng);
+
+                    markerOptions.title("name:");
+                    markerOptions.snippet("no2: 12312312 mV");
                     //Add first marker to the map
                     mMap.addMarker(markerOptions);
+
 
                     if (listPoints.size() >= 2) {
                         //Create the URL to get request from first marker to second marker
@@ -376,6 +385,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
                         taskRequestDirections.execute(url);
                     }
+
+
                 } else if (driverControl == false) {
                     mMap.clear();
                     //Save first point select
@@ -395,6 +406,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         schoolAddress = latLng;
                     }
                 }
+            }
+        });
+        // Do other setup activities here too, as described elsewhere in this tutorial.
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                // Inflate the layouts for the info window, title and snippet.
+                View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_contents, null);
+
+                TextView title = ((TextView) infoWindow.findViewById(R.id.title));
+                title.setText(marker.getTitle());
+
+                TextView snippet = ((TextView) infoWindow.findViewById(R.id.snippet));
+                snippet.setText(marker.getSnippet());
+
+                return infoWindow;
             }
         });
     }

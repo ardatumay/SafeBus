@@ -8,24 +8,32 @@
         android:id="@+id/see_the_map"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="See the map" />
+        android:text="See the map"
+        android:background="@drawable/border"
+        android:layout_margin="5dp"/>
 
     <Button
         android:id="@+id/add_home_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add home address" />
+        android:text="Add home address"
+        android:background="@drawable/border"
+        android:layout_margin="5dp"/>
 
     <Button
         android:id="@+id/add_school_address"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add school adress" />
+        android:text="Add school adress"
+        android:background="@drawable/border"
+        android:layout_margin="5dp"/>
 
     <Button
         android:id="@+id/stop_location_tracking"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Stop location tracking" />
+        android:text="Stop location tracking"
+        android:background="@drawable/border"
+        android:layout_margin="5dp"/>
 
 </LinearLayout>
