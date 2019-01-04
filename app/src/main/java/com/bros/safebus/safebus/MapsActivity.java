@@ -60,6 +60,7 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+
     private static final int LOCATION_REQUEST = 500;
     ArrayList<LatLng> listPoints;
     ArrayList<LatLng> listPointsChildLoc;
@@ -75,6 +76,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng homeAddress;
     LatLng schoolAddress;
     private int buttonId=0;
+    List<Marker> markerList;
     private static boolean driverControl = false;
     String DriverKey;
 
@@ -87,6 +89,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        markerList = new ArrayList<Marker>();
         listPoints = new ArrayList<>();
         listPointsChildLoc = new ArrayList<>();
         listPointsDriverLoc = new ArrayList<>();
@@ -326,7 +329,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -363,11 +365,21 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     listPoints.add(latLng);
                     //Create marker
 
-                    mMap.addMarker(new MarkerOptions()
+
+
+                    markerList.add(  mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            //.title("name:")
+                            //.snippet("no2: 12312312 mV")
+                            .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag))
+                    ));
+
+                   /* mMap.addMarker(new MarkerOptions()
                             .position(latLng)
                             //.title("name:")
                             //.snippet("no2: 12312312 mV")
                             .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag)));
+*/
 
 
 
@@ -444,6 +456,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (listPoints.size() > 1) {
                 mMap.clear();
+                getHomeTag();
             MarkerOptions markerOptions = new MarkerOptions();
             listPoints.remove(listPoints.size()-1);
             for (int i=0;i<listPoints.size()-1;i++){
@@ -469,6 +482,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onClick(View view) {
             mMap.clear();
             listPoints.clear();
+            getHomeTag();
         }
     };
 
