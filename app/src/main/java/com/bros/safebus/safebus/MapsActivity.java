@@ -126,18 +126,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                                     LatLng point = new LatLng(dataSnapshot.child(String.valueOf(i)).child("latitude").getValue(Double.class), dataSnapshot.child(String.valueOf(i)).child("longitude").getValue(Double.class));
-
-                                    //LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
-                                    Log.v("pointList", "pointlists" + point.toString());
-
-
                                     //Use the dataType you are using and also use the reference of those childs inside arrays\\
-
-                                    // Putting Data into Getter Setter \\
-
                                     listPoints.add(point);
                                     Log.v("pointList", "pointlists" + listPoints.toString());
-
                                     if(i>=1){
                                         String url = getRequestUrl(listPoints.get(num), listPoints.get(num + 1));
                                         TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
@@ -350,11 +341,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         2) location değiştiğinde bunu anlaması için call methodu yarat
         3) Değişimi anladığında location arası noktaların arasını google servisi kullanarak bağla
          */
-
-
+        if (driverControl == true) {
+            getHomeTag();
+        }
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             LatLng getlast;
             boolean create=true;
+
             @Override
             public void onMapLongClick(LatLng latLng) {
 
@@ -370,13 +363,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     listPoints.add(latLng);
                     //Create marker
 
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(latLng);
+                    mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            //.title("name:")
+                            //.snippet("no2: 12312312 mV")
+                            .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag)));
 
-                    markerOptions.title("name:");
-                    markerOptions.snippet("no2: 12312312 mV");
-                    //Add first marker to the map
-                    mMap.addMarker(markerOptions);
 
 
                     if (listPoints.size() >= 2) {
@@ -430,6 +422,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 return infoWindow;
             }
         });
+
+
     }
 
     void CreateButton(String name, View.OnClickListener listener,int icon) {
@@ -454,20 +448,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             listPoints.remove(listPoints.size()-1);
             for (int i=0;i<listPoints.size()-1;i++){
                //Create the URL to get request from first marker to second marker
-                markerOptions.position(listPoints.get(i));
+             //   markerOptions.position(listPoints.get(i));
                 //Add first marker to the map
-                mMap.addMarker(markerOptions);
+              //  mMap.addMarker(markerOptions);
                String url = getRequestUrl(listPoints.get(i+1), listPoints.get(i));
                TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
                taskRequestDirections.execute(url);
             }
-            markerOptions.position(listPoints.get(listPoints.size()-1));
-            //Add first marker to the map
-            mMap.addMarker(markerOptions);
+                mMap.addMarker(new MarkerOptions()
+                .position(listPoints.get(listPoints.size()-1))
+                .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag)));
            }else{
             Toast.makeText(getApplicationContext(), "You need to choose first!", Toast.LENGTH_SHORT).show();
         }
-
        }
     };
 
@@ -503,7 +496,38 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.clear();
         }
     }
+    LatLng point = null;
+    String cName = null;
+    private void getHomeTag(){
 
+        final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
+        databaserefChild.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if(postSnapshot.child("name").exists()&&postSnapshot.child("homeAddress").hasChildren()){
+                        cName= postSnapshot.child("name").getValue(String.class);
+
+                        if(postSnapshot.child("homeAddress").child("latitude").exists()&&postSnapshot.child("homeAddress").child("longitude").exists()){
+                            point = new LatLng(postSnapshot.child("homeAddress").child("latitude").getValue(Double.class), postSnapshot.child("homeAddress").child("longitude").getValue(Double.class));
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(point)
+                                    .title("name:" + cName)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.raw.hometag)));
+                        }
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Add Child informations!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+
+
+    }
     private String getRequestUrl(LatLng origin, LatLng dest) {
         //Value of origin
         String str_org = "origin=" + origin.latitude + "," + origin.longitude;

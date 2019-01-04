@@ -3,18 +3,21 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layoutDirection="locale"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#ffffff">
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:textColor="#ff000000"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:background="#ffffff"/>
 
     <TextView
         android:id="@+id/snippet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#ff7f7f7f" />
+        android:textColor="#ff7f7f7f"
+        android:background="#ffffff"/>
 </LinearLayout>
