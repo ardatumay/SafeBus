@@ -73,15 +73,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     TextView distanceView, serviceSpeedInput;
     Button submit;
     //variables for parent to mark home and school address on the map
-    Boolean parentMarksMapSchool;
-    Boolean parentMarksMapHome;
-    LatLng homeAddress;
-    LatLng schoolAddress;
+    Boolean parentMarksMapSchool,parentMarksMapHome;
+    LatLng homeAddress,schoolAddress;
     private int buttonId = 0;
     private static boolean driverControl = false;
     String childKey;
     boolean trackChildLoc;
-    ArrayList<Marker> markerList;
+    Marker HomeMarker, SchoolMarker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,7 +91,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        markerList = new ArrayList<Marker>();
         listPoints = new ArrayList<>();
         listPointsChildLoc = new ArrayList<>();
         listPointsDriverLoc = new ArrayList<>();
@@ -467,6 +465,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -484,10 +483,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (driverControl == true) {
             getHomeTag();
         }
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            LatLng getlast;
-            boolean create = true;
 
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            boolean create = true;
             @Override
             public void onMapLongClick(LatLng latLng) {
 
@@ -502,12 +500,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Save first point select
                     listPoints.add(latLng);
                     //Create marker
-                    markerList.add(  mMap.addMarker(new MarkerOptions()
+                     mMap.addMarker(new MarkerOptions()
                             .position(latLng)
                             //.title("name:")
                             //.snippet("no2: 12312312 mV")
                             .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag))
-                    ));
+                    );
 
                    /* mMap.addMarker(new MarkerOptions()
                             .position(latLng)
@@ -524,21 +522,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 } else if (driverControl == false) {
-                    mMap.clear();
+
                     //Save first point select
                     if (parentMarksMapHome && !parentMarksMapSchool) {
                         //Create marker
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(latLng);
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-                        mMap.addMarker(markerOptions);
+                        if(HomeMarker!=null){
+                            HomeMarker.remove();
+                        }
+                        HomeMarker = mMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        );
                         homeAddress = latLng;
+
                     } else if (!parentMarksMapHome && parentMarksMapSchool) {
+                        if(SchoolMarker!=null){
+                            SchoolMarker.remove();
+                        }
                         //Create marker
-                        MarkerOptions markerOptions = new MarkerOptions();
-                        markerOptions.position(latLng);
-                        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                        mMap.addMarker(markerOptions);
+                        SchoolMarker = mMap.addMarker(new MarkerOptions()
+                                .position(latLng)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                        );
                         schoolAddress = latLng;
                     }
                 }
