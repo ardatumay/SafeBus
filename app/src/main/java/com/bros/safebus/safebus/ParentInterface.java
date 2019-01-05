@@ -244,6 +244,7 @@ public class ParentInterface extends Activity {
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.safebuslogo)
                 .setContentText(name + " is far away from bus")
+
                 .setChannelId(CHANNEL_ID)
                 .build();
 

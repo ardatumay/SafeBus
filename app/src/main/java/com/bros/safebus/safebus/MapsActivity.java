@@ -2,6 +2,8 @@ package com.bros.safebus.safebus;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -30,6 +32,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -57,6 +60,7 @@ import java.util.List;
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+
     private static final int LOCATION_REQUEST = 500;
     ArrayList<LatLng> listPoints;
     ArrayList<LatLng> listPointsChildLoc;
@@ -66,16 +70,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private String userType = "";
-    TextView distanceView;
+    TextView distanceView, serviceSpeedInput;
     Button submit;
     //variables for parent to mark home and school address on the map
     Boolean parentMarksMapSchool;
     Boolean parentMarksMapHome;
     LatLng homeAddress;
     LatLng schoolAddress;
-    private int buttonId=0;
+    private int buttonId = 0;
     private static boolean driverControl = false;
-    String DriverKey;
+    String childKey;
+    boolean trackChildLoc;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +92,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        markerList = new ArrayList<Marker>();
         listPoints = new ArrayList<>();
         listPointsChildLoc = new ArrayList<>();
         listPointsDriverLoc = new ArrayList<>();
@@ -103,8 +110,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         submit.setVisibility(View.INVISIBLE);
+        serviceSpeedInput = (TextView) findViewById(R.id.service_speed_input);
 
-        String childKey = GetChildKey();
+
+        childKey = GetChildKey();
         Log.w("CHILD KEY", "CHILDKEY" + childKey);
 
         listPoints = new ArrayList<>();
@@ -124,22 +133,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         databaserefForDriverPathlist.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                int i = 0,  num=0;
+                                int i = 0, num = 0;
 
                                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                                     LatLng point = new LatLng(dataSnapshot.child(String.valueOf(i)).child("latitude").getValue(Double.class), dataSnapshot.child(String.valueOf(i)).child("longitude").getValue(Double.class));
-
-                                    //LatLng point = postSnapshot.child(String.valueOf(i++)).getValue(LatLng.class);
-                                    Log.v("pointList", "pointlists" + point.toString());
-
-
                                     //Use the dataType you are using and also use the reference of those childs inside arrays\\
-
-                                    // Putting Data into Getter Setter \\
-
                                     listPoints.add(point);
                                     Log.v("pointList", "pointlists" + listPoints.toString());
-
                                     if(i>=1){
                                         String url = getRequestUrl(listPoints.get(num), listPoints.get(num + 1));
                                         TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
@@ -165,10 +165,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
 
 
-
             Intent incomingIntent = getIntent();
             parentMarksMapHome = incomingIntent.getBooleanExtra("parentMarksMapHome", false);
             parentMarksMapSchool = incomingIntent.getBooleanExtra("parentMarksMapSchool", false);
+            trackChildLoc = incomingIntent.getBooleanExtra("trackChildLoc", false);
 
             //Log.w("mark home", "marks home" + parentMarksMapHome);
            // Log.w("mark school", "marks school" + parentMarksMapSchool);
@@ -219,7 +219,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
             }*/
 
-            if (!parentMarksMapSchool && !parentMarksMapHome) {
+            if (!parentMarksMapSchool && !parentMarksMapHome && trackChildLoc) {
                 distanceView.setVisibility(View.VISIBLE);
                 Log.w("parent", "parent marks map");
         /*FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
@@ -400,9 +400,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     }
                 });
 
+            } else if (!trackChildLoc) {
+                Toast.makeText(getApplicationContext(), "You need to enable track location to see location information!", Toast.LENGTH_SHORT).show();
             } else {
                 Log.w("parent", "parent marks map");
                 submit.setVisibility(View.VISIBLE);
+                distanceView.setVisibility(View.VISIBLE);
+                if (parentMarksMapSchool)
+                    distanceView.setText("Please mark the school address.");
+                else if (parentMarksMapHome)
+                    distanceView.setText("Please mark the home address.");
             }
 
 
@@ -464,9 +471,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -481,36 +488,54 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         2) location değiştiğinde bunu anlaması için call methodu yarat
         3) Değişimi anladığında location arası noktaların arasını google servisi kullanarak bağla
          */
-
-
+        if (driverControl == true) {
+            getHomeTag();
+        }
         mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
             LatLng getlast;
-            boolean create=true;
+            boolean create = true;
+
             @Override
             public void onMapLongClick(LatLng latLng) {
 
 
                 if (driverControl == true) {
-                    if(create){
-                        CreateButton("Add Path",addPath,R.raw.ok);
-                        CreateButton("Return", deleteLastPoint,R.raw.red);
-                        CreateButton("Remove",deletePoints,R.raw.del);
-                        create=false;
+                    if (create) {
+                        CreateButton("Add Path", addPath, R.raw.ok);
+                        CreateButton("Return", deleteLastPoint, R.raw.red);
+                        CreateButton("Remove", deletePoints, R.raw.del);
+                        create = false;
                     }
                     //Save first point select
                     listPoints.add(latLng);
                     //Create marker
-                    MarkerOptions markerOptions = new MarkerOptions();
-                    markerOptions.position(latLng);
-                    //Add first marker to the map
-                    mMap.addMarker(markerOptions);
+
+
+
+                    markerList.add(  mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            //.title("name:")
+                            //.snippet("no2: 12312312 mV")
+                            .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag))
+                    ));
+
+                   /* mMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            //.title("name:")
+                            //.snippet("no2: 12312312 mV")
+                            .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag)));
+*/
+
+
 
                     if (listPoints.size() >= 2) {
                         //Create the URL to get request from first marker to second marker
-                        String url = getRequestUrl(listPoints.get(listPoints.size()-1), listPoints.get(listPoints.size()-2));
+                        String url = getRequestUrl(listPoints.get(listPoints.size() - 1), listPoints.get(listPoints.size() - 2));
                         TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
                         taskRequestDirections.execute(url);
                     }
+
+
                 } else if (driverControl == false) {
                     mMap.clear();
                     //Save first point select
@@ -532,9 +557,33 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             }
         });
+        // Do other setup activities here too, as described elsewhere in this tutorial.
+        mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker marker) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                // Inflate the layouts for the info window, title and snippet.
+                View infoWindow = getLayoutInflater().inflate(R.layout.custom_info_contents, null);
+
+                TextView title = ((TextView) infoWindow.findViewById(R.id.title));
+                title.setText(marker.getTitle());
+
+                TextView snippet = ((TextView) infoWindow.findViewById(R.id.snippet));
+                snippet.setText(marker.getSnippet());
+
+                return infoWindow;
+            }
+        });
+
+
     }
 
-    void CreateButton(String name, View.OnClickListener listener,int icon) {
+    void CreateButton(String name, View.OnClickListener listener, int icon) {
         Log.d("Button", "Add Button " + name);
         ImageButton myButton = new ImageButton(this);
         myButton.setId(buttonId);
@@ -552,24 +601,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             if (listPoints.size() > 1) {
                 mMap.clear();
+                getHomeTag();
             MarkerOptions markerOptions = new MarkerOptions();
             listPoints.remove(listPoints.size()-1);
             for (int i=0;i<listPoints.size()-1;i++){
                //Create the URL to get request from first marker to second marker
-                markerOptions.position(listPoints.get(i));
+             //   markerOptions.position(listPoints.get(i));
                 //Add first marker to the map
-                mMap.addMarker(markerOptions);
+              //  mMap.addMarker(markerOptions);
                String url = getRequestUrl(listPoints.get(i+1), listPoints.get(i));
                TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
                taskRequestDirections.execute(url);
             }
-            markerOptions.position(listPoints.get(listPoints.size()-1));
-            //Add first marker to the map
-            mMap.addMarker(markerOptions);
+                mMap.addMarker(new MarkerOptions()
+                .position(listPoints.get(listPoints.size()-1))
+                .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag)));
            }else{
             Toast.makeText(getApplicationContext(), "You need to choose first!", Toast.LENGTH_SHORT).show();
         }
-
        }
     };
 
@@ -578,15 +627,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         public void onClick(View view) {
             mMap.clear();
             listPoints.clear();
+            getHomeTag();
         }
     };
 
     View.OnClickListener addPath = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            if(listPoints.size()<2){
+            if (listPoints.size() < 2) {
                 Toast.makeText(getApplicationContext(), "You need to choose 2 point", Toast.LENGTH_SHORT).show();
-            }else{
+            } else {
                 FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();//get the unique id of parent
                 final String RegisteredUserID = currentUser.getUid();
                 Intent goMain = new Intent(MapsActivity.this, DriverInterface.class);
@@ -606,6 +656,65 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    LatLng point = null;
+
+    private void getHomeTag(){
+        final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
+        databaserefChild.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if(postSnapshot.child("name").exists()&&postSnapshot.child("homeAddress").hasChildren()){
+                        String cName= postSnapshot.child("name").getValue(String.class);
+                        int cPhone= postSnapshot.child("phone").getValue(int.class);
+                        String cSurname = postSnapshot.child("surname").getValue(String.class);
+                        if(postSnapshot.child("homeAddress").child("latitude").exists()&&postSnapshot.child("homeAddress").child("longitude").exists()){
+                            point = new LatLng(postSnapshot.child("homeAddress").child("latitude").getValue(Double.class), postSnapshot.child("homeAddress").child("longitude").getValue(Double.class));
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(point)
+                                    .title("name:" + cName + " " + cSurname)
+                                    .snippet("Child Phone: " + cPhone)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.raw.hometag)));
+                        }
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Add Child informations!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });
+    }
+    private void getSchoolTag(){
+        final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
+        databaserefChild.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    if(postSnapshot.child("schoolName").exists()&&postSnapshot.child("schoolAddress").hasChildren()){
+                        String sName= postSnapshot.child("schoolName").getValue(String.class);
+                       // String sAddress = postSnapshot.child("schoolAddress").getValue(String.class);
+                        if(postSnapshot.child("schoolAddress").child("latitude").exists()&&postSnapshot.child("schoolAddress").child("longitude").exists()){
+                            point = new LatLng(postSnapshot.child("schoolAddress").child("latitude").getValue(Double.class), postSnapshot.child("schoolAddress").child("longitude").getValue(Double.class));
+                            mMap.addMarker(new MarkerOptions()
+                                    .position(point)
+                                    .title("School Name:" + sName)
+                       //             .snippet("School Address" + sAddress)
+                                    .icon(BitmapDescriptorFactory.fromResource(R.raw.schooltag)));
+                        }
+                    }else{
+                        Toast.makeText(getApplicationContext(), "Add school informations!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
     private String getRequestUrl(LatLng origin, LatLng dest) {
         //Value of origin
         String str_org = "origin=" + origin.latitude + "," + origin.longitude;
@@ -775,8 +884,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(GetChildKey()).child("homeAddress");
             databaseref.setValue(locationDetails);
-                //Success toast
-                Toast.makeText(getApplicationContext(), "Home Submited", Toast.LENGTH_SHORT).show();
+            //Success toast
+            Toast.makeText(getApplicationContext(), "Home Submited", Toast.LENGTH_SHORT).show();
 
         } else if (parentMarksMapSchool) {
             HashMap<String, Double> locationDetails = new HashMap<String, Double>();
@@ -789,8 +898,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(GetChildKey()).child("schoolAddress");
             databaseref.setValue(locationDetails);
-                //Success toast
-                Toast.makeText(getApplicationContext(), "School Submited", Toast.LENGTH_SHORT).show();
+            //Success toast
+            Toast.makeText(getApplicationContext(), "School Submited", Toast.LENGTH_SHORT).show();
 
         }
     }
