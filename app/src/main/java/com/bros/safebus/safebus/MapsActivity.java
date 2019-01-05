@@ -380,9 +380,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notify");
                                             databaserefForParentNotif.setValue(false);
                                         }
-                                        distanceView.setText(String.valueOf(distance) + " KM");
                                         MarkMap();
-
                                     }
                                 }
 
@@ -411,9 +409,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 else if (parentMarksMapHome)
                     distanceView.setText("Please mark the home address.");
             }
-
-
-
         }
     }
 
@@ -453,22 +448,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void MarkMap() {
         mMap.clear();
-
-        if (listPointsChildLoc.size() >= 1) {
-            LatLng childrenLocation = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
-            MarkerOptions markerOptionsChild = new MarkerOptions();
-            markerOptionsChild.position(childrenLocation);
-            markerOptionsChild.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-            mMap.addMarker(markerOptionsChild);
+                if (listPointsChildLoc.size() >= 1) {
+            mMap.addMarker(new MarkerOptions()
+                    .position(listPointsChildLoc.get(listPointsChildLoc.size() - 1))
+                    .title("Student")
+                 //   .snippet("Name: "+ driverName)
+                    .icon(BitmapDescriptorFactory.fromResource(R.raw.student)));
         }
         if (listPointsDriverLoc.size() >= 1) {
-            LatLng driverLocation = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
-            MarkerOptions markerOptionsDriver = new MarkerOptions();
-            markerOptionsDriver.position(driverLocation);
-            markerOptionsDriver.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-            mMap.addMarker(markerOptionsDriver);
+            mMap.addMarker(new MarkerOptions()
+                    .position(listPointsDriverLoc.get(listPointsDriverLoc.size() - 1))
+                    .title("Driver")
+              //      .snippet("Name: " + studentName)
+                    .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag)));
         }
-
     }
 
 
@@ -509,9 +502,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     //Save first point select
                     listPoints.add(latLng);
                     //Create marker
-
-
-
                     markerList.add(  mMap.addMarker(new MarkerOptions()
                             .position(latLng)
                             //.title("name:")
@@ -525,9 +515,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             //.snippet("no2: 12312312 mV")
                             .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag)));
 */
-
-
-
                     if (listPoints.size() >= 2) {
                         //Create the URL to get request from first marker to second marker
                         String url = getRequestUrl(listPoints.get(listPoints.size() - 1), listPoints.get(listPoints.size() - 2));
@@ -606,9 +593,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             listPoints.remove(listPoints.size()-1);
             for (int i=0;i<listPoints.size()-1;i++){
                //Create the URL to get request from first marker to second marker
-             //   markerOptions.position(listPoints.get(i));
-                //Add first marker to the map
-              //  mMap.addMarker(markerOptions);
+                mMap.addMarker(new MarkerOptions()
+                        .position(listPoints.get(i))
+                        .icon(BitmapDescriptorFactory.fromResource(R.raw.bustag)));
                String url = getRequestUrl(listPoints.get(i+1), listPoints.get(i));
                TaskRequestDirections taskRequestDirections = new TaskRequestDirections();
                taskRequestDirections.execute(url);
@@ -657,7 +644,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     LatLng point = null;
-
+//
     private void getHomeTag(){
         final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
         databaserefChild.addValueEventListener(new ValueEventListener() {
@@ -687,6 +674,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     });
     }
+
     private void getSchoolTag(){
         final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
         databaserefChild.addValueEventListener(new ValueEventListener() {
@@ -711,10 +699,25 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }
+   /* public String getDriverInfo(String driverKey){
+         String driverName;
+         String driverPhone;
+        final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("Drivers").child(driverKey);
+        databaserefChild.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                driverName = dataSnapshot.child("name").toString();
+                driverPhone = dataSnapshot.child("phoneNumber").toString();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+        return  driverName;
+    }*/
     private String getRequestUrl(LatLng origin, LatLng dest) {
         //Value of origin
         String str_org = "origin=" + origin.latitude + "," + origin.longitude;
