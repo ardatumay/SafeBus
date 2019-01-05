@@ -3,11 +3,35 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent">
 
+
     <TextView
+        android:text="12.123431 KM"
         android:id="@+id/distance"
-        android:layout_width="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="15dp"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true">
+
+        <TextView
+            android:text="Service speed:"
+            android:id="@+id/service_speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"/>
+        <TextView
+            android:text="87 KM/H"
+            android:id="@+id/service_speed_input"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15dp"/>
+    </LinearLayout>
 
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
@@ -26,8 +50,9 @@
         android:text="Submit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"/>
+        />
 
     <LinearLayout
         android:layout_margin="5dp"

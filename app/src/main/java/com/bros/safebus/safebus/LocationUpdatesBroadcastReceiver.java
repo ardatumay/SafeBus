@@ -42,10 +42,13 @@ public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
                 if (result != null) {
                     List<Location> locations = result.getLocations();
                     Log.d("LOC", "LOC UPDATE" + locations);
+                    Log.d("LOC", "LOC HAS SPEED" + locations.get(locations.size() - 1).hasSpeed());
+
 
                     HashMap<String, Double> locationDetails = new HashMap<String, Double>();
                     locationDetails.put("latitude", locations.get(locations.size() - 1).getLatitude());
                     locationDetails.put("longitude", locations.get(locations.size() - 1).getLongitude());
+                    locationDetails.put("speed", (double) locations.get(locations.size() - 1).getSpeed());
 
                     HashMap<String, HashMap<String, Double>> currentLocation = new HashMap<String, HashMap<String, Double>>();
                     currentLocation.put("currentLocation", locationDetails);
