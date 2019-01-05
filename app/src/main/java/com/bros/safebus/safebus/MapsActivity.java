@@ -81,7 +81,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private static boolean driverControl = false;
     String childKey;
     boolean trackChildLoc;
-
+    ArrayList<Marker> markerList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
