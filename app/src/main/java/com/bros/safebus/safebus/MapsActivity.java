@@ -61,6 +61,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<LatLng> listPoints;
     ArrayList<LatLng> listPointsChildLoc;
     ArrayList<LatLng> listPointsDriverLoc;
+    ArrayList<LatLng> listPointsHomeLoc;
+    ArrayList<LatLng> listPointsSchoolLoc;
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private String userType = "";
@@ -87,6 +89,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         listPoints = new ArrayList<>();
         listPointsChildLoc = new ArrayList<>();
         listPointsDriverLoc = new ArrayList<>();
+        listPointsHomeLoc = new ArrayList<>();
+        listPointsSchoolLoc = new ArrayList<>();
         //Make both distance view and submit button invisible and make each one visible depending on user mode, e.g. showing location of student and service or marking school address
         distanceView = (TextView) findViewById(R.id.distance);
         distanceView.setVisibility(View.INVISIBLE);
@@ -94,6 +98,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 onSubmit();
             }
         });
@@ -165,8 +170,54 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             parentMarksMapHome = incomingIntent.getBooleanExtra("parentMarksMapHome", false);
             parentMarksMapSchool = incomingIntent.getBooleanExtra("parentMarksMapSchool", false);
 
-            Log.w("mark home", "marks home" + parentMarksMapHome);
-            Log.w("mark school", "marks school" + parentMarksMapSchool);
+            //Log.w("mark home", "marks home" + parentMarksMapHome);
+           // Log.w("mark school", "marks school" + parentMarksMapSchool);
+
+           /* if (parentMarksMapHome && !parentMarksMapSchool)
+            {
+                final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
+                databaseref.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                        LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+                        //listPointsChildLoc.add(ltlng);
+                        listPointsHomeLoc.add(ltlng);
+
+                        if (listPointsChildLoc.size() > 0 && listPointsHomeLoc.size() > 0) {//eğer bi list in uzunluğu sıfırsa sıkıntı çıkarabilir dikkar et !!
+                            LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
+                            LatLng homeLoc = listPointsHomeLoc.get(listPointsHomeLoc.size() - 1);
+                            double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, homeLoc.latitude, homeLoc.longitude);
+                           // Log.v("mark home", "marks home" + distance);
+
+                            if (distance > 0.1) {
+
+                                String parentKey = GetParentKey();
+                                String childUpperKey = GetChildContainerKey();
+                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifyHome");
+                                databaserefForParentNotif.setValue(true);
+                            } else {
+
+                                String parentKey = GetParentKey();
+                                String childUpperKey = GetChildContainerKey();
+                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifyHome");
+                                databaserefForParentNotif.setValue(false);
+                            }
+                            //Log.w("DISTANCE", "DISTANCE Home" + distance);
+
+                            MarkMap();
+
+                        }
+
+                    }
+
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+            }*/
 
             if (!parentMarksMapSchool && !parentMarksMapHome) {
                 distanceView.setVisibility(View.VISIBLE);
@@ -181,6 +232,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
 
                         LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+
                         listPointsChildLoc.add(ltlng);
                         Log.w("Child loc", "CHILDLOCSIZE" + listPointsChildLoc.size());
                         if (listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0) {//eğer bi list in uzunluğu sıfırsa sıkıntı çıkarabilir dikkar et !!
@@ -201,13 +253,91 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notify");
                                 databaserefForParentNotif.setValue(false);
                             }
-                            Log.w("DISTANCE", "DISTANCE" + distance);
+                            Log.w("DISTANCEchild", "DISTANCE" + distance);
                             distanceView.setText(String.valueOf(distance));
                             MarkMap();
 
                         }
 
+                        databaseref.getParent().getParent().child("homeAddress").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                LatLng ltlnghome = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+                                listPointsHomeLoc.add(ltlnghome);
+                                Log.w("Child loc", "efe" + listPointsHomeLoc.size());
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        if (listPointsHomeLoc.size() > 0 && listPointsChildLoc.size() > 0) {//eğer bi list in uzunluğu sıfırsa sıkıntı çıkarabilir dikkar et !!
+                            LatLng homeLoc = listPointsHomeLoc.get(listPointsHomeLoc.size() - 1);
+                            LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
+                            double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, homeLoc.latitude, homeLoc.longitude);
+
+                            if (distance < 1) {
+
+                                String parentKey = GetParentKey();
+                                String childUpperKey = GetChildContainerKey();
+                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifyHome");
+                                databaserefForParentNotif.setValue(true);
+                            } else {
+
+                                String parentKey = GetParentKey();
+                                String childUpperKey = GetChildContainerKey();
+                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifyHome");
+                                databaserefForParentNotif.setValue(false);
+                            }
+                             Log.w("DISTANCEHome", "DISTANCE Home" + distance);
+
+                            MarkMap();
+
+                        }
+
+                        databaseref.getParent().getParent().child("schoolAddress").addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                LatLng ltlngschool = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
+                                listPointsSchoolLoc.add(ltlngschool);
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
+                        if (listPointsSchoolLoc.size() > 0 && listPointsChildLoc.size() > 0) {//eğer bi list in uzunluğu sıfırsa sıkıntı çıkarabilir dikkar et !!
+                            LatLng schoolLoc = listPointsSchoolLoc.get(listPointsSchoolLoc.size() - 1);
+                            LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
+                            double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, schoolLoc.latitude, schoolLoc.longitude);
+
+                            if (distance < 1) {
+
+                                String parentKey = GetParentKey();
+                                String childUpperKey = GetChildContainerKey();
+                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifySchool");
+                                databaserefForParentNotif.setValue(true);
+                            } else {
+
+                                String parentKey = GetParentKey();
+                                String childUpperKey = GetChildContainerKey();
+                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifySchool");
+                                databaserefForParentNotif.setValue(false);
+                            }
+
+
+                            MarkMap();
+
+                        }
+
+
                     }
+
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -236,7 +366,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
                                         LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
                                         double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, driverLoc.latitude, driverLoc.longitude);
-                                        Log.w("DISTANCE", "DISTANCE" + distance);
+                                       // Log.w("DISTANCE", "DISTANCE" + distance);
                                         if (distance > 0.1) {
                                             distanceView.setTextColor(getResources().getColor(R.color.red));
                                             String parentKey = GetParentKey();
@@ -274,6 +404,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.w("parent", "parent marks map");
                 submit.setVisibility(View.VISIBLE);
             }
+
+
+
         }
     }
 
@@ -313,6 +446,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void MarkMap() {
         mMap.clear();
+
         if (listPointsChildLoc.size() >= 1) {
             LatLng childrenLocation = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
             MarkerOptions markerOptionsChild = new MarkerOptions();
@@ -327,6 +461,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             markerOptionsDriver.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
             mMap.addMarker(markerOptionsDriver);
         }
+
     }
 
     @Override

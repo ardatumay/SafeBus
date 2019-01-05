@@ -140,6 +140,61 @@ public class ParentInterface extends Activity {
                                 dbSource.setException(databaseError.toException());
                             }
                         });
+
+                        final DatabaseReference databaserefNotifyHome = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children").child(ds.getKey()).child("notifyHome");
+                        databaserefNotifyHome.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if ((boolean) dataSnapshot.getValue()) {
+                                    databaserefNotifyHome.getParent().child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            SentNotifHome(dataSnapshot.getValue(String.class));
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                } else {
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                dbSource.setException(databaseError.toException());
+                            }
+                        });
+
+                        final DatabaseReference databaserefNotifySchool = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children").child(ds.getKey()).child("notifySchool");
+                        databaserefNotifySchool.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if ((boolean) dataSnapshot.getValue()) {
+                                    databaserefNotifySchool.getParent().child("name").addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            SentNotifSchool(dataSnapshot.getValue(String.class));
+
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                        }
+                                    });
+                                } else {
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                dbSource.setException(databaseError.toException());
+                            }
+                        });
+
                     }
 
                     if (childrenNames.size() != 0) {
@@ -188,7 +243,51 @@ public class ParentInterface extends Activity {
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.safebuslogo)
-                .setContentText(name + "is far away from bus")
+                .setContentText(name + " is far away from bus")
+                .setChannelId(CHANNEL_ID)
+                .build();
+
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
+    }
+
+    void SentNotifHome(String name) {
+
+
+        Intent intent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(intent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        String CHANNEL_ID = "my_channel_01";
+        Notification notification = new Notification.Builder(this)
+                //.setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(getString(R.string.app_name))
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.safebuslogo)
+                .setContentText(name + " came to Home")
+                .setChannelId(CHANNEL_ID)
+                .build();
+
+        mNotificationManager.notify(NOTIFICATION_ID, notification);
+    }
+
+    void SentNotifSchool(String name) {
+
+
+        Intent intent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(intent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+        String CHANNEL_ID = "my_channel_01";
+        Notification notification = new Notification.Builder(this)
+                //.setSmallIcon(R.mipmap.ic_launcher)
+                .setContentTitle(getString(R.string.app_name))
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.drawable.safebuslogo)
+                .setContentText(name + " came to School")
                 .setChannelId(CHANNEL_ID)
                 .build();
 
