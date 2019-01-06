@@ -48,7 +48,6 @@ public class ParentInterface extends Activity {
     NotificationManager mNotificationManager;
     NotificationChannel mChannel;
     String DriverKey;
-
     TaskCompletionSource<DataSnapshot> dbSource = new TaskCompletionSource<>();
     Task dbTask = dbSource.getTask();
     TaskCompletionSource<DataSnapshot> dbSource2 = new TaskCompletionSource<>();
@@ -123,7 +122,6 @@ public class ParentInterface extends Activity {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                             SentNotif(dataSnapshot.getValue(String.class));
-
                                         }
 
                                         @Override
@@ -230,7 +228,6 @@ public class ParentInterface extends Activity {
 
     void SentNotif(String name) {
 
-
         Intent intent = new Intent(this, MainActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         stackBuilder.addParentStack(MainActivity.class);
@@ -249,10 +246,10 @@ public class ParentInterface extends Activity {
                 .build();
 
         mNotificationManager.notify(NOTIFICATION_ID, notification);
+
     }
 
     void SentNotifHome(String name) {
-
 
         Intent intent = new Intent(this, MainActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -274,7 +271,6 @@ public class ParentInterface extends Activity {
     }
 
     void SentNotifSchool(String name) {
-
 
         Intent intent = new Intent(this, MainActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -373,7 +369,6 @@ public class ParentInterface extends Activity {
     }
 
     View.OnClickListener OnClikChild = new View.OnClickListener() {
-
         @Override
         public void onClick(View view) {
             Button b = (Button) view;
@@ -392,17 +387,18 @@ public class ParentInterface extends Activity {
                     dbSource.setException(databaseError.toException());
                 }
             });*/
-            GoToChildInterface(childKey, childUpperKey);
+            GoToChildInterface(childKey, childUpperKey, buttonText);
         }
     };
 
-    void GoToChildInterface(String childKey, String childUpperKey){
+    void GoToChildInterface(String childKey, String childUpperKey, String childFullName){
         Intent i = new Intent(this, ParentChildInterface.class);
         Intent intent = getIntent();
         String parentKey = intent.getStringExtra("userKey");
         i.putExtra("parentKey", parentKey);
         i.putExtra("childKey", childKey);
         i.putExtra("childUpperKey", childUpperKey);
+        i.putExtra("childFullName", childFullName);
         startActivity(i);
     }
 

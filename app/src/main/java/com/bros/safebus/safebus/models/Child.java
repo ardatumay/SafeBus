@@ -1,5 +1,6 @@
 package com.bros.safebus.safebus.models;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Child {
@@ -7,19 +8,23 @@ public class Child {
     private String password;
     private String name;
     private String surname;
+    private String schoolName;
     private String schoolAddress;
-    private  String homeAddress;
+    private String homeAddress;
     private long phone;
     private String parentKey;
     private String email;
     private String busPlate;
     private String key;
     private String type;
+   /* private boolean notify;
+    private boolean notifyHome;
+    private boolean notifySchool;*/
     //locarion related data
     private double currentLocation [];
     //private String currentLocation;
     private String lastKnownLocation;//tek bi string olarak mı yoksa ikili hashmap tarzında mı. virgülle ayrılıyor
-    boolean trackLocation;
+    private boolean trackLocation;
 
 
 
@@ -27,9 +32,10 @@ public class Child {
     }
 
     //full constructor
-    public Child(String name, String surname, String schoolAddress, long phone, String parentKey, String email, String busPlate, String key, double latitude, double longitude, String lastKnownLocation) {
+    public Child(String name, String surname,String schoolName, String schoolAddress, long phone, String parentKey, String email, String busPlate, String key, double latitude, double longitude, String lastKnownLocation) {
         this.name = name;
         this.surname = surname;
+        this.schoolName = schoolName;
         this.schoolAddress = schoolAddress;
         this.phone = phone;
         this.parentKey = parentKey;
@@ -42,9 +48,18 @@ public class Child {
         this.lastKnownLocation = lastKnownLocation;
     }
 
-    public Child(String name, String surname, String email, String password, String schoolAddress, long phone, String key, String parentKey, String type, boolean trackLocation, String homeAddress) {// for register page. only includes register page variables
+    /*public Child(String fullName, String key, boolean notify, boolean notifyHome, boolean notifySchool) {// for register page. only includes register page variables
+        this.name = fullName;
+        this.key = key;
+        this.notify = notify;
+        this.notifyHome = notifyHome;
+        this.notifySchool = notifySchool;
+    }*/
+
+    public Child(String name, String surname,String schoolName, String email, String password, String schoolAddress, long phone, String key, String parentKey, String type, boolean trackLocation, String homeAddress) {// for register page. only includes register page variables
         this.name = name;
         this.surname = surname;
+        this.schoolName = schoolName;
         this.schoolAddress = schoolAddress;
         this.phone = phone;
         this.email = email;
@@ -58,6 +73,18 @@ public class Child {
 
 
 
+  /*  public boolean isNotify() { return notify; }
+
+    public void setNotify(boolean notify) { this.notify = notify; }
+
+    public boolean isNotifyHome() { return notifyHome; }
+
+    public void setNotifyHome(boolean notifyHome) { this.notifyHome = notifyHome; }
+
+    public boolean isNotifySchool() { return notifySchool; }
+
+    public void setNotifySchool(boolean notifySchool) { this.notifySchool = notifySchool; }
+*/
     public String getName() {
         return name;
     }
@@ -73,6 +100,10 @@ public class Child {
     public void setSurname(String surname) {
         this.surname = surname;
     }
+
+    public String getSchoolName() { return schoolName; }
+
+    public void setSchoolName(String schoolName) { this.schoolName = schoolName; }
 
     public String getSchoolAddress() {
         return schoolAddress;
@@ -142,35 +173,58 @@ public class Child {
         return currentLocation;
     }
 
-    @Override
-    public String toString() {
-        return "Child{" +
-                "password='" + password + '\'' +
-                ", name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", schoolAddress='" + schoolAddress + '\'' +
-                ", phone=" + phone +
-                ", parentKey='" + parentKey + '\'' +
-                ", email='" + email + '\'' +
-                ", busPlate='" + busPlate + '\'' +
-                ", key='" + key + '\'' +
-                ", currentLocation='" + currentLocation + '\'' +
-                ", lastKnownLocation='" + lastKnownLocation + '\'' +
-                ", type='" + type + '\'' +
-                '}';
-    }
-
     public void setCurrentLocation(double lat, double log) {
         this.currentLocation = new double[2];
         this.currentLocation[0] = lat;
         this.currentLocation[1] = log;
     }
 
+    public String getHomeAddress() {
+        return homeAddress;
+    }
+
+    public void setHomeAddress(String homeAddress) {
+        this.homeAddress = homeAddress;
+    }
+
+    public void setCurrentLocation(double[] currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public boolean isTrackLocation() {
+        return trackLocation;
+    }
+
+    public void setTrackLocation(boolean trackLocation) {
+        this.trackLocation = trackLocation;
+    }
     public String getLastKnownLocation() {
         return lastKnownLocation;
     }
 
     public void setLastKnownLocation(String lastKnownLocation) {
         this.lastKnownLocation = lastKnownLocation;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Child{" +
+                "password='" + password + '\'' +
+                ", name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", schoolName='" + schoolName + '\'' +
+                ", schoolAddress='" + schoolAddress + '\'' +
+                ", homeAddress='" + homeAddress + '\'' +
+                ", phone=" + phone +
+                ", parentKey='" + parentKey + '\'' +
+                ", email='" + email + '\'' +
+                ", busPlate='" + busPlate + '\'' +
+                ", key='" + key + '\'' +
+                ", type='" + type + '\'' +
+                ", currentLocation=" + Arrays.toString(currentLocation) +
+                ", lastKnownLocation='" + lastKnownLocation + '\'' +
+                ", trackLocation=" + trackLocation +
+                '}';
     }
 }

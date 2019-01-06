@@ -15,7 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bros.safebus.safebus.models.Child;
-import com.bros.safebus.safebus.models.Parent;
+import com.bros.safebus.safebus.models.parentChild;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -53,6 +53,7 @@ public class registerChild extends Activity {
         final TextView surname = (TextView) findViewById(R.id.surname);
         final TextView password = (TextView) findViewById(R.id.password);
         final TextView phoneNumber = (TextView) findViewById(R.id.phone_Number);
+        final TextView schoolName = (TextView) findViewById(R.id.school_Name);
 
         Button register = (Button) findViewById(R.id.registerChild);
         register.setOnClickListener(new View.OnClickListener() {
@@ -64,6 +65,7 @@ public class registerChild extends Activity {
                 final long phone = Long.parseLong(phoneNumber.getText().toString());
                 final String Name = name.getText().toString();
                 final String Surname = surname.getText().toString();
+                final String SchoolName = schoolName.getText().toString();
 
                 if (TextUtils.isEmpty(email_Address)) {
                     Toast.makeText(registerChild.this, "Enter email address!", Toast.LENGTH_SHORT).show();
@@ -85,6 +87,10 @@ public class registerChild extends Activity {
                     Toast.makeText(registerChild.this, "Enter phone number!", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                if (TextUtils.isEmpty(SchoolName)) {
+                    Toast.makeText(registerChild.this, "Enter school name", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
 
 
@@ -103,20 +109,27 @@ public class registerChild extends Activity {
                                     databaseReference = firebaseDatabase.getReference();
                                     String childrenKey = firebaseAuth.getCurrentUser().getUid();
                                     boolean trackLocation = true;
-                                    String homeAddress = "some adsress";
-                                    String schoolAddress= "some adsress";
-                                    final Child newChild = new Child(Name, Surname, email_Address, pass, schoolAddress, phone, childrenKey, parentKey ,type, trackLocation, homeAddress);
+                                    String homeAddress = "some address";
+                                    String schoolAddress= "some address";
+                                    final Child newChild = new Child(Name, Surname, SchoolName, email_Address, pass, schoolAddress, phone, childrenKey, parentKey ,type, trackLocation, homeAddress);
                                     databaseReference.child("children").child(childrenKey)
                                             .setValue(newChild);
+
+
+                                    //Set problemi yeni parentChild modeli oluturularak çözüldü !
                                     //set value for parent
-                                    HashMap<String, String> childForparent = new HashMap<String, String>();
-                                    childForparent.put("key",childrenKey );
+                                    //HashMap<String, Object> hashchildForparent = new HashMap<String, Object>();
                                     String childName = Name + " " + Surname;
-                                    childForparent.put("name",childName );
-                                    childForparent.put("notify", childName);
+                                    final parentChild childForParent = new parentChild(childName, childrenKey,false,false,false);
                                     String key = databaseReference.child("parents").child(parentKey).child("children").push().getKey();
+                                   /* hashchildForparent.put("childName",(String)childName);
+                                    hashchildForparent.put("childrenKey",(String)childrenKey);
+                                    hashchildForparent.put("notify",(boolean)false);
+                                    hashchildForparent.put("childName",(boolean)false);
+                                    hashchildForparent.put("childName",(boolean)false);*/
                                     databaseReference.child("parents").child(parentKey).child("children").child(key)
-                                            .setValue(childForparent);
+                                            .setValue(childForParent);
+
                                     //set value for users
                                     //extract @ and . character from mail and pur it as a key
                                     String mailAsUsername = CreateUsernameFromEmail(email_Address);
