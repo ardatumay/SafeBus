@@ -491,8 +491,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
-        /*mMap.getUiSettings().setZoomControlsEnabled(true);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+
+       /* if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
             return;
         }
@@ -505,6 +506,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         3) Değişimi anladığında location arası noktaların arasını google servisi kullanarak bağla
          */
         if (driverControl == true) {
+            CreateButton("Add Path", addPath, R.raw.ok);
+            CreateButton("Return", deleteLastPoint, R.raw.red2);
+            CreateButton("Remove", deletePoints, R.raw.del2);
+            CreateButton("Traffic Light", trafficLights, R.raw.trafficlight);
             getHomeTag();
         }
 
@@ -515,12 +520,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                 if (driverControl == true) {
-                    if (create) {
-                        CreateButton("Add Path", addPath, R.raw.ok);
-                        CreateButton("Return", deleteLastPoint, R.raw.red);
-                        CreateButton("Remove", deletePoints, R.raw.del);
-                        create = false;
-                    }
+                    mMap.setTrafficEnabled(true);
+
                     //Save first point select
                     listPoints.add(latLng);
                     //Create marker
@@ -597,12 +598,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myButton.setId(buttonId);
         myButton.setOnClickListener(listener);
         LinearLayout ll = (LinearLayout) findViewById(R.id.button_holder);
-        myButton.setBackgroundResource(R.drawable.border);
+        myButton.setBackgroundResource(R.drawable.border2);
         myButton.setImageResource(icon);
         ll.addView(myButton);
         buttonId++;
     }
 
+    View.OnClickListener trafficLights = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          if(mMap.isTrafficEnabled()){
+              mMap.setTrafficEnabled(false);
+          }else{
+              mMap.setTrafficEnabled(true);
+          }
+        }
+    };
     View.OnClickListener deleteLastPoint = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -663,9 +674,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.clear();
         }
     }
-
     LatLng point = null;
-//
+
     private void getHomeTag(){
         getSchoolTag();
         final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
@@ -675,7 +685,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     if(postSnapshot.child("name").exists()&&postSnapshot.child("homeAddress").hasChildren()){
                         String cName= postSnapshot.child("name").getValue(String.class);
-                        Long cPhone= postSnapshot.child("phone").getValue(Long.class);
+                        Long   cPhone= postSnapshot.child("phone").getValue(Long.class);
                         String cSurname = postSnapshot.child("surname").getValue(String.class);
                         if(postSnapshot.child("homeAddress").child("latitude").exists()&&postSnapshot.child("homeAddress").child("longitude").exists()){
                             point = new LatLng(postSnapshot.child("homeAddress").child("latitude").getValue(Double.class), postSnapshot.child("homeAddress").child("longitude").getValue(Double.class));
@@ -696,6 +706,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         }
                     });
     }
+
 //şu an çocuktan alınyor ancak parent istediği isimde okul ismi yazabilir bir scroll ile tek bir isim haline getirilmeli. Bir ikincisi  okul yerleri static olmalı
 // 1. Parent map üstünde bulunan bir noktayı seçicek
 // 2. Driver çocuğu eklerken okulunu scroll ile ekliyecek

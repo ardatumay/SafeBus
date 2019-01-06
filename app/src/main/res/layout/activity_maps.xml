@@ -55,8 +55,10 @@
         />
 
     <LinearLayout
-        android:layout_margin="5dp"
-        android:layout_alignParentLeft="true"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_alignParentRight="true"
         android:id="@+id/button_holder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
