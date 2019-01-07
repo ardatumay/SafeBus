@@ -695,9 +695,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     .snippet("Child Phone: " + cPhone)
                                     .icon(BitmapDescriptorFactory.fromResource(R.raw.hometag)));
                         }
-                    }else{
-                        Toast.makeText(getApplicationContext(), "Add Child informations!", Toast.LENGTH_SHORT).show();
                     }
+//                    else{
+//                        Toast.makeText(getApplicationContext(), "Add Child informations!", Toast.LENGTH_SHORT).show();
+//                    }
                 }
             }
                         @Override
@@ -727,9 +728,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                        //             .snippet("School Address" + sAddress)
                                     .icon(BitmapDescriptorFactory.fromResource(R.raw.schooltag)));
                         }
-                    }else{
-                        Toast.makeText(getApplicationContext(), "Add school informations!", Toast.LENGTH_SHORT).show();
                     }
+//                       else {
+//                        Toast.makeText(getApplicationContext(), "Add school informations!", Toast.LENGTH_SHORT).show();
+//                    }
                 }
             }
             @Override
