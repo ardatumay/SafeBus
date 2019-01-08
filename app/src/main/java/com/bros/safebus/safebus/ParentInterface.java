@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -49,6 +50,10 @@ public class ParentInterface extends Activity {
     NotificationChannel mChannel;
     String DriverKey;
 
+
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor preferenceEditor;
+
     TaskCompletionSource<DataSnapshot> dbSource = new TaskCompletionSource<>();
     Task dbTask = dbSource.getTask();
     TaskCompletionSource<DataSnapshot> dbSource2 = new TaskCompletionSource<>();
@@ -75,6 +80,18 @@ public class ParentInterface extends Activity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //empty shared preference for next login
+                preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
+                preferenceEditor = preferences.edit();
+                preferenceEditor.putString("userMail", "");
+                preferenceEditor.putString("userPass","");
+                preferenceEditor.putString("userKey","");
+                preferenceEditor.putString("userType","");
+                preferenceEditor.commit();
+                preferenceEditor.apply();
+
+                //logout firebase auth
                 firebaseAuth.signOut();
                 finish();
             }

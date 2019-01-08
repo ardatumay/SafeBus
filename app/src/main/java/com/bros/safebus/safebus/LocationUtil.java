@@ -28,6 +28,4 @@ public class LocationUtil {
         builder.build();
         return mLocationRequest;
     }
-
-
 }

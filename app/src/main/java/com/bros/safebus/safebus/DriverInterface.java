@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -64,6 +65,8 @@ public class DriverInterface extends Activity {
     private GeofencingClient mGeofencingClient;
     String DriverKey;
     ArrayList<LatLng> listPoints;
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor preferenceEditor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,7 +77,24 @@ public class DriverInterface extends Activity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //empty shared preference for next login
+                preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
+                preferenceEditor = preferences.edit();
+                preferenceEditor.putString("userMail", "");
+                preferenceEditor.putString("userPass", "");
+                preferenceEditor.putString("userKey", "");
+                preferenceEditor.putString("userType", "");
+                preferenceEditor.commit();
+                preferenceEditor.apply();
+
+                //disable the broadcast receiver
+                DisableBroadcastReceiver();
+
+                //logout firebase auth
+
                 firebaseAuth.signOut();
+
                 finish();
             }
         });
@@ -84,7 +104,7 @@ public class DriverInterface extends Activity {
             @Override
             public void onClick(View view) {
                 if (view != null) {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                 }
 
@@ -138,11 +158,11 @@ public class DriverInterface extends Activity {
         databaseref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!(boolean)dataSnapshot.getValue()){
+                if (!(boolean) dataSnapshot.getValue()) {
 
                     DisableBroadcastReceiver();
                     mFusedLocationClient.removeLocationUpdates(getPendingIntent());
-                }else{
+                } else {
                     enableBroadcastReceiver();
                     checkLocationPermission();
                     mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
@@ -158,8 +178,8 @@ public class DriverInterface extends Activity {
 
         //adding List path into DB
         listPoints = getIntent().getParcelableArrayListExtra("pathList");
-        if(listPoints!=null){
-        Log.v("listPath", listPoints.toString());
+        if (listPoints != null) {
+            Log.v("listPath", listPoints.toString());
             final DatabaseReference databasePath = FirebaseDatabase.getInstance().getReference().child("drivers").child(DriverKey);
             databasePath.child("pathList").setValue(listPoints);
         }
@@ -186,10 +206,10 @@ public class DriverInterface extends Activity {
             @Override
             public void onClick(View view) {
                 EditText childMail = (EditText) findViewById(R.id.child_email);
-                if (childMail.getText().toString().length() == 0){
+                if (childMail.getText().toString().length() == 0) {
                     Toast.makeText(DriverInterface.this, "Please enter a valid input.", Toast.LENGTH_SHORT).show();
                     return;
-                }else{
+                } else {
                     AddChildToDriver(childMail.getText().toString());
                 }
 
@@ -293,13 +313,13 @@ public class DriverInterface extends Activity {
             public void onClick(View view) {
                 Intent intent = new Intent(DriverInterface.this, MapsActivity.class);
                 intent.putExtra("driverControl", true);
-                intent.putExtra("driverKey",DriverKey);
+                intent.putExtra("driverKey", DriverKey);
                 startActivity(intent);
             }
         });
     }
 
-    private void DisableBroadcastReceiver(){
+    private void DisableBroadcastReceiver() {
         ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
         PackageManager pm = this.getPackageManager();
         pm.setComponentEnabledSetting(receiver,
@@ -307,7 +327,7 @@ public class DriverInterface extends Activity {
                 PackageManager.DONT_KILL_APP);
     }
 
-    public void enableBroadcastReceiver(){
+    public void enableBroadcastReceiver() {
         ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
         PackageManager pm = this.getPackageManager();
         pm.setComponentEnabledSetting(receiver,
@@ -318,13 +338,17 @@ public class DriverInterface extends Activity {
 
 
     private PendingIntent getPendingIntent() {
+        preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        preferenceEditor = preferences.edit();
+        preferenceEditor.putString("userKey", DriverKey);
+        preferenceEditor.putString("userType", "drivers");
+        preferenceEditor.commit();
+        preferenceEditor.apply();
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES);
         /*intent.putExtra(LocationUpdatesBroadcastReceiver.USER_KEY, DriverKey);
         intent.putExtra(LocationUpdatesBroadcastReceiver.USER_TYPE, "drivers");
         sendBroadcast(intent);*/
-        LocationUpdatesBroadcastReceiver.setUserKey(DriverKey);
-        LocationUpdatesBroadcastReceiver.setUserType("drivers");
         return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -341,7 +365,7 @@ public class DriverInterface extends Activity {
 
                 if (dataSnapshot.getChildrenCount() != 0) {
                     dbSource.setResult(dataSnapshot);
-                }else {
+                } else {
                     Toast.makeText(DriverInterface.this, "Child not found.", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -395,7 +419,7 @@ public class DriverInterface extends Activity {
         super.onResume();
         boolean mRequestingLocationUpdates = true;
         if (mRequestingLocationUpdates) {
-           // startLocationUpdates();
+            // startLocationUpdates();
         }
     }
 
@@ -403,14 +427,14 @@ public class DriverInterface extends Activity {
         checkLocationPermission();
         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
                 mLocationCallback,
-                null );
+                null);
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
-       // stopLocationUpdates();
+        // stopLocationUpdates();
     }
 
     private void stopLocationUpdates() {
@@ -431,6 +455,17 @@ public class DriverInterface extends Activity {
                 }
             }
         });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //GoToHome();
+    }
+
+    void GoToHome() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
     }
 
     void setTextView(TextView targetTextView, String targetString) {//set textView content

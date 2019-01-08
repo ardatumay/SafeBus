@@ -1,5 +1,7 @@
 package com.bros.safebus.safebus;
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -10,6 +12,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -36,11 +39,19 @@ public class MainActivity extends AppCompatActivity {
     private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     private final FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
     private String userType = "";
+    private ProgressBar progressBar;
+
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor preferenceEditor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
 
         final EditText email = (EditText) findViewById(R.id.email);
         final EditText password = (EditText) findViewById(R.id.password);
@@ -53,6 +64,18 @@ public class MainActivity extends AppCompatActivity {
         hideKeyboard(email);
         hideKeyboard(password);
 
+        SharedPreferences preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        String USERMAIL = preferences.getString("userMail", "");
+        String USERPASS = preferences.getString("userPass", "");
+
+        if(USERMAIL != "" && USERPASS != "" ){
+            loginUser(USERMAIL, USERPASS);
+            progressBar.setVisibility(View.VISIBLE);
+            login.setVisibility(View.INVISIBLE);
+            sign_up.setVisibility(View.INVISIBLE);
+            email.setVisibility(View.INVISIBLE);
+            password.setVisibility(View.INVISIBLE);
+        }
 
         sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,6 +180,14 @@ public class MainActivity extends AppCompatActivity {
                             user = user.replace("@","");
                             user = user.replace(".","");
                             Log.v("deneme", user);
+
+                            preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
+                            preferenceEditor = preferences.edit();
+                            preferenceEditor.putString("userMail", userLoginEmail);
+                            preferenceEditor.putString("userPass",userLoginPassword);
+                            preferenceEditor.commit();
+                            preferenceEditor.apply();
+
                             final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("users").child(user);
 
                             databaseref.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -177,7 +208,6 @@ public class MainActivity extends AppCompatActivity {
                                         startActivity(intentMain);
                                         finish();*/
                                         GoToDriverHome(key);
-
                                     }else if(userType.equals("children")) {
                                         GoToChildrenHome(key);
                                     }

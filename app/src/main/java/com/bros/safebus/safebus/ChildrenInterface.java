@@ -4,8 +4,10 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -33,7 +35,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
-public class ChildrenInterface extends Activity  {
+public class ChildrenInterface extends Activity {
 
     private FusedLocationProviderClient mFusedLocationClient; //location provider client
     LocationRequest mLocationRequest; // location request
@@ -44,8 +46,11 @@ public class ChildrenInterface extends Activity  {
     String childKey;
     Intent i;
 
+    private SharedPreferences preferences;
+    private SharedPreferences.Editor preferenceEditor;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState){
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.children_interface);
         Intent intent = getIntent();
@@ -80,11 +85,11 @@ public class ChildrenInterface extends Activity  {
         databaseref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!(boolean)dataSnapshot.getValue()){
+                if (!(boolean) dataSnapshot.getValue()) {
 
                     DisableBroadcastReceiver();
                     mFusedLocationClient.removeLocationUpdates(getPendingIntent());
-                }else{
+                } else {
                     enableBroadcastReceiver();
                     checkLocationPermission();
                     mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
@@ -101,7 +106,7 @@ public class ChildrenInterface extends Activity  {
 
     }
 
-    private void DisableBroadcastReceiver(){
+    private void DisableBroadcastReceiver() {
         ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
         PackageManager pm = this.getPackageManager();
         pm.setComponentEnabledSetting(receiver,
@@ -109,7 +114,7 @@ public class ChildrenInterface extends Activity  {
                 PackageManager.DONT_KILL_APP);
     }
 
-    public void enableBroadcastReceiver(){
+    public void enableBroadcastReceiver() {
         ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
         PackageManager pm = this.getPackageManager();
         pm.setComponentEnabledSetting(receiver,
@@ -120,23 +125,27 @@ public class ChildrenInterface extends Activity  {
 
 
     private PendingIntent getPendingIntent() {
+        preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        preferenceEditor = preferences.edit();
+        preferenceEditor.putString("userKey",childKey);
+        preferenceEditor.putString("userType","children");
+        preferenceEditor.commit();
+        preferenceEditor.apply();
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES);
         /*intent.putExtra(LocationUpdatesBroadcastReceiver.USER_KEY, DriverKey);
         intent.putExtra(LocationUpdatesBroadcastReceiver.USER_TYPE, "drivers");
         sendBroadcast(intent);*/
-        LocationUpdatesBroadcastReceiver.setUserKey(childKey);
-        LocationUpdatesBroadcastReceiver.setUserType("children");
         return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    public void StartLocationService(){
+    public void StartLocationService() {
         i.putExtra(LocationListener.USER_KEY, childKey);
         i.putExtra(LocationListener.USER_TYPE, "children");
         startService(i);
     }
 
-    public void StopLocationService(){
+    public void StopLocationService() {
         //stopService(i);
         stopService(new Intent(this, LocationListener.class));
     }
@@ -148,9 +157,10 @@ public class ChildrenInterface extends Activity  {
         checkLocationPermission();
 
         if (mRequestingLocationUpdates) {
-           // startLocationUpdates();
+            // startLocationUpdates();
         }
     }
+
     private void startLocationUpdates() {
         checkLocationPermission();
        /* mFusedLocationClient.requestLocationUpdates(mLocationRequest,
@@ -170,7 +180,7 @@ public class ChildrenInterface extends Activity  {
     }
 
 
-    void setTextView(TextView targetTextView, String targetString){//set textView content
+    void setTextView(TextView targetTextView, String targetString) {//set textView content
         targetTextView.setText(targetString);
     }
 
