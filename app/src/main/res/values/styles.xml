@@ -10,8 +10,5 @@
         <item name="colorAccent">@color/colorAccent</item>
 
     </style>
-    <style name="ButtonStyle" parent="android:Theme">
-        <item name="android:buttonStyle">@drawable/border</item>
 
-    </style>
 </resources>

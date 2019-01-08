@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 
 import com.bros.safebus.safebus.MapsActivity;
 import com.bros.safebus.safebus.R;
@@ -17,15 +19,9 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ParentChildInterface extends Activity {
 
-    Button seeTheMap;
-    Button addHomeAddress;
-    Button addSchoolAddress;
-    Button stopLocationTracking;
-
-    String childKey;
-    String childUpperKey;
-    String parentKey;
-
+    Button seeTheMap, addHomeAddress, addSchoolAddress ;
+    Switch stopLocationTracking;
+    public String childKey, childUpperKey, parentKey, childFullName;
     boolean  trackChildLoc;
 
     @Override
@@ -36,19 +32,26 @@ public class ParentChildInterface extends Activity {
         childKey = intent.getStringExtra("childKey");
         childUpperKey = intent.getStringExtra("childUpperKey");
         parentKey = intent.getStringExtra("parentKey");
-
+        childFullName = intent.getStringExtra("childFullName");
         seeTheMap = (Button) findViewById(R.id.see_the_map);
         addHomeAddress = (Button) findViewById(R.id.add_home_address);
         addSchoolAddress = (Button) findViewById(R.id.add_school_address);
-        stopLocationTracking = (Button) findViewById(R.id.stop_location_tracking);
+        stopLocationTracking = (Switch) findViewById(R.id.stop_location_tracking);
 
-        stopLocationTracking.setOnClickListener(new View.OnClickListener() {
+
+
+        /*stopLocationTracking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(((Switch) stopLocationTracking).isChecked()==true){
+                    ((Switch) stopLocationTracking).setChecked(false);
+                }else {
+                    ((Switch) stopLocationTracking).setChecked(true);
+                }
                 StopLocationTracking();
             }
         });
-
+*/
         seeTheMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -72,15 +75,22 @@ public class ParentChildInterface extends Activity {
             }
         });
 
+        stopLocationTracking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    StopLocationTracking();
+            }
+        });
+
         final DatabaseReference databaserefNotify = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");
         databaserefNotify.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if ((boolean) dataSnapshot.getValue()) {
-                    stopLocationTracking.setText("STOP LOCATION TRACKING");
+                    stopLocationTracking.setChecked(true);
                     trackChildLoc = true;
                 } else {
-                    stopLocationTracking.setText("START LOCATION TRACKING");
+                    stopLocationTracking.setChecked(false);
                     trackChildLoc = false;
                 }
             }
@@ -102,10 +112,12 @@ public class ParentChildInterface extends Activity {
         i.putExtra("parentKey", parentKey);
         i.putExtra("childKey", childKey);
         i.putExtra("childUpperKey", childUpperKey);
+        i.putExtra("childFullName", childFullName);
         startActivity(i);
     }
 
     void StopLocationTracking() {
+
         final DatabaseReference databaserefNotify = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");
         databaserefNotify.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
