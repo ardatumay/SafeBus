@@ -318,6 +318,17 @@ public class ParentInterface extends Activity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        GoToHome();
+    }
+
+    void GoToHome() {
+        Intent i = new Intent(this, MainActivity.class);
+        startActivity(i);
+    }
+
     String GetChildFullName(String childKey) {
         final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey);
         databaseref.addValueEventListener(new ValueEventListener() {
