@@ -1,3 +1,15 @@
+/******************************************************************************
+ *  Class Name: MapsActivity
+ *  Author: Can
+ *
+ *  This class gets the child's and driver's location and shows it to the parent
+ *
+ *  Revisions: Efe: Added calculation of distance between child-home and home-child
+ *             Efe: Added proper notification for the home and school
+ *             Arda: Added calculation of distance between child and driver
+ *             Arda: Added proper notification for the child and school bus
+ ******************************************************************************/
+
 package com.bros.safebus.safebus;
 
 import android.Manifest;
@@ -84,7 +96,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -113,8 +124,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         listPoints = new ArrayList<>();
         driverControl = GetDriverControl();
-        //DriverKey = GetDriverKey();
-//        Log.v("DriverKey", DriverKey);
+
 
         if (driverControl == false) {
             final DatabaseReference databaserefForDriver = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
@@ -166,67 +176,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             parentMarksMapSchool = incomingIntent.getBooleanExtra("parentMarksMapSchool", false);
             trackChildLoc = incomingIntent.getBooleanExtra("trackChildLoc", false);
 
-            //Log.w("mark home", "marks home" + parentMarksMapHome);
-           // Log.w("mark school", "marks school" + parentMarksMapSchool);
 
-           /* if (parentMarksMapHome && !parentMarksMapSchool)
-            {
-                final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
-                databaseref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
-                        //listPointsChildLoc.add(ltlng);
-                        listPointsHomeLoc.add(ltlng);
-
-                        if (listPointsChildLoc.size() > 0 && listPointsHomeLoc.size() > 0) {//eğer bi list in uzunluğu sıfırsa sıkıntı çıkarabilir dikkar et !!
-                            LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
-                            LatLng homeLoc = listPointsHomeLoc.get(listPointsHomeLoc.size() - 1);
-                            double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, homeLoc.latitude, homeLoc.longitude);
-                           // Log.v("mark home", "marks home" + distance);
-
-                            if (distance > 0.1) {
-
-                                String parentKey = GetParentKey();
-                                String childUpperKey = GetChildContainerKey();
-                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifyHome");
-                                databaserefForParentNotif.setValue(true);
-                            } else {
-
-                                String parentKey = GetParentKey();
-                                String childUpperKey = GetChildContainerKey();
-                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifyHome");
-                                databaserefForParentNotif.setValue(false);
-                            }
-                            //Log.w("DISTANCE", "DISTANCE Home" + distance);
-
-                            MarkMap();
-
-                        }
-
-                    }
-
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }*/
 
             if (!parentMarksMapSchool && !parentMarksMapHome && trackChildLoc) {
                 distanceView.setVisibility(View.VISIBLE);
                 Log.w("parent", "parent marks map");
-        /*FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
-        final String RegisteredUserID = currentUser.getUid();*/
+                /******************************************************************************
+                 * Adds a value listener to check the changes in children's location
+                 * Author: Arda
+                 ******************************************************************************/
                 final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
                 databaseref.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("latitude").getValue(Double.class));
                         Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
-
+                        /******************************************************************************
+                         * Gets the current location of children and calculate distance between childeren's location
+                         * and the driver's location. If it is greater than that we wanted, it sets the notification true
+                         * Author: Arda
+                         ******************************************************************************/
                         LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
 
                         listPointsChildLoc.add(ltlng);
@@ -253,7 +222,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             distanceView.setText(String.valueOf(distance));
                             MarkMap();
                         }
-
+                        /******************************************************************************
+                         * Gets the location of home and calculate distance between childeren's location
+                         * and the home's location. If it is greater than that we wanted, it sets the notification true
+                         * Author: Efe
+                         ******************************************************************************/
                         databaseref.getParent().getParent().child("homeAddress").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -288,7 +261,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             MarkMap();
 
                         }
-
+                        /******************************************************************************
+                         * Gets the location of school and calculate distance between childeren's location
+                         * and the school's location. If it is greater than that we wanted, it sets the notification true
+                         * Author: Efe
+                         ******************************************************************************/
                         databaseref.getParent().getParent().child("schoolAddress").addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -327,7 +304,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     }
                 });
-
+                /******************************************************************************
+                 * Adds a value listener to check the changes in driver's location
+                 * Author: Arda
+                 ******************************************************************************/
                 databaserefForDriver.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -340,7 +320,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("latitude").getValue(Double.class));
                                     Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("longitude").getValue(Double.class));
-
+                                    /******************************************************************************
+                                     * Gets the current location of driver and calculate distance between childeren's location
+                                     * and the driver's location. If it is greater than that we wanted, it sets the notification true
+                                     * Author: Arda
+                                     ******************************************************************************/
                                     LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
                                     listPointsDriverLoc.add(ltlng);
                                     Log.w("Child loc", "DRIVERLOCSIZE" + listPointsDriverLoc.size());

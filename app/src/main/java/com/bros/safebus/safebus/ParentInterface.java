@@ -1,3 +1,16 @@
+/******************************************************************************
+ *  Class Name: ParentInterface
+ *  Author: Arda
+ *
+ *  This class provides you to sign up screen for the child
+ *  Also it sends you to MapsActivty class to see the map
+ *  Also it deals with notifications
+ *
+ *  Revisions: Efe: Added database checking for notifications for all children about school and home
+ *             Can: Added intent switches
+ ******************************************************************************/
+
+
 package com.bros.safebus.safebus;
 
 import android.app.Activity;
@@ -81,7 +94,7 @@ public class ParentInterface extends Activity {
             @Override
             public void onClick(View v) {
 
-                //empty shared preference for next login
+
                 preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
                 preferenceEditor = preferences.edit();
                 preferenceEditor.putString("userMail", "");
@@ -91,7 +104,7 @@ public class ParentInterface extends Activity {
                 preferenceEditor.commit();
                 preferenceEditor.apply();
 
-                //logout firebase auth
+
                 firebaseAuth.signOut();
                 finish();
             }
@@ -129,8 +142,12 @@ public class ParentInterface extends Activity {
                         children.put(ds.child("name").getValue(String.class)+"UpperKey", ds.getKey());
                         childrenNames.add(ds.child("name").getValue(String.class));
                         Log.w("TAG", "child keyss in parent" + ds.getKey() );
-                        //Listen notify variable of each child so that it can show notifications based on each child
 
+
+                        /******************************************************************************
+                         * Listen notify variable of each child so that it can show notifications based on each child
+                         * Author: Arda
+                         ******************************************************************************/
                         final DatabaseReference databaserefNotify = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children").child(ds.getKey()).child("notify");
                         databaserefNotify.addValueEventListener(new ValueEventListener() {
                             @Override
@@ -156,7 +173,10 @@ public class ParentInterface extends Activity {
                                 dbSource.setException(databaseError.toException());
                             }
                         });
-
+                        /******************************************************************************
+                         * Listen notify variable of each child so that it can show notifications based on each child
+                         * Author: Efe
+                         ******************************************************************************/
                         final DatabaseReference databaserefNotifyHome = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children").child(ds.getKey()).child("notifyHome");
                         databaserefNotifyHome.addValueEventListener(new ValueEventListener() {
                             @Override
@@ -183,7 +203,10 @@ public class ParentInterface extends Activity {
                                 dbSource.setException(databaseError.toException());
                             }
                         });
-
+                        /******************************************************************************
+                         * Listen notify variable of each child so that it can show notifications based on each child
+                         * Author: Efe
+                         ******************************************************************************/
                         final DatabaseReference databaserefNotifySchool = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children").child(ds.getKey()).child("notifySchool");
                         databaserefNotifySchool.addValueEventListener(new ValueEventListener() {
                             @Override

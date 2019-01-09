@@ -1,3 +1,13 @@
+/******************************************************************************
+ *  Class Name: registerChild
+ *  Author: Efe
+ *
+ *  This class provides parent to sign up for a child
+ *
+ *  Revisions: Can: Toast messages
+ *             Arda: Extract characters that we don't want from sources
+ ******************************************************************************/
+
 package com.bros.safebus.safebus;
 
 import android.app.Activity;
@@ -47,15 +57,22 @@ public class registerChild extends Activity {
 
             }
         });
-
+        /******************************************************************************
+         * Defining TextViews and register button
+         * Author: Efe
+         ******************************************************************************/
         final TextView email = (TextView) findViewById(R.id.email);
         final TextView name = (TextView) findViewById(R.id.name);
         final TextView surname = (TextView) findViewById(R.id.surname);
         final TextView password = (TextView) findViewById(R.id.password);
         final TextView phoneNumber = (TextView) findViewById(R.id.phone_Number);
         final TextView schoolName = (TextView) findViewById(R.id.school_Name);
-
         Button register = (Button) findViewById(R.id.registerChild);
+
+        /******************************************************************************
+         * After clicked to register it gets the inputs and put them in to the variables
+         * Author: Efe
+         ******************************************************************************/
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -67,6 +84,11 @@ public class registerChild extends Activity {
                 final String Surname = surname.getText().toString();
                 final String SchoolName = schoolName.getText().toString();
 
+
+                /******************************************************************************
+                 * Proper toast messages if inputs are empty
+                 * Author: Can
+                 ******************************************************************************/
                 if (TextUtils.isEmpty(email_Address)) {
                     Toast.makeText(registerChild.this, "Enter email address!", Toast.LENGTH_SHORT).show();
                     return;
@@ -94,13 +116,16 @@ public class registerChild extends Activity {
 
 
 
-                //final String number = phoneNumber.getText().toString();
+                /******************************************************************************
+                 * Creates the child with firebase's method with proper constructor
+                 * Author: Efe
+                 ******************************************************************************/
                 firebaseAuth.createUserWithEmailAndPassword(email_Address, pass)
                         .addOnCompleteListener(registerChild.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    //firstTextView.setText("Signing up");
+
                                     Intent intent = getIntent();
                                     String parentKey = intent.getStringExtra("parentKey");
 
@@ -116,38 +141,27 @@ public class registerChild extends Activity {
                                             .setValue(newChild);
 
 
-                                    //Set problemi yeni parentChild modeli oluturularak çözüldü !
-                                    //set value for parent
-                                    //HashMap<String, Object> hashchildForparent = new HashMap<String, Object>();
+
                                     String childName = Name + " " + Surname;
                                     final parentChild childForParent = new parentChild(childName, childrenKey,false,false,false);
                                     String key = databaseReference.child("parents").child(parentKey).child("children").push().getKey();
-                                   /* hashchildForparent.put("childName",(String)childName);
-                                    hashchildForparent.put("childrenKey",(String)childrenKey);
-                                    hashchildForparent.put("notify",(boolean)false);
-                                    hashchildForparent.put("childName",(boolean)false);
-                                    hashchildForparent.put("childName",(boolean)false);*/
+
                                     databaseReference.child("parents").child(parentKey).child("children").child(key)
                                             .setValue(childForParent);
 
-                                    //set value for users
-                                    //extract @ and . character from mail and pur it as a key
+
                                     String mailAsUsername = CreateUsernameFromEmail(email_Address);
                                     HashMap<String, String> userRecord = new HashMap<String, String>();
                                     userRecord.put("key",childrenKey );
                                     userRecord.put("type", "Children");
-                                    //String keyForUsers = databaseReference.child("users").child(mailAsUsername).child("children").push().getKey();
+
                                     databaseReference.child("users").child(mailAsUsername)
                                             .setValue(userRecord);
 
-                                    // Map<String, String> newUser = new HashMap<String, String>();
-                                    //newUser.put("email", email_Address);
-                                    //newUser.put("password", pass);
+
                                     returnHomePage();
 
-                                    // .child(firebaseAuth.getCurrentUser().getUid())
-                                    // .setValue(newParent);
-                                    // kullaniciGuncelle();
+
                                 } else {
                                     Log.e("New User Error", task.getException().getMessage());
                                 }
@@ -159,7 +173,10 @@ public class registerChild extends Activity {
 
 
     }
-
+    /******************************************************************************
+     * Extracting characters that we don't want
+     * Author: Arda
+     ******************************************************************************/
     String CreateUsernameFromEmail(String email){
         String src1 = ExtractCharFromString(email, "@");
         String src2 = ExtractCharFromString(src1, ".");
