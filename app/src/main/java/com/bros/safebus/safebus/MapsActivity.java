@@ -56,6 +56,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -77,6 +78,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String childKey;
     boolean trackChildLoc;
     Marker HomeMarker, SchoolMarker;
+    boolean takeSchool = true;
 
 
     @Override
@@ -171,52 +173,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             //Log.w("mark home", "marks home" + parentMarksMapHome);
             // Log.w("mark school", "marks school" + parentMarksMapSchool);
 
-           /* if (parentMarksMapHome && !parentMarksMapSchool)
-            {
-                final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
-                databaseref.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-                        LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
-                        //listPointsChildLoc.add(ltlng);
-                        listPointsHomeLoc.add(ltlng);
-
-                        if (listPointsChildLoc.size() > 0 && listPointsHomeLoc.size() > 0) {//eğer bi list in uzunluğu sıfırsa sıkıntı çıkarabilir dikkar et !!
-                            LatLng childLoc = listPointsChildLoc.get(listPointsChildLoc.size() - 1);
-                            LatLng homeLoc = listPointsHomeLoc.get(listPointsHomeLoc.size() - 1);
-                            double distance = CalculationByDistance(childLoc.latitude, childLoc.longitude, homeLoc.latitude, homeLoc.longitude);
-                           // Log.v("mark home", "marks home" + distance);
-
-                            if (distance > 0.1) {
-
-                                String parentKey = GetParentKey();
-                                String childUpperKey = GetChildContainerKey();
-                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifyHome");
-                                databaserefForParentNotif.setValue(true);
-                            } else {
-
-                                String parentKey = GetParentKey();
-                                String childUpperKey = GetChildContainerKey();
-                                final DatabaseReference databaserefForParentNotif = FirebaseDatabase.getInstance().getReference().child("parents").child(parentKey).child("children").child(childUpperKey).child("notifyHome");
-                                databaserefForParentNotif.setValue(false);
-                            }
-                            //Log.w("DISTANCE", "DISTANCE Home" + distance);
-
-                            MarkMap();
-
-                        }
-
-                    }
-
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }*/
-
             if (!parentMarksMapSchool && !parentMarksMapHome && trackChildLoc) {
                 serviceSpeedInput.setVisibility(View.VISIBLE);
                 servideSpeed.setVisibility(View.VISIBLE);
@@ -235,6 +191,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
 
                             listPointsChildLoc.add(ltlng);
+                            MarkMap();
                             Log.w("Child loc", "CHILDLOCSIZE" + listPointsChildLoc.size());
                             if (listPointsDriverLoc.size() > 0 && listPointsChildLoc.size() > 0) {//eğer bi list in uzunluğu sıfırsa sıkıntı çıkarabilir dikkar et !!
                                 LatLng driverLoc = listPointsDriverLoc.get(listPointsDriverLoc.size() - 1);
@@ -270,8 +227,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         LatLng ltlnghome = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
                                         listPointsHomeLoc.add(ltlnghome);
                                         Log.w("Child loc", "efe" + listPointsHomeLoc.size());
-                                    }else {
-                                       // Toast.makeText(getApplicationContext(), "Mark home address.", Toast.LENGTH_SHORT).show();
+
+                                    } else {
+                                        // Toast.makeText(getApplicationContext(), "Mark home address.", Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
@@ -310,7 +268,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                         LatLng ltlngschool = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
                                         listPointsSchoolLoc.add(ltlngschool);
                                     } else {
-                                       // Toast.makeText(getApplicationContext(), "Mark school address.", Toast.LENGTH_SHORT).show();
+                                        // Toast.makeText(getApplicationContext(), "Mark school address.", Toast.LENGTH_SHORT).show();
                                     }
 
                                 }
@@ -526,6 +484,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
             });
 
+        } else {
+            Toast.makeText(getApplicationContext(), "Driver is needed to register your child.", Toast.LENGTH_SHORT).show();
+
         }
     }
 
@@ -724,27 +685,52 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LatLng point = null;
 
     private void getHomeTag() {
-        getSchoolTag();
-        final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
-        databaserefChild.addValueEventListener(new ValueEventListener() {
+        String driverKey = GetDriverKey();
+
+        final DatabaseReference databaserefForDriver = FirebaseDatabase.getInstance().getReference().child("drivers").child(driverKey).child("children");
+        databaserefForDriver.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    if (postSnapshot.child("name").exists() && postSnapshot.child("homeAddress").hasChildren()) {
-                        String cName = postSnapshot.child("name").getValue(String.class);
-                        Long cPhone = postSnapshot.child("phone").getValue(Long.class);
-                        String cSurname = postSnapshot.child("surname").getValue(String.class);
-                        if (postSnapshot.child("homeAddress").child("latitude").exists() && postSnapshot.child("homeAddress").child("longitude").exists()) {
-                            point = new LatLng(postSnapshot.child("homeAddress").child("latitude").getValue(Double.class), postSnapshot.child("homeAddress").child("longitude").getValue(Double.class));
-                            mMap.addMarker(new MarkerOptions()
-                                    .position(point)
-                                    .title("name:" + cName + " " + cSurname)
-                                    .snippet("Child Phone: " + cPhone)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.raw.hometag)));
+                if (dataSnapshot.exists()) {
+                    dataSnapshot.getChildren().forEach(new Consumer<DataSnapshot>() {
+                        @Override
+                        public void accept(DataSnapshot dataSnapshot) {
+
+                            HashMap<String, String> child = (HashMap<String, String>) dataSnapshot.getValue();
+                            Log.w("driver child", "driver child " + child.get("childKey"));
+                            if (takeSchool) {
+                                getSchoolTag(child.get("childKey"));
+                                takeSchool = false;
+                            }
+                            final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children").child(child.get("childKey"));
+                            databaserefChild.addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.child("name").exists() && dataSnapshot.child("homeAddress").hasChildren()) {
+                                        String cName = dataSnapshot.child("name").getValue(String.class);
+                                        Long cPhone = dataSnapshot.child("phone").getValue(Long.class);
+                                        String cSurname = dataSnapshot.child("surname").getValue(String.class);
+                                        if (dataSnapshot.child("homeAddress").child("latitude").exists() && dataSnapshot.child("homeAddress").child("longitude").exists()) {
+                                            point = new LatLng(dataSnapshot.child("homeAddress").child("latitude").getValue(Double.class), dataSnapshot.child("homeAddress").child("longitude").getValue(Double.class));
+                                            mMap.addMarker(new MarkerOptions()
+                                                    .position(point)
+                                                    .title("name:" + cName + " " + cSurname)
+                                                    .snippet("Child Phone: " + cPhone)
+                                                    .icon(BitmapDescriptorFactory.fromResource(R.raw.hometag)));
+                                        }
+                                    } else {
+                                        Toast.makeText(getApplicationContext(), "Add Child information!", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Add Child informations!", Toast.LENGTH_SHORT).show();
-                    }
+                    });
                 }
             }
 
@@ -758,27 +744,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     //şu an çocuktan alınyor ancak parent istediği isimde okul ismi yazabilir bir scroll ile tek bir isim haline getirilmeli. Bir ikincisi  okul yerleri static olmalı
 // 1. Parent map üstünde bulunan bir noktayı seçicek
 // 2. Driver çocuğu eklerken okulunu scroll ile ekliyecek
-    private void getSchoolTag() {
-        final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children");
+    private void getSchoolTag(String childkey) {
+        final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children").child(childkey);
         databaserefChild.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                    if (postSnapshot.child("schoolName").exists() && postSnapshot.child("schoolAddress").hasChildren()) {
-                        String sName = postSnapshot.child("schoolName").getValue(String.class);
-                        // String sAddress = postSnapshot.child("schoolAddress").getValue(String.class);
-                        if (postSnapshot.child("schoolAddress").child("latitude").exists() && postSnapshot.child("schoolAddress").child("longitude").exists()) {
-                            point = new LatLng(postSnapshot.child("schoolAddress").child("latitude").getValue(Double.class), postSnapshot.child("schoolAddress").child("longitude").getValue(Double.class));
-                            mMap.addMarker(new MarkerOptions()
-                                    .position(point)
-                                    .title("School Name:" + sName)
-                                    //             .snippet("School Address" + sAddress)
-                                    .icon(BitmapDescriptorFactory.fromResource(R.raw.schooltag)));
-                        }
-                    } else {
-                        Toast.makeText(getApplicationContext(), "Add school informations!", Toast.LENGTH_SHORT).show();
+                if (dataSnapshot.child("schoolName").exists() && dataSnapshot.child("schoolAddress").hasChildren()) {
+                    String sName = dataSnapshot.child("schoolName").getValue(String.class);
+                    // String sAddress = postSnapshot.child("schoolAddress").getValue(String.class);
+                    if (dataSnapshot.child("schoolAddress").child("latitude").exists() && dataSnapshot.child("schoolAddress").child("longitude").exists()) {
+                        point = new LatLng(dataSnapshot.child("schoolAddress").child("latitude").getValue(Double.class), dataSnapshot.child("schoolAddress").child("longitude").getValue(Double.class));
+                        mMap.addMarker(new MarkerOptions()
+                                .position(point)
+                                .title("School Name:" + sName)
+                                //             .snippet("School Address" + sAddress)
+                                .icon(BitmapDescriptorFactory.fromResource(R.raw.schooltag)));
                     }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Add school information for children!", Toast.LENGTH_SHORT).show();
                 }
+
             }
 
             @Override

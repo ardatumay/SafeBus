@@ -5,7 +5,7 @@
 
 
     <TextView
-        android:text="12.123431 KM"
+        android:text="  -  M"
         android:id="@+id/distance"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
