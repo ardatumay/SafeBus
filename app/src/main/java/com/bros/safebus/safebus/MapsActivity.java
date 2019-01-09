@@ -237,7 +237,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
 
                           
-                        }
+                        
                         /******************************************************************************
                          * Gets the location of home and calculate distance between childeren's location
                          * and the home's location. If it is greater than that we wanted, it sets the notification true
