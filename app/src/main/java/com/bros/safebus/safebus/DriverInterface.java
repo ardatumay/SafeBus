@@ -94,7 +94,7 @@ public class DriverInterface extends Activity {
                 //logout firebase auth
 
                 firebaseAuth.signOut();
-
+                GoToHome();
                 finish();
             }
         });
@@ -344,12 +344,18 @@ public class DriverInterface extends Activity {
         preferenceEditor.putString("userType", "drivers");
         preferenceEditor.commit();
         preferenceEditor.apply();
-        Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
+        //Intent intent = new Intent();
+        Intent intent = new Intent ();
+
         intent.setAction(LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES);
+        //intent.setPackage(getApplicationContext().getPackageName());
+        intent.setClass(getApplicationContext(), LocationUpdatesBroadcastReceiver.class);
+
         /*intent.putExtra(LocationUpdatesBroadcastReceiver.USER_KEY, DriverKey);
         intent.putExtra(LocationUpdatesBroadcastReceiver.USER_TYPE, "drivers");
         sendBroadcast(intent);*/
-        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        return PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
 
@@ -460,7 +466,8 @@ public class DriverInterface extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        GoToHome();
+
+
     }
 
     void GoToHome() {

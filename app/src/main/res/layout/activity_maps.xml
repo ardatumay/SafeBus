@@ -20,13 +20,13 @@
         android:layout_alignParentTop="true">
 
         <TextView
-            android:text="Service speed:"
+            android:text="Service speed: "
             android:id="@+id/service_speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="15dp"/>
         <TextView
-            android:text="87 KM/H"
+            android:text=" - "
             android:id="@+id/service_speed_input"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
