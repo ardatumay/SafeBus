@@ -125,7 +125,7 @@ public class LocationListener extends Service {
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        userKey= intent.getStringExtra(USER_KEY);
+        userKey = intent.getStringExtra(USER_KEY);
         userType = intent.getStringExtra(USER_TYPE);
         final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child(userType).child(userKey).child("trackLocation");
         databaseref.addValueEventListener(new ValueEventListener() {

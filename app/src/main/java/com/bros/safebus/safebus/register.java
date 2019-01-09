@@ -1,3 +1,14 @@
+/******************************************************************************
+ *  Class Name: register
+ *  Author: Efe
+ *
+ *  This class provides different screens to sign up for parent and driver by using a switch button
+ *
+ *  Revisions: Can: Toast messages
+ *             Arda: Extract characters that we don't want from sources
+ ******************************************************************************/
+
+
 package com.bros.safebus.safebus;
 
 import android.content.Context;
@@ -50,7 +61,10 @@ public class register extends AppCompatActivity {
 
             }
         });
-
+        /******************************************************************************
+         * Defining EditText's and Buttons and radio groups
+         * Author: Efe
+         ******************************************************************************/
         final EditText email = (EditText) findViewById(R.id.email);
         final EditText driverEmail = (EditText) findViewById(R.id.email_driver);
         final EditText password = (EditText) findViewById(R.id.password);
@@ -70,14 +84,10 @@ public class register extends AppCompatActivity {
         final RadioButton parentButton = (RadioButton) findViewById(R.id.parent_Button);
         final RadioButton driverButton = (RadioButton) findViewById(R.id.driver_Button);
 
-       /* name.setVisibility(View.VISIBLE);
-        deneme.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                name.setVisibility((View.INVISIBLE));
-            }
-        });*/
+        /******************************************************************************
+         * Until user choose his/her type, makes the edittext's invisible
+         * Author: Efe
+         ******************************************************************************/
         driverName.setVisibility(View.INVISIBLE);
         driverEmail.setVisibility(View.INVISIBLE);
         driverPassword.setVisibility(View.INVISIBLE);
@@ -94,7 +104,10 @@ public class register extends AppCompatActivity {
         surname.setVisibility(View.INVISIBLE);
         register.setVisibility(View.INVISIBLE);
 
-
+        /******************************************************************************
+         * If user choose parent as type make the proper edittext's visible for the parent
+         * Author: Efe
+         ******************************************************************************/
         View.OnClickListener first_radio_listener = new View.OnClickListener() {
             public void onClick(View v) {
                 driverName.setVisibility(View.INVISIBLE);
@@ -116,6 +129,10 @@ public class register extends AppCompatActivity {
         };
         parentButton.setOnClickListener(first_radio_listener);
 
+        /******************************************************************************
+         * If user choose driver as type make the proper edittext's visible for the driver
+         * Author: Efe
+         ******************************************************************************/
         View.OnClickListener second_radio_listener = new View.OnClickListener() {
             public void onClick(View v) {
                 name.setVisibility(View.INVISIBLE);
@@ -144,13 +161,21 @@ public class register extends AppCompatActivity {
             name.setVisibility(View.INVISIBLE);
         }*/
 
-
+        /******************************************************************************
+         * After clicked to register it gets the inputs and put them in to the variables
+         * Author: Efe
+         ******************************************************************************/
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
                 final String email_Address = email.getText().toString().trim();
+
+                /******************************************************************************
+                 * Proper toast messages if inputs are empty
+                 * Author: Can
+                 ******************************************************************************/
                 if (TextUtils.isEmpty(email_Address)) {
                     Toast.makeText(register.this, "Enter email address!", Toast.LENGTH_SHORT).show();
                     return;
@@ -176,7 +201,10 @@ public class register extends AppCompatActivity {
                 final String parentRole = parentButton.getText().toString();
 
 
-                //final String number = phoneNumber.getText().toString();
+                /******************************************************************************
+                 * Creates the parent with firebase's method with proper constructor
+                 * Author: Efe
+                 ******************************************************************************/
                 firebaseAuth.createUserWithEmailAndPassword(email_Address, pass)
                         .addOnCompleteListener(register.this, new OnCompleteListener<AuthResult>() {
                             @Override
@@ -212,7 +240,11 @@ public class register extends AppCompatActivity {
             }
         });
 
-
+        /******************************************************************************
+         * After clicked to register it gets the inputs and put them in to the variables
+         * (same button just for the driver)
+         * Author: Efe
+         ******************************************************************************/
         driverRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -223,18 +255,52 @@ public class register extends AppCompatActivity {
                 final String driver_Name = driverName.getText().toString();
                 final String driver_Surname = driverSurname.getText().toString();
                 final String driver_Address = driverSchoolAddress.getText().toString();
-                //final Editable number = phoneNumber.getText();
                 final long driver_phoneNumber = Long.parseLong(driverPhoneNumber.getText().toString());
                 final String driver_plateNumber = plateNumber.getText().toString();
                 final String driverRole = driverButton.getText().toString();
 
-                //final String number = phoneNumber.getText().toString();
+                /******************************************************************************
+                 * Proper toast messages if inputs are empty
+                 * Author: Can
+                 ******************************************************************************/
+                if (TextUtils.isEmpty(driverEmail)) {
+                    Toast.makeText(register.this, "Enter email address!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final String pass = driverPassword.getText().toString();
+                if (TextUtils.isEmpty(pass)) {
+                    Toast.makeText(register.this, "Enter password!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final String Name = driverName.getText().toString();
+                if (TextUtils.isEmpty(Name)) {
+                    Toast.makeText(register.this, "Enter name!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                final String Surname = driverSurname.getText().toString();
+                if (TextUtils.isEmpty(Surname)) {
+                    Toast.makeText(register.this, "Enter surname!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                final String SchoolAddress = driverSchoolAddress.getText().toString();
+                if (TextUtils.isEmpty(SchoolAddress)) {
+                    Toast.makeText(register.this, "Enter school address!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+
+
+                /******************************************************************************
+                 * Creates the parent with firebase's method with proper constructor
+                 * Author: Efe
+                 ******************************************************************************/
                 firebaseAuth.createUserWithEmailAndPassword(driver_Email_Address, driver_Pass)
                         .addOnCompleteListener(register.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    //firstTextView.setText("Signing up");
+
 
                                     databaseReference = firebaseDatabase.getReference();
                                     String driverKey = firebaseAuth.getCurrentUser().getUid();
@@ -242,20 +308,17 @@ public class register extends AppCompatActivity {
                                     final Driver newDriver = new Driver(driver_Name, driver_Surname, driver_Email_Address, driver_Pass, driver_Address, driver_phoneNumber, driver_plateNumber, driverKey, driverRole, trackLocation);
                                     databaseReference.child("drivers").child(firebaseAuth.getCurrentUser().getUid())
                                             .setValue(newDriver);
-                                    //set value for users
-                                    //extract @ and . character from mail and pur it as a key
+
                                     String mailAsUsername = CreateUsernameFromEmail(driver_Email_Address);
                                     HashMap<String, String> userRecord = new HashMap<String, String>();
                                     userRecord.put("key", driverKey);
                                     userRecord.put("type", "Drivers");
-                                    //String keyForUsers = databaseReference.child("users").child(mailAsUsername).child("children").push().getKey();
+
                                     databaseReference.child("users").child(mailAsUsername)
                                             .setValue(userRecord);
 
                                     returnMainPage();
-                                    // .child(firebaseAuth.getCurrentUser().getUid())
-                                    // .setValue(newParent);
-                                    // kullaniciGuncelle();
+
                                 } else {
                                     Log.e("New User Error", task.getException().getMessage());
                                 }
@@ -267,8 +330,10 @@ public class register extends AppCompatActivity {
 
 
     }
-
-
+    /******************************************************************************
+     * Extracting charachters that we don't want
+     * Author: Arda
+     ******************************************************************************/
     String CreateUsernameFromEmail(String email){
         String src1 = ExtractCharFromString(email, "@");
         String src2 = ExtractCharFromString(src1, ".");

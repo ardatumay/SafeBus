@@ -1,3 +1,12 @@
+/******************************************************************************
+ *  Class Name: ChildrenInterface
+ *  Author:
+ *
+ *  After child logs in, it gets the permission to get lcoation and it gets
+ *  the child's lcoation
+ *
+ ******************************************************************************/
+
 package com.bros.safebus.safebus;
 
 import android.Manifest;
@@ -57,24 +66,6 @@ public class ChildrenInterface extends Activity {
         childKey = intent.getStringExtra("userKey");
         i = new Intent(getApplicationContext(), LocationListener.class);
 
-        //Service code that does not work for disabling and enabling
-        /*final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");
-        databaseref.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                if(!(boolean)dataSnapshot.getValue()){
-                    StopLocationService();
-                    Log.d("eede", "onDataChange: " + "33333 paused");
-                }else{
-                    StartLocationService();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });*/
 
         checkLocationPermission();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client

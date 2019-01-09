@@ -1,3 +1,15 @@
+/******************************************************************************
+ *  Class Name: MapsActivity
+ *  Author: Can
+ *
+ *  This class gets the child's and driver's location and shows it to the parent
+ *
+ *  Revisions: Efe: Added calculation of distance between child-home and home-child
+ *             Efe: Added proper notification for the home and school
+ *             Arda: Added calculation of distance between child and driver
+ *             Arda: Added proper notification for the child and school bus
+ ******************************************************************************/
+
 package com.bros.safebus.safebus;
 
 import android.Manifest;
@@ -86,7 +98,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -117,8 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         listPoints = new ArrayList<>();
         driverControl = GetDriverControl();
-        //DriverKey = GetDriverKey();
-//        Log.v("DriverKey", DriverKey);
+
 
         if (driverControl == false) {
             final DatabaseReference databaserefForDriver = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
@@ -170,16 +180,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             parentMarksMapSchool = incomingIntent.getBooleanExtra("parentMarksMapSchool", false);
             trackChildLoc = incomingIntent.getBooleanExtra("trackChildLoc", false);
 
-            //Log.w("mark home", "marks home" + parentMarksMapHome);
-            // Log.w("mark school", "marks school" + parentMarksMapSchool);
 
             if (!parentMarksMapSchool && !parentMarksMapHome && trackChildLoc) {
                 serviceSpeedInput.setVisibility(View.VISIBLE);
                 servideSpeed.setVisibility(View.VISIBLE);
                 distanceView.setVisibility(View.VISIBLE);
                 Log.w("parent", "parent marks map");
-        /*FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();
-        final String RegisteredUserID = currentUser.getUid();*/
+                /******************************************************************************
+                 * Adds a value listener to check the changes in children's location
+                 * Author: Arda
+                 ******************************************************************************/
                 final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("location").child("currentLocation");
                 databaseref.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -187,6 +197,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("latitude").getValue(Double.class));
                         Log.w("Child loc", "CHILDLOC" + dataSnapshot.child("longitude").getValue(Double.class));
 
+                        /******************************************************************************
+                         * Gets the current location of children and calculate distance between childeren's location
+                         * and the driver's location. If it is greater than that we wanted, it sets the notification true
+                         * Author: Arda
+                         ******************************************************************************/   
                         if (dataSnapshot.child("longitude").getValue(Double.class) != null) {
                             LatLng ltlng = new LatLng(dataSnapshot.child("latitude").getValue(Double.class), dataSnapshot.child("longitude").getValue(Double.class));
 
@@ -213,12 +228,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
                                 Log.w("DISTANCEchild", "DISTANCE" + distance);
 
+
                                 String num = String.valueOf(distance);
                                 int index = num.indexOf('.');
                                 String result = num.substring(0, index + 3);
                                 distanceView.setText(result + " M");
                                 MarkMap();
                             }
+
+                          
+                        }
+                        /******************************************************************************
+                         * Gets the location of home and calculate distance between childeren's location
+                         * and the home's location. If it is greater than that we wanted, it sets the notification true
+                         * Author: Efe
+                         ******************************************************************************/
+ 
 
                             databaseref.getParent().getParent().child("homeAddress").addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -231,6 +256,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                     } else {
                                         // Toast.makeText(getApplicationContext(), "Mark home address.", Toast.LENGTH_SHORT).show();
                                     }
+
 
                                 }
 
@@ -257,9 +283,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 }
                                 Log.w("DISTANCEHome", "DISTANCE Home" + distance);
 
-                                MarkMap();
 
-                            }
+                        }
+                        
+
+                        /******************************************************************************
+                         * Gets the location of school and calculate distance between childeren's location
+                         * and the school's location. If it is greater than that we wanted, it sets the notification true
+                         * Author: Efe
+                         ******************************************************************************/
+                            
 
                             databaseref.getParent().getParent().child("schoolAddress").addValueEventListener(new ValueEventListener() {
                                 @Override
@@ -310,7 +343,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     }
                 });
-
+                /******************************************************************************
+                 * Adds a value listener to check the changes in driver's location
+                 * Author: Arda
+                 ******************************************************************************/
                 databaserefForDriver.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -323,6 +359,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                 public void onDataChange(DataSnapshot dataSnapshot) {
                                     Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("latitude").getValue(Double.class));
                                     Log.w("Child loc", "DRIVERLOC" + dataSnapshot.child("longitude").getValue(Double.class));
+
+                                    /******************************************************************************
+                                     * Gets the current location of driver and calculate distance between childeren's location
+                                     * and the driver's location. If it is greater than that we wanted, it sets the notification true
+                                     * Author: Arda
+                                     ******************************************************************************/
+                                  
                                     if (dataSnapshot.child("speed").getValue(Integer.class) != null) {
                                         int speed = dataSnapshot.child("speed").getValue(Integer.class);
                                         serviceSpeedInput.setText(String.valueOf(speed) + " KM/H");
@@ -354,6 +397,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                                             String result = num.substring(0, index + 3);
                                             distanceView.setText(result + " M");
                                             MarkMap();
+
                                         }
                                     }
                                 }
