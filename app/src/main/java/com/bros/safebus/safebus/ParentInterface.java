@@ -22,9 +22,13 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -98,9 +102,9 @@ public class ParentInterface extends Activity {
                 preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
                 preferenceEditor = preferences.edit();
                 preferenceEditor.putString("userMail", "");
-                preferenceEditor.putString("userPass","");
-                preferenceEditor.putString("userKey","");
-                preferenceEditor.putString("userType","");
+                preferenceEditor.putString("userPass", "");
+                preferenceEditor.putString("userKey", "");
+                preferenceEditor.putString("userType", "");
                 preferenceEditor.commit();
                 preferenceEditor.apply();
 
@@ -109,7 +113,12 @@ public class ParentInterface extends Activity {
                 finish();
             }
         });
-        CreateNotifChannel();
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (Build.VERSION.SDK_INT >= 26) {
+            CreateNotifChannel();
+        }
+
 
         FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();//get the unique id of parent
         final String RegisteredUserID = currentUser.getUid();
@@ -139,9 +148,12 @@ public class ParentInterface extends Activity {
 
                     for (DataSnapshot ds : result.getChildren()) {
                         children.put(ds.child("name").getValue(String.class), ds.child("key").getValue(String.class));
-                        children.put(ds.child("name").getValue(String.class)+"UpperKey", ds.getKey());
+                        children.put(ds.child("name").getValue(String.class) + "UpperKey", ds.getKey());
                         childrenNames.add(ds.child("name").getValue(String.class));
-                        Log.w("TAG", "child keyss in parent" + ds.getKey() );
+
+                        Log.w("TAG", "child keyss in parent" + ds.getKey());
+                       
+
 
 
                         /******************************************************************************
@@ -156,7 +168,7 @@ public class ParentInterface extends Activity {
                                     databaserefNotify.getParent().child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            SentNotif(dataSnapshot.getValue(String.class));
+                                            SentNotif(dataSnapshot.getValue(String.class), " is far away from bus.");
                                         }
 
                                         @Override
@@ -185,7 +197,7 @@ public class ParentInterface extends Activity {
                                     databaserefNotifyHome.getParent().child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            SentNotifHome(dataSnapshot.getValue(String.class));
+                                            SentNotif(dataSnapshot.getValue(String.class), " came to home.");
 
                                         }
 
@@ -215,7 +227,7 @@ public class ParentInterface extends Activity {
                                     databaserefNotifySchool.getParent().child("name").addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                            SentNotifSchool(dataSnapshot.getValue(String.class));
+                                            SentNotif(dataSnapshot.getValue(String.class), " came to school.");
 
                                         }
 
@@ -253,21 +265,22 @@ public class ParentInterface extends Activity {
         // The user-visible description of the channel.
         String description = "Notif channel";
         int importance = NotificationManager.IMPORTANCE_HIGH;
+        if (Build.VERSION.SDK_INT >= 26) {
+            mChannel = new NotificationChannel(id, name, importance);
+            // Configure the notification channel.
+            mChannel.setDescription(description);
+            mChannel.enableLights(true);
+            // Sets the notification light color for notifications posted to this
+            // channel, if the device supports this feature.
+            mChannel.setLightColor(Color.BLUE);
+            mChannel.enableVibration(true);
+            mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+            mNotificationManager.createNotificationChannel(mChannel);
+        }
 
-        mChannel = new NotificationChannel(id, name, importance);
-        // Configure the notification channel.
-        mChannel.setDescription(description);
-        mChannel.enableLights(true);
-        // Sets the notification light color for notifications posted to this
-        // channel, if the device supports this feature.
-        mChannel.setLightColor(Color.BLUE);
-        mChannel.enableVibration(true);
-        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.createNotificationChannel(mChannel);
     }
 
-    void SentNotif(String name) {
+    void SentNotif(String name, String content) {
 
         Intent intent = new Intent(this, MainActivity.class);
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -275,18 +288,40 @@ public class ParentInterface extends Activity {
         stackBuilder.addNextIntent(intent);
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         String CHANNEL_ID = "my_channel_01";
-        Notification notification = new Notification.Builder(this)
-                //.setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(getString(R.string.app_name))
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .setSmallIcon(R.drawable.safebuslogo)
-                .setContentText(name + " is far away from bus")
+        Notification notification;
+        if (Build.VERSION.SDK_INT >= 26) {
+            notification = new Notification.Builder(this,CHANNEL_ID )
+                    //.setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setContentIntent(pendingIntent)
+                    .setSmallIcon(R.drawable.safebuslogo)
+                    .setContentText(name + content)
+                    .setChannelId(CHANNEL_ID)
+                    .build();
+            mNotificationManager.notify(NOTIFICATION_ID, notification);
+        } else {
+           /* notification = new Notification.Builder(this)
+                    //.setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle(getString(R.string.app_name))
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent)
+                    .setSmallIcon(R.drawable.safebuslogo)
+                    .setContentText(name + " is far away from bus")
+                    .build();*/
+            NotificationCompat.Builder notificationCompatBuilder = new NotificationCompat.Builder(this, CHANNEL_ID);
+            notificationCompatBuilder.setContentTitle(getString(R.string.app_name));
+            notificationCompatBuilder.setContentText(name + content);
+            notificationCompatBuilder.setSmallIcon(R.drawable.safebuslogo);
+            notificationCompatBuilder.setAutoCancel(true);
+            notificationCompatBuilder.setContentIntent(pendingIntent);
+            notificationCompatBuilder.setPriority(NotificationCompat.PRIORITY_HIGH);
 
-                .setChannelId(CHANNEL_ID)
-                .build();
+           // mNotificationManager.notify(NOTIFICATION_ID, notificationCompatBuilder.build());
 
-        mNotificationManager.notify(NOTIFICATION_ID, notification);
+            NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+            notificationManager.notify(0, notificationCompatBuilder.build());
+        }
+
 
     }
 
@@ -381,7 +416,7 @@ public class ParentInterface extends Activity {
 
     }
 
-    public void GetDriverKey(String childKey){
+    public void GetDriverKey(String childKey) {
         final DatabaseReference databaseKey = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
         databaseKey.addValueEventListener(new ValueEventListener() {
             @Override
@@ -396,7 +431,7 @@ public class ParentInterface extends Activity {
         });
 
 
-        Log.v("DriverKeyyy",DriverKey);
+        Log.v("DriverKeyyy", DriverKey);
 
 
     }
@@ -426,7 +461,7 @@ public class ParentInterface extends Activity {
             Button b = (Button) view;
             String buttonText = b.getText().toString();
             String childKey = children.get(buttonText);
-            String childUpperKey = children.get(buttonText+"UpperKey");
+            String childUpperKey = children.get(buttonText + "UpperKey");
             /*final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
             databaseref.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -443,7 +478,7 @@ public class ParentInterface extends Activity {
         }
     };
 
-    void GoToChildInterface(String childKey, String childUpperKey, String childFullName){
+    void GoToChildInterface(String childKey, String childUpperKey, String childFullName) {
         Intent i = new Intent(this, ParentChildInterface.class);
         Intent intent = getIntent();
         String parentKey = intent.getStringExtra("userKey");

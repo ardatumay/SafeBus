@@ -191,7 +191,7 @@ public class registerChild extends Activity {
 
     void returnHomePage()
     {
-        Intent intent = new Intent(this, ParentInterface.class);
+        Intent intent = new Intent(this, MainActivity.class);
 
         startActivity(intent);
     }

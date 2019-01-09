@@ -44,16 +44,17 @@
             android:exported="false" />
 
         <receiver
-            android:name=".LocationUpdatesBroadcastReceiver"
+            android:name="com.bros.safebus.safebus.LocationUpdatesBroadcastReceiver"
             android:enabled="true"
-            android:exported="true"
+            android:exported="false"
             android:stopWithTask="false">
-            <intent-filter>
-                <action android:name="com.bros.safebus.safebus.LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES" />
-            </intent-filter>
-        </receiver>
+            <!-- <intent-filter>
+               <action android:name="com.bros.safebus.safebus.LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES" />
+           </intent-filter>
+            -->
+       </receiver>
 
 
-    </application>
+   </application>
 
 </manifest>
