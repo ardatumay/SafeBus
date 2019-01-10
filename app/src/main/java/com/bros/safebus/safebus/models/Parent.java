@@ -1,3 +1,11 @@
+/******************************************************************************
+ *  Class Name: Parent
+ *  Author: Efe
+ *
+ * This is the model of Parent
+ *
+ ******************************************************************************/
+
 package com.bros.safebus.safebus.models;
 
 import com.bros.safebus.safebus.models.Child;
@@ -5,6 +13,10 @@ import com.bros.safebus.safebus.models.Child;
 import java.util.Arrays;
 
 public class Parent {
+    /******************************************************************************
+     * Defining the variables that we need for the Parent account
+     * Author: Efe
+     ******************************************************************************/
     private String name;
     private String surname;
     private String email;
@@ -19,7 +31,12 @@ public class Parent {
     {
 
     }
-    public Parent (String name, String surname, String email, String password, String address, long phone, String key, String type)//constructor for only register page and includes only register page variables
+
+    /******************************************************************************
+     * Another constructor of Parent for registering
+     * Author: Efe
+     ******************************************************************************/
+    public Parent (String name, String surname, String email, String password, String address, long phone, String key, String type)
     {
         this.name = name;
         this.surname = surname;
@@ -31,8 +48,12 @@ public class Parent {
         this.type = type;
     }
 
-    //full constructor
-    public Parent(String name, String surname, String email, String password, String address, long phone, String key, Child[] children, String type) {
+    /******************************************************************************
+     * Full constructor of Parent
+     * Author: Efe
+     ******************************************************************************/
+    public Parent(String name, String surname, String email, String password, String address, long phone, String key, Child[] children, String type)
+    {
         this.name = name;
         this.surname = surname;
         this.email = email;
@@ -43,7 +64,10 @@ public class Parent {
         this.children = children;
         this.type = type;
     }
-
+    /******************************************************************************
+     * Getters and Setters for the variables
+     * Author: Efe
+     ******************************************************************************/
     public String getName() {
         return name;
     }

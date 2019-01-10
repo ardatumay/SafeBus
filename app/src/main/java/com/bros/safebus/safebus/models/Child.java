@@ -1,10 +1,22 @@
+/******************************************************************************
+ *  Class Name: Child
+ *  Author: Efe
+ *
+ * This is the model of Child
+ *
+ ******************************************************************************/
+
+
 package com.bros.safebus.safebus.models;
 
 import java.util.Arrays;
 import java.util.HashMap;
 
 public class Child {
-
+    /******************************************************************************
+     * Defining the variables that we need for the child account
+     * Author: Efe
+     ******************************************************************************/
     private String password;
     private String name;
     private String surname;
@@ -17,13 +29,8 @@ public class Child {
     private String busPlate;
     private String key;
     private String type;
-   /* private boolean notify;
-    private boolean notifyHome;
-    private boolean notifySchool;*/
-    //locarion related data
     private double currentLocation [];
-    //private String currentLocation;
-    private String lastKnownLocation;//tek bi string olarak mı yoksa ikili hashmap tarzında mı. virgülle ayrılıyor
+    private String lastKnownLocation;
     private boolean trackLocation;
 
 
@@ -31,7 +38,10 @@ public class Child {
     public Child() {
     }
 
-    //full constructor
+    /******************************************************************************
+     * Full constructor of child
+     * Author: Efe
+     ******************************************************************************/
     public Child(String name, String surname,String schoolName, String schoolAddress, long phone, String parentKey, String email, String busPlate, String key, double latitude, double longitude, String lastKnownLocation) {
         this.name = name;
         this.surname = surname;
@@ -48,15 +58,12 @@ public class Child {
         this.lastKnownLocation = lastKnownLocation;
     }
 
-    /*public Child(String fullName, String key, boolean notify, boolean notifyHome, boolean notifySchool) {// for register page. only includes register page variables
-        this.name = fullName;
-        this.key = key;
-        this.notify = notify;
-        this.notifyHome = notifyHome;
-        this.notifySchool = notifySchool;
-    }*/
 
-    public Child(String name, String surname,String schoolName, String email, String password, String schoolAddress, long phone, String key, String parentKey, String type, boolean trackLocation, String homeAddress) {// for register page. only includes register page variables
+    /******************************************************************************
+     * Different constructor of child for registering
+     * Author: Efe
+     ******************************************************************************/
+    public Child(String name, String surname,String schoolName, String email, String password, String schoolAddress, long phone, String key, String parentKey, String type, boolean trackLocation, String homeAddress) {
         this.name = name;
         this.surname = surname;
         this.schoolName = schoolName;
@@ -73,18 +80,10 @@ public class Child {
 
 
 
-  /*  public boolean isNotify() { return notify; }
-
-    public void setNotify(boolean notify) { this.notify = notify; }
-
-    public boolean isNotifyHome() { return notifyHome; }
-
-    public void setNotifyHome(boolean notifyHome) { this.notifyHome = notifyHome; }
-
-    public boolean isNotifySchool() { return notifySchool; }
-
-    public void setNotifySchool(boolean notifySchool) { this.notifySchool = notifySchool; }
-*/
+    /******************************************************************************
+     * Getters and Setters for the variables
+     * Author: Efe
+     ******************************************************************************/
     public String getName() {
         return name;
     }

@@ -1,3 +1,16 @@
+/******************************************************************************
+ *  Class Name: MainActivity
+ *  Author: Efe
+ *
+ *  This is the MainActivity of the app,
+ *  When the application starts it shows a login texts and sign up option to user
+ *  It takes the parameters from the database and logins the user successfully
+ *
+ *
+ ******************************************************************************/
+
+
+
 package com.bros.safebus.safebus;
 import android.app.Activity;
 import android.content.Context;
@@ -48,6 +61,10 @@ public class MainActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);
 
+        /******************************************************************************
+         * Defining EditText's and Buttons and radio groups
+         * Author: Efe
+         ******************************************************************************/
         final EditText email = (EditText) findViewById(R.id.email);
         final EditText password = (EditText) findViewById(R.id.password);
         final String sa ;
@@ -72,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
             password.setVisibility(View.INVISIBLE);
         }
 
+
+        /******************************************************************************
+         * If the user clicks on sign up button it shows the sigh up screen
+         * Author: Efe
+         ******************************************************************************/
         sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -79,29 +101,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-/*
-        sign_up.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String emailAddr = email.getText().toString();
-                String pass = password.getText().toString();
-                firebaseAuth.createUserWithEmailAndPassword(emailAddr, pass)
-                        .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    firstTextView.setText("Signing up");
-                                    kullaniciOlustur();
-                                    kullaniciGuncelle();
-                                } else {
-                                    Log.e("Yeni Kullanıcı Hatası", task.getException().getMessage());
-                                }
 
-                            }
-                        }
-            }
-        }*/
-
+        /******************************************************************************
+         * If the user clicks to login, it takes the needed inputs (email and password)
+         * and logins for the user
+         * Author: Efe
+         ******************************************************************************/
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -118,38 +123,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        // login.setOnClickListener(new View.OnClickListener() {
-        //  @Override
-        //  public void onClick(View v) {
-        //   firebaseAuth.signInWithEmailAndPassword(
-        //            email.getText().toString(),
-        //           password.getText().toString())
-        //          .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-        //              @Override
-        //             public void onComplete(@NonNull Task<AuthResult> task) {
-        //                 if (task.isSuccessful()) {
-        //                     loginUser(email, password);
-        // firstTextView.setText("Logging in");
-        // openActivity();
-        // startActivity(new Intent(getApplication(), User.class));
-        //              } else {
-        //                  Log.e("Log in error", task.getException().toString());
-        //               }
-        //           }
-        //       });
-        // }
-        // });
-  /*      RadioGroup radioGroup = (RadioGroup) findViewById(R.id.userTypeRadio);
-        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
-        {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                RadioButton checkedButton = (RadioButton) findViewById(checkedId);
-                Log.d("DRIVER", "NEW RADIO CLICK" + checkedButton.getText().toString().toLowerCase() );
-                SetUserType(checkedButton.getText().toString().toLowerCase());
 
-            }
-        });*/
     }
 
 
@@ -158,7 +132,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d("SET USERTYPE", "NEW VAL" + val );
         userType = val;
     }
-
+    /******************************************************************************
+     * By using firebase, it logins the user and check for the user's type and
+     * send the user proper page for it's type after login.
+     * Author: Efe
+     ******************************************************************************/
     private void loginUser(final String userLoginEmail, final String userLoginPassword) {
         firebaseAuth.signInWithEmailAndPassword(userLoginEmail, userLoginPassword)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -189,16 +167,10 @@ public class MainActivity extends AppCompatActivity {
                                     String key = dataSnapshot.child("key").getValue().toString();
 
                                     if(userType.equals("parents")){
-                                        /*Intent intentResident = new Intent(MainActivity.this, register.class);
-                                        intentResident.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intentResident);
-                                        finish();*/
+
                                         GoToParentHome(key);
                                     }else if (userType.equals("drivers")){
-                                        /*Intent intentMain = new Intent(MainActivity.this, register.class);
-                                        intentMain.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intentMain);
-                                        finish();*/
+
                                         GoToDriverHome(key);
                                     }else if(userType.equals("children")) {
                                         GoToChildrenHome(key);
@@ -226,52 +198,37 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+    /******************************************************************************
+     * Switch intent to ParenntInterface by taking the key
+     * Author: Efe
+     ******************************************************************************/
     void GoToParentHome(String userKey){
         Intent i = new Intent(this, ParentInterface.class);
         i.putExtra("userKey", userKey);
         startActivity(i);
     }
+    /******************************************************************************
+     * Switch intent to ChildrenInterface by taking the key
+     * Author: Efe
+     ******************************************************************************/
     void GoToChildrenHome(String userKey){
         Intent i = new Intent(this, ChildrenInterface.class);
         i.putExtra("userKey", userKey);
         startActivity(i);
     }
+    /******************************************************************************
+     * Switch intent to DriverInterface by taking the key
+     * Author: Efe
+     ******************************************************************************/
     void GoToDriverHome(String userKey){
         Intent i = new Intent(this, DriverInterface.class);
         i.putExtra("userKey", userKey);
         startActivity(i);
     }
-    /* private void kullaniciOlustur() {
-         Map<String, String> yeniUser = new HashMap<String, String>();
-         yeniUser.put("name", "name");
-         yeniUser.put("surname", "surname");
-
-         DatabaseReference databaseReference = firebaseDatabase.getReference();
-         databaseReference.child("users")
-                 .child(firebaseAuth.getCurrentUser().getUid())
-                 .setValue(yeniUser);
-     }
-     private void kullaniciGuncelle() {
-         FirebaseUser firebaseUser = firebaseAuth.getCurrentUser();
-
-         UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
-                 .setDisplayName("nick ver")
-                 .setPhotoUri(null)
-                 .build();
-
-         firebaseUser.updateProfile(userProfileChangeRequest)
-                 .addOnCompleteListener(new OnCompleteListener<Void>() {
-                     @Override
-                     public void onComplete(@NonNull Task<Void> task) {
-                         if (!task.isSuccessful()) {
-                             Log.e("update error", task.getException().getMessage());
-                         }
-                        // startActivity(new Intent(MainActivity.this, User.class));
-                     }
-                 });
-
-     }*/
+    /******************************************************************************
+     * Switch intent to sign up page
+     * Author: Efe
+     ******************************************************************************/
     void changeRegisterPage()
     {
         Intent register_intent = new Intent(this, register.class);

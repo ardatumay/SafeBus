@@ -1,8 +1,21 @@
+/******************************************************************************
+ *  Class Name: Driver
+ *  Author: Efe
+ *
+ * This is the model of Driver
+ *
+ ******************************************************************************/
+
 package com.bros.safebus.safebus.models;
 
 import com.bros.safebus.safebus.models.Child;
 
 public class Driver {
+
+    /******************************************************************************
+     * Defining the variables that we need for the driver account
+     * Author: Efe
+     ******************************************************************************/
     private String name;
     private String surname;
     private String schoolAddress;
@@ -11,7 +24,7 @@ public class Driver {
     private String password;
     private String plateNumber;
     private String currentLocation;
-    private String lastKnownLocation;//tek bi string olarak mı yoksa ikili hashmap tarzında mı. virgülle ayrılıyor
+    private String lastKnownLocation;
     private String key;
     private Child[] children;
     private String type;
@@ -20,6 +33,10 @@ public class Driver {
     public Driver() {
     }
 
+    /******************************************************************************
+     * Full constructor of Driver
+     * Author: Efe
+     ******************************************************************************/
     public Driver(String name, String surname, String email, String password, String schoolAddress, long phoneNumber, String plateNumber, String key,String type, boolean trackLocation ) {
         this.name = name;
         this.surname = surname;
@@ -33,6 +50,10 @@ public class Driver {
         this.trackLocation = trackLocation;
     }
 
+    /******************************************************************************
+     * Different constructor of driver
+     * Author: Efe
+     ******************************************************************************/
     public Driver(String name, String surname, String schoolAddress, int phoneNumber, String email, String plateNumber, String currentLocation, String lastKnownLocation,String type) {
         this.name = name;
         this.surname = surname;
@@ -46,7 +67,10 @@ public class Driver {
     }
 
 
-
+    /******************************************************************************
+     * Getters and Setters for the variables
+     * Author: Efe
+     ******************************************************************************/
     public String getPassword() {
         return password;
     }
