@@ -2,6 +2,8 @@
  *  Class Name: ParentInterface
  *  Author: Arda
  *
+ * This is home page of the parent where several buttons are placed to interact with
+ * Each button povides differet features
  *  This class provides you to sign up screen for the child
  *  Also it sends you to MapsActivty class to see the map
  *  Also it deals with notifications
@@ -70,7 +72,10 @@ public class ParentInterface extends Activity {
 
     private SharedPreferences preferences;
     private SharedPreferences.Editor preferenceEditor;
-
+    /******************************************************************************
+     * Tasks are created to wait result of the firebase db calls before running an process that depends on the result
+     * Author: Arda
+     ******************************************************************************/
     TaskCompletionSource<DataSnapshot> dbSource = new TaskCompletionSource<>();
     Task dbTask = dbSource.getTask();
     TaskCompletionSource<DataSnapshot> dbSource2 = new TaskCompletionSource<>();
@@ -98,7 +103,12 @@ public class ParentInterface extends Activity {
             @Override
             public void onClick(View v) {
 
-
+                /******************************************************************************
+                 * if logout clicked delete the permanent user data from phone and logout the user
+                 * shared resource structure provides key-value pair data structure which is a permanent storage
+                 * It can be user as a soft database where there is no requirement for sqlite
+                 * Author: Arda
+                 ******************************************************************************/
                 preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
                 preferenceEditor = preferences.edit();
                 preferenceEditor.putString("userMail", "");
@@ -110,16 +120,27 @@ public class ParentInterface extends Activity {
 
 
                 firebaseAuth.signOut();
+                GoToHome();
+
                 finish();
             }
         });
+        /******************************************************************************
+         * create notification channel for devices whose api level greater than or equal to 26
+         * for other devices does not create notification channel becase other devices has only one channel
+         * Author: Arda
+         ******************************************************************************/
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (Build.VERSION.SDK_INT >= 26) {
             CreateNotifChannel();
         }
 
-
+        /******************************************************************************
+         * Get registered children to the parent from firebase to gent children data in other pages
+         * it gets children name to be put on buttons and children key to find related children from firebase
+         * Author: Arda
+         ******************************************************************************/
         FirebaseUser currentUser = firebaseAuth.getInstance().getCurrentUser();//get the unique id of parent
         final String RegisteredUserID = currentUser.getUid();
         final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("parents").child(RegisteredUserID).child("children");
@@ -257,6 +278,10 @@ public class ParentInterface extends Activity {
         Log.d("Child name", "Child Names: " + childrenNames);
     }
 
+    /******************************************************************************
+     * Create notificaiton channel
+     * Author: Arda
+     ******************************************************************************/
     void CreateNotifChannel() {
         // The id of the channel.
         String id = "my_channel_01";
@@ -280,6 +305,12 @@ public class ParentInterface extends Activity {
 
     }
 
+
+    /******************************************************************************
+     * Create notification and show it in the device based on api level
+     * api level 26 or higher requires notif. channel
+     * Author: Arda
+     ******************************************************************************/
     void SentNotif(String name, String content) {
 
         Intent intent = new Intent(this, MainActivity.class);
@@ -325,6 +356,10 @@ public class ParentInterface extends Activity {
 
     }
 
+    /******************************************************************************
+     * Not used, sentNotif used instead
+     * Author: Efe
+     ******************************************************************************/
     void SentNotifHome(String name) {
 
         Intent intent = new Intent(this, MainActivity.class);
@@ -346,6 +381,10 @@ public class ParentInterface extends Activity {
         mNotificationManager.notify(NOTIFICATION_ID, notification);
     }
 
+    /******************************************************************************
+     * Not used, sentNotif used instead
+     * Author: Efe
+     ******************************************************************************/
     void SentNotifSchool(String name) {
 
         Intent intent = new Intent(this, MainActivity.class);
@@ -367,6 +406,15 @@ public class ParentInterface extends Activity {
         mNotificationManager.notify(NOTIFICATION_ID, notification);
     }
 
+    /******************************************************************************
+     * To disable back button in home page
+     * Author: Arda
+     ******************************************************************************/
+    @Override
+    public void onBackPressed() {
+
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -376,7 +424,6 @@ public class ParentInterface extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        GoToHome();
     }
 
     void GoToHome() {
@@ -384,6 +431,10 @@ public class ParentInterface extends Activity {
         startActivity(i);
     }
 
+    /******************************************************************************
+     * Not used, onCreate method is used instead
+     * Author: Arda
+     ******************************************************************************/
     String GetChildFullName(String childKey) {
         final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey);
         databaseref.addValueEventListener(new ValueEventListener() {
@@ -416,25 +467,7 @@ public class ParentInterface extends Activity {
 
     }
 
-    public void GetDriverKey(String childKey) {
-        final DatabaseReference databaseKey = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
-        databaseKey.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                DriverKey = dataSnapshot.getValue(String.class);
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-
-
-        Log.v("DriverKeyyy", DriverKey);
-
-
-    }
 
     void CreateButtons(List<String> names) {
         for (int i = 0; i < childrenNames.size(); i++) {
@@ -478,6 +511,11 @@ public class ParentInterface extends Activity {
         }
     };
 
+    /******************************************************************************
+     * Goes to middle page for showing children related buttons and features
+     * parent reaches map from this page
+     * Author: Arda
+     ******************************************************************************/
     void GoToChildInterface(String childKey, String childUpperKey, String childFullName) {
         Intent i = new Intent(this, ParentChildInterface.class);
         Intent intent = getIntent();
@@ -489,6 +527,10 @@ public class ParentInterface extends Activity {
         startActivity(i);
     }
 
+    /******************************************************************************
+     * goes to registration page of the children
+     * Author: Arda
+     ******************************************************************************/
 
     void GoToChildrenRegister() {
         Intent intent = getIntent();

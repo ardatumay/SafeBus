@@ -1,3 +1,13 @@
+/******************************************************************************
+ *  Class Name: ParentChildrenInterfface
+ *  Author: Arda
+ *
+ *This class shows buttons related to childrean feautures
+ * location tracking for children is enabled/disabled here
+ * parent sees the map for locations
+ * parent assign school and home addreesses here by clicking related buttons
+ ******************************************************************************/
+
 package com.bros.safebus.safebus;
 
 import android.app.Activity;
@@ -28,6 +38,10 @@ public class ParentChildInterface extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.parent_child_interface);
+        /******************************************************************************
+         * required variables are initialized, user keys and buttons
+         * Author: Arda
+         ******************************************************************************/
         Intent intent = getIntent();
         childKey = intent.getStringExtra("childKey");
         childUpperKey = intent.getStringExtra("childUpperKey");
@@ -40,18 +54,6 @@ public class ParentChildInterface extends Activity {
 
 
 
-        /*stopLocationTracking.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(((Switch) stopLocationTracking).isChecked()==true){
-                    ((Switch) stopLocationTracking).setChecked(false);
-                }else {
-                    ((Switch) stopLocationTracking).setChecked(true);
-                }
-                StopLocationTracking();
-            }
-        });
-*/
         seeTheMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,6 +84,10 @@ public class ParentChildInterface extends Activity {
             }
         });
 
+        /******************************************************************************
+         * Firebase db listener for setting track location variable in the app
+         * Author: Arda
+         ******************************************************************************/
         final DatabaseReference databaserefNotify = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");
         databaserefNotify.addValueEventListener(new ValueEventListener() {
             @Override
@@ -102,6 +108,10 @@ public class ParentChildInterface extends Activity {
 
     }
 
+    /******************************************************************************
+     * goes to map page with required parameters
+     * Author: Arda
+     ******************************************************************************/
     void GoToMapPage(String childKey, String childUpperKey, String parentKey, boolean marksHome, boolean marksSchool) {
 
         Intent i = new Intent(this, MapsActivity.class);
@@ -116,6 +126,10 @@ public class ParentChildInterface extends Activity {
         startActivity(i);
     }
 
+    /******************************************************************************
+     * when toggle is pressed track location is off
+     * Author: Arda
+     ******************************************************************************/
     void StopLocationTracking() {
 
         final DatabaseReference databaserefNotify = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");

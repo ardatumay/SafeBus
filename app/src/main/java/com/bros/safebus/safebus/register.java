@@ -263,7 +263,7 @@ public class register extends AppCompatActivity {
                  * Proper toast messages if inputs are empty
                  * Author: Can
                  ******************************************************************************/
-                if (TextUtils.isEmpty(driverEmail)) {
+                if (TextUtils.isEmpty(driver_Email_Address)) {
                     Toast.makeText(register.this, "Enter email address!", Toast.LENGTH_SHORT).show();
                     return;
                 }

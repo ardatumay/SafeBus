@@ -1,3 +1,9 @@
+/******************************************************************************
+ *  Class Name: LocatinUtil
+ *  Author: Arda
+ *
+ * helper class for createing location request
+ ******************************************************************************/
 package com.bros.safebus.safebus;
 
 import android.Manifest;
@@ -19,6 +25,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 public class LocationUtil {
 
+
+    /******************************************************************************
+     * This method creates a location request and builds it to set required location paremeters for location tracking
+     * priority of locaiton and intervals are set here
+     * Author: Arda
+     ******************************************************************************/
     public static LocationRequest CreateLocationRequest() { //create a location request for the location updates
         LocationRequest mLocationRequest = new LocationRequest(); // location request
         mLocationRequest.setInterval(1500);

@@ -2,12 +2,14 @@
  *  Class Name: MapsActivity
  *  Author: Can
  *
+ * Can creates the map, shows in the application, draws the path on the map
  *  This class gets the child's and driver's location and shows it to the parent
  *
  *  Revisions: Efe: Added calculation of distance between child-home and home-child
  *             Efe: Added proper notification for the home and school
  *             Arda: Added calculation of distance between child and driver
  *             Arda: Added proper notification for the child and school bus
+ *             Arda, Efe and Can: Creates required firebase calls for getting data
  ******************************************************************************/
 
 package com.bros.safebus.safebus;
@@ -100,12 +102,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+        /******************************************************************************
+         * Initialize variables required for holding gps
+         * Author: Can
+         ******************************************************************************/
         mapFragment.getMapAsync(this);
         listPoints = new ArrayList<>();
         listPointsChildLoc = new ArrayList<>();
         listPointsDriverLoc = new ArrayList<>();
         listPointsHomeLoc = new ArrayList<>();
         listPointsSchoolLoc = new ArrayList<>();
+        /******************************************************************************
+         * Get some user interface components
+         * Author: Arda
+         ******************************************************************************/
         //Make both distance view and submit button invisible and make each one visible depending on user mode, e.g. showing location of student and service or marking school address
         distanceView = (TextView) findViewById(R.id.distance);
         distanceView.setVisibility(View.INVISIBLE);
@@ -117,6 +127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 onSubmit();
             }
         });
+
         submit.setVisibility(View.INVISIBLE);
         serviceSpeedInput = (TextView) findViewById(R.id.service_speed_input);
         serviceSpeedInput.setVisibility(View.INVISIBLE);
@@ -130,7 +141,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         driverControl = GetDriverControl();
 
 
+        /******************************************************************************
+         * If user is not a driver, he is parent. Children does not reach the map
+         * Author: Arda
+         ******************************************************************************/
         if (driverControl == false) {
+
+            /******************************************************************************
+             * Get path list saved in driver in firebase
+             * Author: Can
+             ******************************************************************************/
             final DatabaseReference databaserefForDriver = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("driverKey");
             databaserefForDriver.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -175,6 +195,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
 
 
+            /******************************************************************************
+             * Variables for deciding map mode: marking home, marking school or showing locations
+             * if statemtent controls which feature to enable
+             * Author: Arda
+             ******************************************************************************/
             Intent incomingIntent = getIntent();
             parentMarksMapHome = incomingIntent.getBooleanExtra("parentMarksMapHome", false);
             parentMarksMapSchool = incomingIntent.getBooleanExtra("parentMarksMapSchool", false);
@@ -237,7 +262,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             }
 
                           
-                        
+
                         /******************************************************************************
                          * Gets the location of home and calculate distance between childeren's location
                          * and the home's location. If it is greater than that we wanted, it sets the notification true
@@ -417,8 +442,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 });
 
             } else if (!trackChildLoc) {
+
+                /******************************************************************************
+                 * If parent disables the location tracking give alert
+                 * Author: Can
+                 ******************************************************************************/
                 Toast.makeText(getApplicationContext(), "You need to enable track location to see location information!", Toast.LENGTH_SHORT).show();
             } else {
+
+                /******************************************************************************
+                 * if user does not see the locations, he marks the school or home location
+                 * Author: Arda
+                 ******************************************************************************/
                 Log.w("parent", "parent marks map");
                 submit.setVisibility(View.VISIBLE);
                 distanceView.setVisibility(View.VISIBLE);
@@ -439,6 +474,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+
+    /******************************************************************************
+     * Required methods for getting keys from intent
+     * Author: Arda
+     ******************************************************************************/
     String GetChildContainerKey() {
         Intent i = getIntent();
         String childUpperKey = i.getStringExtra("childUpperKey");
@@ -478,6 +518,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    /******************************************************************************
+     * After getting locations from the firebase, this method is used to mark the locations in the map and shows the related info on the markers
+     * Author: Can
+     ******************************************************************************/
     public void MarkMap() {
         mMap.clear();
 
@@ -529,30 +573,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             });
 
         } else {
-            Toast.makeText(getApplicationContext(), "Driver is needed to register your child.", Toast.LENGTH_SHORT).show();
+          //  Toast.makeText(getApplicationContext(), "Driver is needed to register your child.", Toast.LENGTH_SHORT).show();
 
         }
     }
 
 
+
+    /******************************************************************************
+     * Requid method to interact with the map when it is ready
+     * Author: Can
+     ******************************************************************************/
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
+        /******************************************************************************
+         * initialize google map and enable driver buttons if the user driver. if the user is not driver then show the school and home locations for the parent
+         * Author: Can
+         ******************************************************************************/
         mMap = googleMap;
         mMap.getUiSettings().setZoomControlsEnabled(true);
 
-       /* if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_REQUEST);
-            return;
-        }
-        mMap.setMyLocationEnabled(true);*/
-        //iki nokta yaratmak için bu method kullanılıyor eğer haritaya uzun tıklarsan tag yartır ve iki tag arasında yol oluşturur.
-        /*
-        TODO:
-        1) kendi locationumu belli aralıklarla al
-        2) location değiştiğinde bunu anlaması için call methodu yarat
-        3) Değişimi anladığında location arası noktaların arasını google servisi kullanarak bağla
-         */
         if (driverControl == true) {
             CreateButton("Add Path", addPath, R.raw.ok);
             CreateButton("Return", deleteLastPoint, R.raw.red2);
@@ -643,6 +683,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    /******************************************************************************
+     * Method for initializing buttons in the map
+     * Author: Arda
+     ******************************************************************************/
     void CreateButton(String name, View.OnClickListener listener, int icon) {
         Log.d("Button", "Add Button " + name);
         ImageButton myButton = new ImageButton(this);
@@ -727,7 +771,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     LatLng point = null;
-
     private void getHomeTag() {
         String driverKey = GetDriverKey();
 
@@ -971,6 +1014,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /******************************************************************************
+     * Requid method to calculate distance between two geolocations on the earth. ,
+     * Method implements harversine methodology to calculate the distance on a earth shape
+     *
+     * Author: Arda
+     ******************************************************************************/
     public double CalculationByDistance(double initialLat, double initialLong,
                                         double finalLat, double finalLong) {
         int R = 6371; // km (Earth radius)
@@ -989,7 +1038,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public double toRadians(double deg) {
         return deg * (Math.PI / 180);
     }
-
+    /******************************************************************************
+     * When user marks the home or school location in the map, he need to press submit button to save location.
+     * This method is called when submit button is clicked.
+     * it simply send the home or school location to firebase realtime db
+     * Author: Arda
+     ******************************************************************************/
     public void onSubmit() {
         if (parentMarksMapHome) {
             HashMap<String, Double> locationDetails = new HashMap<String, Double>();

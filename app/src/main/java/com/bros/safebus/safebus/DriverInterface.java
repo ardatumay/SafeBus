@@ -358,6 +358,10 @@ public class DriverInterface extends Activity {
         return PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
+    @Override
+    public void onBackPressed() {
+
+    }
 
     void AddChildToDriver(String userMail) {
         String actualUsername = CreateUsernameFromEmail(userMail);

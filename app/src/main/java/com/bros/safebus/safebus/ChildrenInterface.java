@@ -60,12 +60,20 @@ public class ChildrenInterface extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.children_interface);
         Intent intent = getIntent();
         childKey = intent.getStringExtra("userKey");
         i = new Intent(getApplicationContext(), LocationListener.class);
 
+        preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
+        preferenceEditor = preferences.edit();
+        preferenceEditor.putString("userKey",childKey);
+        preferenceEditor.putString("userType","children");
+        preferenceEditor.commit();
+        preferenceEditor.apply();
 
         checkLocationPermission();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
@@ -116,18 +124,18 @@ public class ChildrenInterface extends Activity {
 
 
     private PendingIntent getPendingIntent() {
-        preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
-        preferenceEditor = preferences.edit();
-        preferenceEditor.putString("userKey",childKey);
-        preferenceEditor.putString("userType","children");
-        preferenceEditor.commit();
-        preferenceEditor.apply();
+
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
         intent.setAction(LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES);
         /*intent.putExtra(LocationUpdatesBroadcastReceiver.USER_KEY, DriverKey);
         intent.putExtra(LocationUpdatesBroadcastReceiver.USER_TYPE, "drivers");
         sendBroadcast(intent);*/
         return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    @Override
+    public void onBackPressed() {
+
     }
 
     public void StartLocationService() {
@@ -201,6 +209,8 @@ public class ChildrenInterface extends Activity {
                                 ActivityCompat.requestPermissions(ChildrenInterface.this,
                                         new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
                                         MY_PERMISSIONS_REQUEST_LOCATION);
+
+
                             }
                         })
                         .create()
@@ -211,11 +221,19 @@ public class ChildrenInterface extends Activity {
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
+
             }
+
             return false;
         } else {
             return true;
         }
+
+    }
+
+    void GoToHome(){
+        Intent in = new Intent(this, MainActivity.class);
+        startActivity(in);
     }
 
     @Override

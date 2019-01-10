@@ -1,3 +1,12 @@
+/******************************************************************************
+ *  Class Name: LocationUpdatesBroadcastReceiver
+ *  Author: Arda
+ *
+ * Broadcast receiver for taking and processing the location changes.
+ * This is the main factor of the application that enables background location tracking
+ * When app is started driver and children are registered to the broadcast for taking location changes
+ ******************************************************************************/
+
 package com.bros.safebus.safebus;
 
 import android.app.Notification;
@@ -22,12 +31,18 @@ import static android.provider.Settings.Global.getString;
 
 public class LocationUpdatesBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "LUBroadcastReceiver";
-    public static final String USER_KEY = "userKey";
-    public static final String USER_TYPE = "userType";
     static final String ACTION_PROCESS_UPDATES =
             "com.google.android.gms.location.sample.backgroundlocationupdates.action" +
                     ".PROCESS_UPDATES";
 
+
+
+    /******************************************************************************
+     * onReceive method is fired when the location change event occurs in the background
+     * when the event occur, method gets the user key and user type rom shared resouce in the device
+     * and sets the location info of the user in the firebase
+     * Author: Arda
+     ******************************************************************************/
     @Override
     public void onReceive(Context context, Intent intent) {
         SharedPreferences preferences = context.getSharedPreferences("credentials", Context.MODE_PRIVATE);

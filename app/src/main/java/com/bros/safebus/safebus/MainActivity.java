@@ -157,10 +157,7 @@ public class MainActivity extends AppCompatActivity {
         });*/
     }
 
-    private void openActivity() {
-        Intent intent = new Intent (MainActivity.this, User.class);
-        startActivity(intent);
-    }
+
 
     void SetUserType(String val){
         Log.d("SET USERTYPE", "NEW VAL" + val );
