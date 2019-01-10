@@ -1,3 +1,12 @@
+/******************************************************************************
+ *  Class Name: LocationListener
+ *  Author: Arda
+ *
+ * This is a service for getting the location in the background as a service
+ * but since we swicth to the broadcast listener in the middle of the app development
+ * this service class is not used
+ * Author: Arda
+ ******************************************************************************/
 package com.bros.safebus.safebus;
 
 import android.Manifest;
@@ -46,7 +55,10 @@ import java.util.concurrent.Executor;
  * helper methods.
  */
 public class LocationListener extends Service {
-
+    /******************************************************************************
+     * Create location variables and required keys
+     * Author: Arda
+     ******************************************************************************/
     private FusedLocationProviderClient mFusedLocationClient; //location provider client
     LocationRequest mLocationRequest; // location request
     Location currentLoc = null;
@@ -74,7 +86,10 @@ public class LocationListener extends Service {
 
     public static final int NOTIFICATION_ID = 555;
 
-
+    /******************************************************************************
+     *Create location request and check poermission
+     * Author: Arda
+     ******************************************************************************/
     @Override
     public void onCreate() {
         //bussiness logic variables
@@ -88,7 +103,10 @@ public class LocationListener extends Service {
         }
 
     }
-
+    /******************************************************************************
+     * Request location updates with the location callback method
+     * Author: Arda
+     ******************************************************************************/
     private void RequestLocationUpdates(){
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -101,7 +119,10 @@ public class LocationListener extends Service {
     private void StopLocationUpdates(){
         this.mFusedLocationClient.removeLocationUpdates(LocationCallback());
     }
-
+    /******************************************************************************
+     * get the last known location if required
+     * Author: Arda
+     ******************************************************************************/
     void GetLoc() {//get the last location of the user and put the location value to the currentLoc variable
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -123,6 +144,10 @@ public class LocationListener extends Service {
 
         Log.i("destror", "onCreate() , service stopped...");
     }
+    /******************************************************************************
+     *if track lopcation is enabled start location tracking
+     * Author: Arda
+     ******************************************************************************/
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         userKey = intent.getStringExtra(USER_KEY);
@@ -231,7 +256,10 @@ public class LocationListener extends Service {
         // TODO: Handle action Baz
         throw new UnsupportedOperationException("Not yet implemented");
     }
-
+    /******************************************************************************
+     *Location callback method where the loccation uypdates are proccessed
+     * Author: Arda
+     ******************************************************************************/
     public LocationCallback LocationCallback(){
         mLocationCallback = new LocationCallback() {//callback function to get location updates
             @Override

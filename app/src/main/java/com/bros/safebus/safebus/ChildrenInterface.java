@@ -1,9 +1,12 @@
 /******************************************************************************
  *  Class Name: ChildrenInterface
- *  Author:
+ *  Author:Arda
  *
  *  After child logs in, it gets the permission to get location and it gets
  *  the child's location
+ *
+ *  There is no any button seen to children since it has not required to take any action
+ *  the only responsibility of the child is sending his location
  *
  ******************************************************************************/
 
@@ -45,7 +48,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.HashMap;
 
 public class ChildrenInterface extends Activity {
-
+    /******************************************************************************
+     *  Create location variables and childkey
+     * Author: Arda
+     ******************************************************************************/
     private FusedLocationProviderClient mFusedLocationClient; //location provider client
     LocationRequest mLocationRequest; // location request
     Location currentLoc = null;
@@ -68,18 +74,30 @@ public class ChildrenInterface extends Activity {
         childKey = intent.getStringExtra("userKey");
         i = new Intent(getApplicationContext(), LocationListener.class);
 
+        /******************************************************************************
+         *Add the user key and user type to shared resource for permanent storage
+         * then the broadcast receiver gets this information and sends the location info to the firebase
+         * Author: Arda
+         ******************************************************************************/
         preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
         preferenceEditor = preferences.edit();
-        preferenceEditor.putString("userKey",childKey);
-        preferenceEditor.putString("userType","children");
+        preferenceEditor.putString("userKey", childKey);
+        preferenceEditor.putString("userType", "children");
         preferenceEditor.commit();
         preferenceEditor.apply();
 
+        /******************************************************************************
+         *create location request, check permissions, register to the updates via pending intent
+         * Author: Arda
+         ******************************************************************************/
         checkLocationPermission();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
         mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
         mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
-
+/******************************************************************************
+ * If location track is disabled, disable the service location tracking
+ * Author: Arda
+ ******************************************************************************/
         final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("children").child(childKey).child("trackLocation");
         databaseref.addValueEventListener(new ValueEventListener() {
             @Override
@@ -104,7 +122,10 @@ public class ChildrenInterface extends Activity {
         //startService(new Intent(getApplicationContext(), LocationListener.class));
 
     }
-
+    /******************************************************************************
+     * If location tracking is disabled, disable the broadcast receiver in the device
+     * Author: Arda
+     ******************************************************************************/
     private void DisableBroadcastReceiver() {
         ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
         PackageManager pm = this.getPackageManager();
@@ -112,7 +133,10 @@ public class ChildrenInterface extends Activity {
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
     }
-
+    /******************************************************************************
+     * If location tracking is enabled, enable the broadcast receiver in the device
+     * Author: Arda
+     ******************************************************************************/
     public void enableBroadcastReceiver() {
         ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
         PackageManager pm = this.getPackageManager();
@@ -122,7 +146,10 @@ public class ChildrenInterface extends Activity {
 
     }
 
-
+    /******************************************************************************
+     * Create intent and register to broadcast receiver with pending intent
+     * Author: Arda
+     ******************************************************************************/
     private PendingIntent getPendingIntent() {
 
         Intent intent = new Intent(this, LocationUpdatesBroadcastReceiver.class);
@@ -132,23 +159,35 @@ public class ChildrenInterface extends Activity {
         sendBroadcast(intent);*/
         return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
-
+    /******************************************************************************
+     * Disable the back press in the home page
+     * Author: Arda
+     ******************************************************************************/
     @Override
     public void onBackPressed() {
 
     }
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     public void StartLocationService() {
         i.putExtra(LocationListener.USER_KEY, childKey);
         i.putExtra(LocationListener.USER_TYPE, "children");
         startService(i);
     }
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     public void StopLocationService() {
         //stopService(i);
         stopService(new Intent(this, LocationListener.class));
     }
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     @Override
     protected void onResume() {
         super.onResume();
@@ -159,7 +198,10 @@ public class ChildrenInterface extends Activity {
             // startLocationUpdates();
         }
     }
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     private void startLocationUpdates() {
         checkLocationPermission();
        /* mFusedLocationClient.requestLocationUpdates(mLocationRequest,
@@ -167,13 +209,19 @@ public class ChildrenInterface extends Activity {
                 null );*/
     }
 
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     @Override
     protected void onPause() {
         super.onPause();
         //stopLocationUpdates();
     }
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
@@ -185,7 +233,10 @@ public class ChildrenInterface extends Activity {
 
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-
+    /******************************************************************************
+     * Location permission is checked with this method
+     * Author: Arda
+     ******************************************************************************/
     public boolean checkLocationPermission() { //check whether the app has enough permissions for location services
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -231,11 +282,15 @@ public class ChildrenInterface extends Activity {
 
     }
 
-    void GoToHome(){
+    void GoToHome() {
         Intent in = new Intent(this, MainActivity.class);
         startActivity(in);
     }
 
+    /******************************************************************************
+     * Set the flag true for service if user gives permission
+     * Author: Arda
+     ******************************************************************************/
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {

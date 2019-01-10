@@ -1,3 +1,16 @@
+/******************************************************************************
+ *  Class Name: DriverInterface
+ *  Author: Arda
+ *
+ * This is home page of the driver where several buttons are placed to interact with
+ * Each button povides differet features
+ * Driver can open map and mark the route
+ * In addition driver can see the registered childrens' location in the map during marking route
+ * Driver can add children to his service
+ *
+ *  Revisions: Efe: Added database checking for notifications for all children about school and home
+ *             Can: Added intent switches, updated markers.
+ ******************************************************************************/
 package com.bros.safebus.safebus;
 
 import android.Manifest;
@@ -77,7 +90,12 @@ public class DriverInterface extends Activity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                /******************************************************************************
+                 * if logout clicked delete the permanent user data from phone and logout the user
+                 * shared resource structure provides key-value pair data structure which is a permanent storage
+                 * It can be user as a soft database where there is no requirement for sqlite
+                 * Author: Arda
+                 ******************************************************************************/
                 //empty shared preference for next login
                 preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
                 preferenceEditor = preferences.edit();
@@ -110,40 +128,13 @@ public class DriverInterface extends Activity {
 
             }
         });
-        //Get the driver key from intent
+        //Get the driver key from intent - Arda
         DriverKey = getIntent().getStringExtra("userKey");
-
-        //bussiness logic variables
-        /*mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
-        mGeofencingClient = LocationServices.getGeofencingClient(this);
-        mLocationCallback = new LocationCallback() {//callback function to get location updates
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {//location gives the updated location
-                    //Log.d("LOC", location.toString());
-                    // Update UI with location data
-                    // ...
-                    Log.w("LOCATION", "onLocationResult: " + location.toString());
-                    //firebase cannot serialize arrays, it must be put in dictionary like data structure which is hashmap
-                    HashMap<String, Double> locationDetails = new HashMap<String, Double>();
-                    locationDetails.put("latitude", location.getLatitude());
-                    locationDetails.put("longitude", location.getLongitude());
-
-                    HashMap<String, HashMap<String, Double>> currentLocation = new HashMap<String, HashMap<String, Double>>();
-                    currentLocation.put("currentLocation", locationDetails);
-                    Intent intent = getIntent();
-                    String childKey = intent.getStringExtra("userKey");
-                    final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("drivers").child(childKey).child("location");
-                    databaseref.setValue(currentLocation);
-                    //updatedLocation.setText(location.toString());
-                }
-            }
-        };*/
-
+        /******************************************************************************
+         * Get the locaton client and create location rewuest and start listening location updates via pendingt intent
+         * that is registered to broadcast receiver
+         * Author: Arda
+         ******************************************************************************/
         checkLocationPermission();
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this); //get the location provider client
         mLocationRequest = LocationUtil.CreateLocationRequest();  //create the location request
@@ -153,19 +144,22 @@ public class DriverInterface extends Activity {
         intent.putExtra(LocationListener.USER_KEY, DriverKey);
         intent.putExtra(LocationListener.USER_TYPE, "drivers");
         startService(intent);*/
-
+        /******************************************************************************
+         * If location track is disabled, disable the service location tracking
+         * Author: Arda
+         ******************************************************************************/
         final DatabaseReference databaseref = FirebaseDatabase.getInstance().getReference().child("drivers").child(DriverKey).child("trackLocation");
         databaseref.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (!(boolean) dataSnapshot.getValue()) {
 
-                    DisableBroadcastReceiver();
-                    mFusedLocationClient.removeLocationUpdates(getPendingIntent());
+                    DisableBroadcastReceiver();//disable boradcast receiver
+                    mFusedLocationClient.removeLocationUpdates(getPendingIntent()); //remove pending intent from location client
                 } else {
-                    enableBroadcastReceiver();
-                    checkLocationPermission();
-                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());
+                    enableBroadcastReceiver();//enable broadcast receiver
+                    checkLocationPermission();///check location permission
+                    mFusedLocationClient.requestLocationUpdates(mLocationRequest, getPendingIntent());//add pending intent from location client
                 }
             }
 
@@ -189,19 +183,6 @@ public class DriverInterface extends Activity {
         }
 
 
-       /*showLocation.setOnClickListener(new View.OnClickListener() {// When show location button is clicked show the location of the currentLoc variable
-            @Override
-            public void onClick(View view) {
-                GetLoc();
-                if (currentLoc == null) {
-                    setTextView(CurrentLocation, "Location Object Is Null");
-
-                } else {
-                    setTextView(CurrentLocation, currentLoc.toString());
-                    //setTextView(CurrentLocation, currentLoc.getLatitude() + " " + currentLoc.getAltitude() + " with accuracy " + currentLoc.getAccuracy() );
-                }
-            }
-        });*/
 
         final Button addChild = (Button) findViewById(R.id.add_child);
         addChild.setOnClickListener(new View.OnClickListener() {
@@ -216,97 +197,6 @@ public class DriverInterface extends Activity {
                 } else {
                     AddChildToDriver(childMail.getText().toString());
                 }
-
-              /* if(!clicked){
-                   EditText childMail =(EditText) findViewById(R.id.child_email);
-                   childMail.setVisibility(View.VISIBLE);
-                   TranslateAnimation editTextAnim = new TranslateAnimation(1500.0f,0.0f , 0.0f, 0.0f); // new TranslateAnimation (float fromXDelta,float toXDelta, float fromYDelta, float toYDelta)
-                   editTextAnim.setDuration(1500); // animation duration
-                   //animation.setRepeatCount(4); // animation repeat count
-                   //animation.setRepeatMode(2); // repeat animation (left to right, right to left)
-                   //animation.setFillAfter(true);
-                   childMail .startAnimation(editTextAnim);//your_view for mine is imageView
-
-                   TranslateAnimation buttonAnim = new TranslateAnimation(0.0f,0.0f , 0.0f, 150.0f); // new TranslateAnimation (float fromXDelta,float toXDelta, float fromYDelta, float toYDelta)
-                   buttonAnim.setDuration(1500); // animation duration
-                   buttonAnim.setAnimationListener(new Animation.AnimationListener() {
-                       @Override
-                       public void onAnimationStart(Animation animation) {
-
-                       }
-
-                       @Override
-                       public void onAnimationEnd(Animation animation) {
-                           /*RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
-                           // change the coordinates of the view object itself so that on click listener reacts to new position
-                           view.layout(view.getLeft()+200, view.getTop(), view.getRight()+200, view.getBottom());
-                           repeatLevelSwitch.clearAnimation();
-
-
-
-                           // set new "real" position of wrapper
-                           RelativeLayout.LayoutParams lpForAddChild = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                          //lpForAddChild.addRule(RelativeLayout.BELOW, R.id.add_route);
-                           addChild.layout(addChild.getLeft(), addChild.getTop() + 1500, addChild.getRight(), addChild.getBottom());
-                           addChild.setLayoutParams(lpForAddChild);
-                           // clear animation to prevent flicker
-                           addChild.clearAnimation();
-                       }
-
-                       //@Override
-                       public void onAnimationRepeat(Animation animation) {
-
-                       }
-                   });
-                   buttonAnim.setFillAfter(true);
-                   addChild.startAnimation(buttonAnim);//your_view for mine is imageView
-                   clicked = true;
-               }else{
-                   EditText childMail =(EditText) findViewById(R.id.child_email);
-                   TranslateAnimation editTextAnim = new TranslateAnimation(0.0f,1500.0f , 0.0f, 0.0f); // new TranslateAnimation (float fromXDelta,float toXDelta, float fromYDelta, float toYDelta)
-                   editTextAnim.setDuration(1500); // animation duration
-                   //animation.setRepeatCount(4); // animation repeat count
-                   //animation.setRepeatMode(2); // repeat animation (left to right, right to left)
-                   //animation.setFillAfter(true);
-                   childMail .startAnimation(editTextAnim);//your_view for mine is imageView
-
-                   TranslateAnimation buttonAnim = new TranslateAnimation(0.0f,0.0f , 150.0f, 0.0f); // new TranslateAnimation (float fromXDelta,float toXDelta, float fromYDelta, float toYDelta)
-                   buttonAnim.setDuration(1500); // animation duration
-                   buttonAnim.setAnimationListener(new Animation.AnimationListener() {
-                       @Override
-                       public void onAnimationStart(Animation animation) {
-
-                       }
-
-                       @Override
-                       public void onAnimationEnd(Animation animation) {
-                           /*RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) view.getLayoutParams();
-                           // change the coordinates of the view object itself so that on click listener reacts to new position
-                           view.layout(view.getLeft()+200, view.getTop(), view.getRight()+200, view.getBottom());
-                           repeatLevelSwitch.clearAnimation();
-
-                           // clear animation to prevent flicker
-                           addChild.clearAnimation();
-
-                           // set new "real" position of wrapper
-                           RelativeLayout.LayoutParams lpForAddChild = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                           lpForAddChild.removeRule(RelativeLayout.BELOW);
-                           lpForAddChild.addRule(RelativeLayout.BELOW, R.id.add_route);
-                           addChild.setLayoutParams(lpForAddChild);
-                       }
-
-                       @Override
-                       public void onAnimationRepeat(Animation animation) {
-
-                       }
-                   });
-                   childMail.setVisibility(View.INVISIBLE);
-                   buttonAnim.setFillAfter(true);
-                   buttonAnim.setFillEnabled(true);
-                   addChild.startAnimation(buttonAnim);//your_view for mine is imageView
-                   clicked = false;
-               }*/
-
             }
         });
 
@@ -322,7 +212,10 @@ public class DriverInterface extends Activity {
             }
         });
     }
-
+    /******************************************************************************
+     * If location tracking is disabled, disable the broadcast receiver in the device
+     * Author: Arda
+     ******************************************************************************/
     private void DisableBroadcastReceiver() {
         ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
         PackageManager pm = this.getPackageManager();
@@ -330,7 +223,10 @@ public class DriverInterface extends Activity {
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                 PackageManager.DONT_KILL_APP);
     }
-
+    /******************************************************************************
+     * If location tracking is enabled, enable the broadcast receiver in the device
+     * Author: Arda
+     ******************************************************************************/
     public void enableBroadcastReceiver() {
         ComponentName receiver = new ComponentName(this, LocationUpdatesBroadcastReceiver.class);
         PackageManager pm = this.getPackageManager();
@@ -340,7 +236,10 @@ public class DriverInterface extends Activity {
 
     }
 
-
+    /******************************************************************************
+     * Create intent and register to broadcast receiver with pending intent
+     * Author: Arda
+     ******************************************************************************/
     private PendingIntent getPendingIntent() {
         preferences = getSharedPreferences("credentials", Context.MODE_PRIVATE);
         preferenceEditor = preferences.edit();
@@ -361,12 +260,19 @@ public class DriverInterface extends Activity {
 
         return PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
-
+    /******************************************************************************
+     * Disable back press in home page
+     * Author: Arda
+     ******************************************************************************/
     @Override
     public void onBackPressed() {
 
     }
-
+    /******************************************************************************
+     * When add child button is pressed system get the entered mail and search it in the firebase db
+     * if any child found, add it to driver but if not, give alert
+     * Author: Arda
+     ******************************************************************************/
     void AddChildToDriver(String userMail) {
         String actualUsername = CreateUsernameFromEmail(userMail);
         final TaskCompletionSource<DataSnapshot> dbSource = new TaskCompletionSource<>();
@@ -414,20 +320,29 @@ public class DriverInterface extends Activity {
             }
         });
     }
-
+    /******************************************************************************
+     * Helper method to search child in DB
+     * Author: Arda
+     ******************************************************************************/
     String CreateUsernameFromEmail(String email) {
         String src1 = ExtractCharFromString(email, "@");
         String src2 = ExtractCharFromString(src1, ".");
         return src2;
     }
-
+    /******************************************************************************
+     * Helper method to search child in DB
+     * Author: Arda
+     ******************************************************************************/
     String ExtractCharFromString(String src, String trgt) {
         String newSrc = src.replace(trgt, "");
         return newSrc;
 
     }
 
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     @Override
     protected void onResume() {
         super.onResume();
@@ -436,7 +351,10 @@ public class DriverInterface extends Activity {
             // startLocationUpdates();
         }
     }
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     private void startLocationUpdates() {
         checkLocationPermission();
         mFusedLocationClient.requestLocationUpdates(mLocationRequest,
@@ -444,18 +362,27 @@ public class DriverInterface extends Activity {
                 null);
     }
 
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     @Override
     protected void onPause() {
         super.onPause();
         // stopLocationUpdates();
     }
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     private void stopLocationUpdates() {
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
-
+    /******************************************************************************
+     * Not working since we use broadcast receiver tyo get the location
+     * Author: Arda
+     ******************************************************************************/
     void GetLoc() {//get the last location of the user and put the location value to the currentLoc variable
         checkLocationPermission();
         mFusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -477,7 +404,10 @@ public class DriverInterface extends Activity {
 
 
     }
-
+    /******************************************************************************
+     * go to login page
+     * Author: Arda
+     ******************************************************************************/
     void GoToHome() {
         Intent i = new Intent(this, MainActivity.class);
         startActivity(i);
@@ -489,7 +419,10 @@ public class DriverInterface extends Activity {
 
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-
+    /******************************************************************************
+     * Location permission is checked with this method
+     * Author: Arda
+     ******************************************************************************/
     public boolean checkLocationPermission() { //check whether the app has enough permissions for location services
         if (ContextCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -529,7 +462,10 @@ public class DriverInterface extends Activity {
             return true;
         }
     }
-
+    /******************************************************************************
+     * Set the flag true for service if user gives permission
+     * Author: Arda
+     ******************************************************************************/
     @Override
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
