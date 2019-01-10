@@ -4,7 +4,7 @@
  *
  *  This class provides parent to sign up for a child
  *
- *  Revisions: Can: Toast messages
+ *  Revisions: Can: Toast messages, Model update.
  *             Arda: Extract characters that we don't want from sources
  ******************************************************************************/
 

@@ -176,7 +176,11 @@ public class DriverInterface extends Activity {
         });
 
 
-        //adding List path into DB
+
+        /******************************************************************************
+         * This adds List path into DB
+         * Author: Can
+         ******************************************************************************/
         listPoints = getIntent().getParcelableArrayListExtra("pathList");
         if (listPoints != null) {
             Log.v("listPath", listPoints.toString());

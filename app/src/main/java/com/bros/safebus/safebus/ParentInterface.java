@@ -9,7 +9,7 @@
  *  Also it deals with notifications
  *
  *  Revisions: Efe: Added database checking for notifications for all children about school and home
- *             Can: Added intent switches
+ *             Can: Added intent switches, updated markers.
  ******************************************************************************/
 
 
@@ -468,7 +468,10 @@ public class ParentInterface extends Activity {
     }
 
 
-
+    /******************************************************************************
+     * Creating for dynamic buttons
+     * Author: Arda
+     ******************************************************************************/
     void CreateButtons(List<String> names) {
         for (int i = 0; i < childrenNames.size(); i++) {
             //String childName = GetChildFullName(child.getValue());

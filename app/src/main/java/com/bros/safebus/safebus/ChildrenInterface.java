@@ -2,8 +2,8 @@
  *  Class Name: ChildrenInterface
  *  Author:
  *
- *  After child logs in, it gets the permission to get lcoation and it gets
- *  the child's lcoation
+ *  After child logs in, it gets the permission to get location and it gets
+ *  the child's location
  *
  ******************************************************************************/
 

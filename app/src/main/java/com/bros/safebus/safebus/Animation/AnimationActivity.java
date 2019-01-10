@@ -1,3 +1,11 @@
+/******************************************************************************
+ *  Class Name: AnimationActivity
+ *  Author: Can
+ *
+ * This class playing an animation for UI.
+ *
+ ******************************************************************************/
+
 package com.bros.safebus.safebus.Animation;
 
 
@@ -14,7 +22,7 @@ import com.bros.safebus.safebus.R;
 
 public class AnimationActivity extends AppCompatActivity {
 
-    private static int SPLASH_TIME_OUT = 0;
+    private static int SPLASH_TIME_OUT = 4000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

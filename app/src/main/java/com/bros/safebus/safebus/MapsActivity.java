@@ -2,8 +2,10 @@
  *  Class Name: MapsActivity
  *  Author: Can
  *
- * Can creates the map, shows in the application, draws the path on the map
- *  This class gets the child's and driver's location and shows it to the parent
+ * This class creates the map, shows in the application, draws the path on the map
+ * The class gets the child's and driver's location and shows it to the parent.
+ * Parent can see dynamic markers which is showing child's and drivers information.
+ * Also Driver can choose home and school from the tag names.
  *
  *  Revisions: Efe: Added calculation of distance between child-home and home-child
  *             Efe: Added proper notification for the home and school
@@ -477,7 +479,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /******************************************************************************
      * Required methods for getting keys from intent
-     * Author: Arda
+     * Author: Arda, Can
      ******************************************************************************/
     String GetChildContainerKey() {
         Intent i = getIntent();
@@ -685,7 +687,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     /******************************************************************************
      * Method for initializing buttons in the map
-     * Author: Arda
+     * Author: Can
      ******************************************************************************/
     void CreateButton(String name, View.OnClickListener listener, int icon) {
         Log.d("Button", "Add Button " + name);
@@ -828,9 +830,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    //şu an çocuktan alınyor ancak parent istediği isimde okul ismi yazabilir bir scroll ile tek bir isim haline getirilmeli. Bir ikincisi  okul yerleri static olmalı
+//şu an çocuktan alınyor ancak parent istediği isimde okul ismi yazabilir bir scroll ile tek bir isim haline getirilmeli. Bir ikincisi  okul yerleri static olmalı
 // 1. Parent map üstünde bulunan bir noktayı seçicek
 // 2. Driver çocuğu eklerken okulunu scroll ile ekliyecek
+
+
+    /******************************************************************************
+     * Method for get dynamic school Tag
+     * Author: Can
+     ******************************************************************************/
     private void getSchoolTag(String childkey) {
         final DatabaseReference databaserefChild = FirebaseDatabase.getInstance().getReference().child("children").child(childkey);
         databaserefChild.addValueEventListener(new ValueEventListener() {
@@ -875,6 +883,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
          });
          return  driverName;
      }*/
+
+    /******************************************************************************
+     * This method creates URL string of diretion
+     * Author: Can
+     ******************************************************************************/
     private String getRequestUrl(LatLng origin, LatLng dest) {
         //Value of origin
         String str_org = "origin=" + origin.latitude + "," + origin.longitude;
@@ -895,6 +908,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return url;
     }
 
+    /******************************************************************************
+     * This method uses URL to creating connection. Then it returns response of service
+     * Author: Can
+     ******************************************************************************/
     private String requestDirection(String reqUrl) throws IOException {
         String responseString = "";
         InputStream inputStream = null;
@@ -964,6 +981,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    /******************************************************************************
+     * This method uses directionParser class to parsing JSON object to direction.
+     * Author: Can
+     ******************************************************************************/
     public class TaskParser extends AsyncTask<String, Void, List<List<HashMap<String, String>>>> {
 
         @Override
@@ -980,6 +1001,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return routes;
         }
 
+        /******************************************************************************
+         * This method creates poly lines on map after JSON object parsed in TaskParser
+         * Author: Can
+         ******************************************************************************/
         @Override
         protected void onPostExecute(List<List<HashMap<String, String>>> lists) {
             //Get list route and display it into the map
